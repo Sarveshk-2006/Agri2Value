@@ -33,6 +33,9 @@ from app.database.models import (
     LogisticsProvider,
     ColdStorageFacility,
     ProcessingFacility,
+    IoTDevice,
+    IoTTelemetryReading,
+    IoTAlert,
 )
 from app.crop_lots.schemas import normalize_to_kg
 
@@ -399,6 +402,85 @@ async def seed_data():
             session.add_all([p1, p2])
             await session.commit()
             print("  [+] Created 3 Buyers, 4 Offers, 3 Logistics Providers, 2 Cold Stores, 2 Processing Units.")
+
+        # 6. Seed default Virtual IoT Edge Node (Phase 4A)
+        res_device = await session.execute(
+            select(IoTDevice).where(IoTDevice.device_code == "ESP32-NIPHAD-NODE-01")
+        )
+        existing_device = res_device.scalar_one_or_none()
+        if not existing_device:
+            import hashlib
+            import json
+            raw_demo_key = "a2v_dev_demo_key_niphad_node_01"
+            hashed_demo_key = hashlib.sha256(raw_demo_key.encode("utf-8")).hexdigest()
+
+            now_utc = datetime.now(timezone.utc)
+            dev = IoTDevice(
+                device_code="ESP32-NIPHAD-NODE-01",
+                device_name="Niphad Tomato Polyhouse Node 1",
+                farm_id=farm.id,
+                farmer_user_id=farmer.id,
+                device_type="ESP32_AGRI_NODE",
+                firmware_version="v1.2.0-sim",
+                sensor_capabilities="SOIL_MOISTURE,AIR_TEMP,HUMIDITY,RAINFALL,LIGHT_INTENSITY,BATTERY_VOLTAGE",
+                status="ACTIVE",
+                data_source="SIMULATED",
+                api_key_hash=hashed_demo_key,
+                api_key_prefix="a2v_dev_demo...",
+                last_seen_at=now_utc,
+                last_reading_summary=json.dumps({
+                    "SOIL_MOISTURE": {"value": 52.4, "unit": "%", "timestamp": now_utc.isoformat(), "source_type": "SIMULATED"},
+                    "AIR_TEMP": {"value": 28.5, "unit": "°C", "timestamp": now_utc.isoformat(), "source_type": "SIMULATED"},
+                    "HUMIDITY": {"value": 64.0, "unit": "%", "timestamp": now_utc.isoformat(), "source_type": "SIMULATED"},
+                    "RAINFALL": {"value": 0.0, "unit": "mm", "timestamp": now_utc.isoformat(), "source_type": "SIMULATED"},
+                }),
+                created_at=now_utc,
+                updated_at=now_utc,
+            )
+            session.add(dev)
+            await session.commit()
+            await session.refresh(dev)
+
+            # Seed a few baseline readings
+            r1 = IoTTelemetryReading(
+                device_id=dev.id,
+                farm_id=farm.id,
+                reading_id="seed-reading-01",
+                sensor_type="SOIL_MOISTURE",
+                value=Decimal("52.40"),
+                unit="%",
+                device_timestamp=now_utc,
+                server_ingested_at=now_utc,
+                source_type="SIMULATED",
+                quality_flag="VALID",
+            )
+            r2 = IoTTelemetryReading(
+                device_id=dev.id,
+                farm_id=farm.id,
+                reading_id="seed-reading-02",
+                sensor_type="AIR_TEMP",
+                value=Decimal("28.50"),
+                unit="°C",
+                device_timestamp=now_utc,
+                server_ingested_at=now_utc,
+                source_type="SIMULATED",
+                quality_flag="VALID",
+            )
+            r3 = IoTTelemetryReading(
+                device_id=dev.id,
+                farm_id=farm.id,
+                reading_id="seed-reading-03",
+                sensor_type="HUMIDITY",
+                value=Decimal("64.00"),
+                unit="%",
+                device_timestamp=now_utc,
+                server_ingested_at=now_utc,
+                source_type="SIMULATED",
+                quality_flag="VALID",
+            )
+            session.add_all([r1, r2, r3])
+            await session.commit()
+            print("  [+] Created Virtual IoT Node: ESP32-NIPHAD-NODE-01 with baseline readings.")
 
         await session.commit()
         print("[SUCCESS] Seeding completed successfully!\n")

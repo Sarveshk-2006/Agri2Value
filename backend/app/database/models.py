@@ -26,6 +26,7 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    UniqueConstraint,
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
@@ -68,6 +69,7 @@ class User(Base):
     # Relationships
     farms: Mapped[List["Farm"]] = relationship("Farm", back_populates="owner", lazy="select")
     crop_lots: Mapped[List["CropLot"]] = relationship("CropLot", back_populates="owner", lazy="select")
+    devices: Mapped[List["IoTDevice"]] = relationship("IoTDevice", back_populates="farmer", lazy="select")
 
     def __repr__(self) -> str:
         return f"<User id={self.id} phone={self.phone} role={self.role}>"
@@ -113,6 +115,7 @@ class Farm(Base):
     owner: Mapped["User"] = relationship("User", back_populates="farms")
     resources: Mapped[List["FarmResource"]] = relationship("FarmResource", back_populates="farm", lazy="selectin")
     crop_lots: Mapped[List["CropLot"]] = relationship("CropLot", back_populates="farm", lazy="select")
+    devices: Mapped[List["IoTDevice"]] = relationship("IoTDevice", back_populates="farm", lazy="select")
 
     __table_args__ = (
         Index("ix_farms_owner_district", "owner_user_id", "district"),
@@ -826,4 +829,206 @@ class ExecutionRequestEvent(Base):
 
     def __repr__(self) -> str:
         return f"<ExecutionRequestEvent id={self.id} {self.from_status} -> {self.to_status}>"
+
+
+# ---- IoT & Edge Telematics (Phase 4A) ----------------------------
+
+class IoTDevice(Base):
+    """
+    Physical or virtual ESP32 farm telematics and microclimate node.
+    """
+    __tablename__ = "iot_devices"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    device_code: Mapped[str] = mapped_column(
+        String(64), nullable=False, unique=True, index=True
+    )
+    device_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    farm_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("farms.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    farmer_user_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    device_type: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="ESP32_AGRI_NODE"
+    )
+    # ESP32_AGRI_NODE | ESP32_WEATHER_STATION | VIRTUAL_SIMULATOR
+    firmware_version: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="v1.0.0-sim"
+    )
+    sensor_capabilities: Mapped[str] = mapped_column(
+        String(255), nullable=False, default="SOIL_MOISTURE,AIR_TEMP,HUMIDITY,RAINFALL"
+    )
+    status: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="ACTIVE"
+    )
+    # ACTIVE | INACTIVE | REVOKED
+    data_source: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="SIMULATED"
+    )
+    # SIMULATED | PHYSICAL
+    api_key_hash: Mapped[str] = mapped_column(String(128), nullable=False)
+    api_key_prefix: Mapped[str] = mapped_column(String(20), nullable=False)
+    last_seen_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    last_reading_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    # Relationships
+    farm: Mapped["Farm"] = relationship("Farm", back_populates="devices")
+    farmer: Mapped["User"] = relationship("User", back_populates="devices")
+    readings: Mapped[List["IoTTelemetryReading"]] = relationship(
+        "IoTTelemetryReading",
+        back_populates="device",
+        cascade="all, delete-orphan",
+        lazy="select",
+    )
+    alerts: Mapped[List["IoTAlert"]] = relationship(
+        "IoTAlert",
+        back_populates="device",
+        cascade="all, delete-orphan",
+        lazy="select",
+    )
+
+    __table_args__ = (
+        Index("ix_iot_devices_farm_status", "farm_id", "status"),
+        Index("ix_iot_devices_farmer", "farmer_user_id"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<IoTDevice id={self.id} code={self.device_code} status={self.status}>"
+
+
+class IoTTelemetryReading(Base):
+    """
+    Time-series sensor telemetry reading ingested from an IoT node.
+    """
+    __tablename__ = "iot_telemetry_readings"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    device_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("iot_devices.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    farm_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("farms.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    reading_id: Mapped[str] = mapped_column(
+        String(64), nullable=False, index=True
+    )
+    # Unique event/reading ID from device for idempotency & deduplication
+    sensor_type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    # SOIL_MOISTURE | AIR_TEMP | HUMIDITY | RAINFALL | LIGHT_INTENSITY | BATTERY_VOLTAGE
+    value: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    unit: Mapped[str] = mapped_column(String(20), nullable=False)
+    # %, °C, mm, lux, V
+    device_timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, index=True
+    )
+    server_ingested_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, index=True
+    )
+    source_type: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="SIMULATED"
+    )
+    # SIMULATED | PHYSICAL
+    quality_flag: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="VALID"
+    )
+    # VALID | OUT_OF_RANGE | SUSPECT
+    raw_metadata: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Relationship
+    device: Mapped["IoTDevice"] = relationship("IoTDevice", back_populates="readings")
+
+    __table_args__ = (
+        UniqueConstraint("device_id", "reading_id", name="uq_device_reading_id"),
+        Index("ix_iot_readings_device_time", "device_id", "device_timestamp"),
+        Index("ix_iot_readings_farm_type_time", "farm_id", "sensor_type", "device_timestamp"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<IoTTelemetryReading device={self.device_id} type={self.sensor_type} val={self.value}{self.unit}>"
+
+
+class IoTAlert(Base):
+    """
+    Environmental anomaly or telematics status advisory.
+    """
+    __tablename__ = "iot_alerts"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    device_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("iot_devices.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    farm_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("farms.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    alert_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    # LOW_SOIL_MOISTURE | HIGH_TEMPERATURE | HIGH_HUMIDITY | HEAVY_RAINFALL | DEVICE_OFFLINE | STALE_TELEMETRY
+    severity: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="WARNING"
+    )
+    # INFO | WARNING | CRITICAL
+    trigger_reading_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    sensor_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    trigger_value: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
+    trigger_unit: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    reading_timestamp: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    threshold_used: Mapped[str] = mapped_column(String(100), nullable=False)
+    source_type: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="SIMULATED"
+    )
+    explanation: Mapped[str] = mapped_column(Text, nullable=False)
+    is_resolved: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, index=True
+    )
+    resolved_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    # Relationship
+    device: Mapped["IoTDevice"] = relationship("IoTDevice", back_populates="alerts")
+
+    __table_args__ = (
+        Index("ix_iot_alerts_device_resolved", "device_id", "is_resolved"),
+        Index("ix_iot_alerts_farm_created", "farm_id", "created_at"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<IoTAlert type={self.alert_type} severity={self.severity} resolved={self.is_resolved}>"
+
 

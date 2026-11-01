@@ -14,6 +14,10 @@ import type {
   ProcessingFacility,
   ExecutionRequest,
   CropRescueAssessment,
+  IoTDevice,
+  IoTTelemetryReading,
+  IoTAlert,
+  SimulatorPresetResponse,
 } from './types';
 
 const API_BASE = '/api/v1';
@@ -574,6 +578,171 @@ class ApiService {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || 'Failed to evaluate crop rescue assessment');
+    }
+    return await res.json();
+  }
+
+  // ---- IoT & Edge Telematics API (Phase 4A) ----
+
+  async listIoTDevices(farmId?: string, status?: string): Promise<IoTDevice[]> {
+    const params = new URLSearchParams();
+    if (farmId) params.append('farm_id', farmId);
+    if (status) params.append('status', status);
+    const qs = params.toString() ? `?${params.toString()}` : '';
+    const res = await fetch(`${API_BASE}/iot/devices${qs}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      return [];
+    }
+    return await res.json();
+  }
+
+  async getIoTDevice(deviceId: string): Promise<IoTDevice> {
+    const res = await fetch(`${API_BASE}/iot/devices/${deviceId}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to get IoT device details');
+    }
+    return await res.json();
+  }
+
+  async registerIoTDevice(payload: {
+    device_code: string;
+    device_name: string;
+    farm_id: string;
+    device_type?: string;
+    firmware_version?: string;
+    sensor_capabilities?: string;
+    data_source?: string;
+  }): Promise<IoTDevice> {
+    const res = await fetch(`${API_BASE}/iot/devices`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || err.message || 'Failed to register IoT device');
+    }
+    return await res.json();
+  }
+
+  async updateIoTDeviceStatus(deviceId: string, status: string): Promise<IoTDevice> {
+    const res = await fetch(`${API_BASE}/iot/devices/${deviceId}/status`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ status }),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to update device status');
+    }
+    return await res.json();
+  }
+
+  async rotateIoTDeviceKey(deviceId: string): Promise<{ device_id: string; raw_api_key: string; api_key_prefix: string; message: string }> {
+    const res = await fetch(`${API_BASE}/iot/devices/${deviceId}/rotate-key`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to rotate device key');
+    }
+    return await res.json();
+  }
+
+  async ingestTelemetry(deviceCode: string, deviceKey: string, payload: {
+    farm_id?: string;
+    readings: Array<{
+      reading_id: string;
+      sensor_type: string;
+      value: number;
+      unit: string;
+      device_timestamp: string;
+      source_type?: string;
+      raw_metadata?: string;
+    }>;
+  }): Promise<any> {
+    const res = await fetch(`${API_BASE}/iot/telemetry`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Device-Id': deviceCode,
+        'X-Device-Key': deviceKey,
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || err.message || 'Telemetry ingestion failed');
+    }
+    return await res.json();
+  }
+
+  async getDeviceTelemetry(deviceId: string, sensorType?: string, limit = 50): Promise<IoTTelemetryReading[]> {
+    const params = new URLSearchParams();
+    if (sensorType) params.append('sensor_type', sensorType);
+    params.append('limit', limit.toString());
+    const res = await fetch(`${API_BASE}/iot/devices/${deviceId}/telemetry?${params.toString()}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      return [];
+    }
+    return await res.json();
+  }
+
+  async getIoTAlerts(farmId?: string, isResolved?: boolean): Promise<IoTAlert[]> {
+    const params = new URLSearchParams();
+    if (farmId) params.append('farm_id', farmId);
+    if (isResolved !== undefined) params.append('is_resolved', String(isResolved));
+    const res = await fetch(`${API_BASE}/iot/alerts?${params.toString()}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      return [];
+    }
+    return await res.json();
+  }
+
+  async resolveIoTAlert(alertId: string): Promise<IoTAlert> {
+    const res = await fetch(`${API_BASE}/iot/alerts/${alertId}/resolve`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to resolve alert');
+    }
+    return await res.json();
+  }
+
+  async listSimulatorScenarios(): Promise<Record<string, any>> {
+    const res = await fetch(`${API_BASE}/iot/simulator/scenarios`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      return {};
+    }
+    return await res.json();
+  }
+
+  async runSimulatorPreset(payload: {
+    device_id: string;
+    scenario: string;
+    custom_soil_moisture?: number;
+    custom_temperature?: number;
+    custom_humidity?: number;
+    custom_rainfall?: number;
+  }): Promise<SimulatorPresetResponse> {
+    const res = await fetch(`${API_BASE}/iot/simulator/run`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || err.message || 'Simulator execution failed');
     }
     return await res.json();
   }

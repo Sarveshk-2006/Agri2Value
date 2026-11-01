@@ -140,14 +140,34 @@ Run all unit and integration tests with pytest:
 cd d:\Agri2Value\backend
 .\.venv\Scripts\pytest -v
 ```
-All 14 tests execute against an isolated in-memory async SQLite engine with 100% pass rate.
+All 80 tests execute with 100% pass rate across authentication, profit decision engine, mandi & weather live integration, smart execution network, crop rescue mode, and IoT telematics.
 
 ---
 
-## 7. Next Phase: Phase 2
+## 7. Phase 4A — Virtual IoT Telemetry & Smart Irrigation Monitoring
 
-**Phase 2 — Profit Engine Vertical Slice** will implement:
-- Formula calculations for Mandi raw sale, contract buyer, and tomato puree processing.
-- Dynamic cost breakdowns and net profit per kg.
-- Automated feasibility gating for transport, processor capacity, and working capital.
-- Unit tests cross-checked against reference calculation sheets.
+Agri2Value features a complete, secure virtual device simulator that connects to the production-minded FastAPI telemetry ingestion pipeline:
+
+### Key Features:
+- **Virtual Node Provisioning:** Farmers can register virtual IoT nodes (`ESP32_AGRI_NODE`) with secure SHA-256 hashed API tokens (`POST /api/v1/iot/devices`).
+- **Telemetry Ingestion API:** `POST /api/v1/iot/telemetry` authenticated via `X-Device-Id` and `X-Device-Token` (or `X-Device-Key`).
+- **Telemetry Validation:** Server-side range checks for Soil Moisture (0–100%), Air Temp (-20 to 65°C), Humidity (0–100%), Rainfall (0–500 mm), Lux, and Battery Voltage.
+- **De-duplication & Time-series Storage:** Prevents duplicate reading IDs and tracks device online/standby status.
+- **Configurable Smart Irrigation Advisories:** Dynamic threshold slider triggers clear advisories (e.g., "Soil moisture is below configured 30.0% threshold. Inspect field rootzone and consider drip irrigation.").
+- **Safety Guardrail:** Strictly **Advisory Only**. No automated remote pump or valve actuation in Phase 4A.
+- **Future ESP32 Hardware Contract:** Documented in [`hardware/README.md`](hardware/README.md).
+
+### Simulator Usage Instructions:
+1. Log in as pilot farmer **Ramesh Patil** (`9876543210` / `123456`).
+2. Navigate to **IoT & Telematics** (`/app/iot`).
+3. Select the seeded node **ESP32-NIPHAD-NODE-01** (or provision a new virtual node via the top-right button).
+4. Choose an environmental scenario preset:
+   - `NORMAL_OPTIMAL`: Balanced microclimate (Moisture 55%, Temp 27.5°C).
+   - `LOW_MOISTURE_DROUGHT`: Soil moisture stress (<30%) — generates actionable irrigation advisory.
+   - `HEATWAVE_STRESS`: Canopy temperature spike (>38°C) — triggers heat advisory.
+   - `HIGH_HUMIDITY_BLIGHT`: Elevated humidity (>85%) — triggers late blight alert.
+   - `HEAVY_MONSOON_RAIN`: Precipitation surge (>25mm) — triggers waterlogging warning.
+   - `DEVICE_OFFLINE`: Missed heartbeat simulation.
+5. Click **Inject Once** to post a single telemetry batch or click **Stream** to transmit continuous readings every 3–10 seconds.
+6. The dashboard gauges, alert list, and persisted database history log update in real-time.
+

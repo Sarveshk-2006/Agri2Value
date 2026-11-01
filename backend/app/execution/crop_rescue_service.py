@@ -15,7 +15,14 @@ from sqlalchemy.orm import selectinload
 
 from app.core.errors import AuthorizationError, NotFoundError
 from app.core.logging import get_logger
-from app.database.models import CropLot, Farm, BuyerOffer, ProcessingFacility, ColdStorageFacility
+from app.database.models import (
+    CropLot,
+    Farm,
+    BuyerOffer,
+    ProcessingFacility,
+    ColdStorageFacility,
+    IoTAlert,
+)
 from app.execution.schemas import CropRescueAssessment, RescuePathwayOption
 from app.services.mandi_service import mandi_service
 from app.services.weather_service import weather_service
@@ -121,6 +128,21 @@ class CropRescueService:
                 mandi_signal = f"Mandi rate: ₹{current_mandi_rate}/kg at {m_quote.market_name} (Observation date: {m_quote.observation_date})."
         except Exception:
             mandi_signal = "Live Mandi rates unavailable; evaluated using regional pilot benchmarks."
+
+        # 4b. Supplementary On-Farm IoT Telematics Alerts (Phase 4A)
+        # Note: Added as supplementary context only. Does NOT mutate Profit Engine or decision snapshots.
+        if farm:
+            res_alerts = await db.execute(
+                select(IoTAlert).where(
+                    IoTAlert.farm_id == farm.id,
+                    IoTAlert.is_resolved == False
+                ).order_by(IoTAlert.created_at.desc()).limit(2)
+            )
+            farm_iot_alerts = res_alerts.scalars().all()
+            for al in farm_iot_alerts:
+                risk_reasons.append(
+                    f"Farm Telematics Alert ({al.source_type}): {al.alert_type} - {al.explanation}"
+                )
 
         # Cap score
         urgency_score = min(98, max(10, urgency_score))

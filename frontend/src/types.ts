@@ -455,7 +455,7 @@ export type TabKey =
 
 export interface IoTTelemetrySample {
   reading_id: string;
-  sensor_type: 'SOIL_MOISTURE' | 'AIR_TEMP' | 'HUMIDITY' | 'RAINFALL' | 'BATTERY_VOLTAGE' | 'SOLAR_LUX';
+  sensor_type: 'SOIL_MOISTURE' | 'AIR_TEMP' | 'HUMIDITY' | 'RAINFALL' | 'BATTERY_VOLTAGE' | 'LIGHT_INTENSITY';
   value: number;
   unit: string;
   device_timestamp: string;
@@ -464,21 +464,77 @@ export interface IoTTelemetrySample {
   quality_flag: string;
 }
 
-export interface IoTDevicePreview {
+export interface IoTDevice {
   id: string;
   device_code: string;
   device_name: string;
-  farm_name: string;
+  farm_id: string;
+  farmer_user_id: string;
   device_type: string;
   firmware_version: string;
+  sensor_capabilities: string;
   status: 'ACTIVE' | 'INACTIVE' | 'REVOKED';
   data_source: 'SIMULATED' | 'PHYSICAL';
+  api_key_prefix: string;
   last_seen_at?: string;
-  moisture_pct?: number;
-  temperature_c?: number;
-  humidity_pct?: number;
-  rainfall_mm?: number;
-  battery_v?: number;
+  last_reading_summary?: string;
+  created_at: string;
+  updated_at: string;
+  raw_api_key?: string;
+}
+
+export interface IoTTelemetryReading {
+  id: string;
+  device_id: string;
+  farm_id: string;
+  reading_id: string;
+  sensor_type: string;
+  value: number;
+  unit: string;
+  device_timestamp: string;
+  server_ingested_at: string;
+  source_type: 'SIMULATED' | 'PHYSICAL';
+  quality_flag: string;
+  raw_metadata?: string;
+}
+
+export interface IoTAlert {
+  id: string;
+  device_id: string;
+  farm_id: string;
+  alert_type: string;
+  severity: 'CRITICAL' | 'WARNING' | 'INFO';
+  trigger_reading_id?: string;
+  sensor_type?: string;
+  trigger_value?: number;
+  trigger_unit?: string;
+  reading_timestamp?: string;
+  threshold_used: string;
+  source_type: string;
+  explanation: string;
+  is_resolved: boolean;
+  created_at: string;
+  resolved_at?: string;
+}
+
+export interface SimulatorPresetResponse {
+  scenario: string;
+  device_id: string;
+  device_code: string;
+  telemetry_response?: any;
+  alerts_count: number;
+  summary: {
+    soil_moisture?: number;
+    air_temperature?: number;
+    humidity?: number;
+    rainfall?: number;
+    scenario_title?: string;
+    quality_check?: string;
+    status?: string;
+    message?: string;
+    simulated_last_seen?: string;
+  };
+  disclaimer: string;
 }
 
 
