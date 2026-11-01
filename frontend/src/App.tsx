@@ -7,6 +7,10 @@ import { FarmsView } from './components/FarmsView';
 import { HarvestLotsView } from './components/HarvestLotsView';
 import { DecisionEngineView } from './components/DecisionEngineView';
 import { MarketWeatherView } from './components/MarketWeatherView';
+import { BuyersView } from './components/BuyersView';
+import { InfrastructureView } from './components/InfrastructureView';
+import { ExecutionRequestsView } from './components/ExecutionRequestsView';
+import { CropRescueView } from './components/CropRescueView';
 import { SpecsView } from './components/SpecsView';
 import { AuthModal } from './components/AuthModal';
 import { api, DEFAULT_DEMO_USER } from './api';
@@ -150,6 +154,10 @@ export const App: React.FC = () => {
               if (lotId) setSelectedLotIdForDecision(lotId);
               setActiveTab('decision-preview');
             }}
+            onNavigateToRescue={(lotId) => {
+              if (lotId) setSelectedLotIdForDecision(lotId);
+              setActiveTab('rescue');
+            }}
           />
         )}
 
@@ -158,6 +166,38 @@ export const App: React.FC = () => {
             lots={cropLots}
             selectedLotId={selectedLotIdForDecision}
             onLotSelect={setSelectedLotIdForDecision}
+            onNavigateToExecution={() => setActiveTab('execution')}
+          />
+        )}
+
+        {activeTab === 'rescue' && (
+          <CropRescueView
+            cropLots={cropLots}
+            selectedLotId={selectedLotIdForDecision}
+            onLotSelect={setSelectedLotIdForDecision}
+            onNavigateToExecution={() => setActiveTab('execution')}
+          />
+        )}
+
+        {activeTab === 'buyers' && (
+          <BuyersView
+            cropLots={cropLots}
+            onNavigateToExecution={() => setActiveTab('execution')}
+          />
+        )}
+
+        {activeTab === 'infrastructure' && (
+          <InfrastructureView
+            cropLots={cropLots}
+            onNavigateToExecution={() => setActiveTab('execution')}
+          />
+        )}
+
+        {activeTab === 'execution' && (
+          <ExecutionRequestsView
+            cropLots={cropLots}
+            onNavigateToBuyers={() => setActiveTab('buyers')}
+            onNavigateToInfra={() => setActiveTab('infrastructure')}
           />
         )}
 
@@ -175,7 +215,7 @@ export const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-slate-400 font-medium">Agri2Value — Feasibility-Aware Profit Engine (Phase 2.6)</span>
+            <span className="text-slate-400 font-medium">Agri2Value — Smart Execution Network & Rescue (Phase 3)</span>
             <span>•</span>
             <span>Indradhanu: PCCOE International Grand Challenge 2026</span>
           </div>

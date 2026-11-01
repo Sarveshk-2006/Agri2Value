@@ -262,3 +262,181 @@ export interface MandiQuoteResponse {
   staleness_warning?: string;
 }
 
+// ---- Phase 3: Smart Execution Network & Crop Rescue Types --------
+
+export interface BuyerOffer {
+  id: string;
+  buyer_id: string;
+  commodity: string;
+  variety?: string;
+  accepted_grades: string;
+  min_quantity_kg: number;
+  max_quantity_kg: number;
+  current_fulfilled_kg: number;
+  offered_price_per_kg: number;
+  price_unit: string;
+  logistics_requirement: string;
+  payment_terms_days: number;
+  valid_until: string;
+  status: string;
+  data_mode: string;
+}
+
+export interface Buyer {
+  id: string;
+  company_name: string;
+  contact_person: string;
+  phone: string;
+  email?: string;
+  district: string;
+  state: string;
+  address: string;
+  buyer_type: string;
+  service_radius_km: number;
+  is_verified: boolean;
+  verification_badge: string;
+  rating?: number;
+  data_mode: string;
+  created_at: string;
+  offers: BuyerOffer[];
+}
+
+export interface LogisticsProvider {
+  id: string;
+  provider_name: string;
+  contact_phone: string;
+  vehicle_type: string;
+  capacity_kg: number;
+  current_available_capacity_kg: number;
+  base_district: string;
+  service_districts: string;
+  per_km_rate_per_kg: number;
+  minimum_fare: number;
+  pricing_unit: string;
+  is_temperature_controlled: boolean;
+  availability_status: string;
+  data_mode: string;
+  created_at: string;
+}
+
+export interface ColdStorageFacility {
+  id: string;
+  facility_name: string;
+  contact_phone: string;
+  location_district: string;
+  location_taluka: string;
+  compatible_commodities: string;
+  total_capacity_kg: number;
+  available_capacity_kg: number;
+  storage_rate_per_kg_per_month: number;
+  pricing_unit: string;
+  min_holding_days: number;
+  max_holding_days: number;
+  temperature_range_celsius: string;
+  humidity_range_pct: string;
+  availability_status: string;
+  data_mode: string;
+  created_at: string;
+}
+
+export interface ProcessingFacility {
+  id: string;
+  facility_name: string;
+  contact_phone: string;
+  facility_type: string;
+  accepted_commodities: string;
+  accepted_grades: string;
+  daily_capacity_kg: number;
+  available_capacity_kg: number;
+  processing_charge_per_kg: number;
+  pricing_unit: string;
+  output_recovery_ratio: number;
+  output_product_name: string;
+  location_district: string;
+  location_taluka: string;
+  availability_status: string;
+  data_mode: string;
+  created_at: string;
+}
+
+export interface ExecutionRequestEvent {
+  id: string;
+  request_id: string;
+  from_status?: string;
+  to_status: string;
+  actor_user_id?: string;
+  actor_role: string;
+  message: string;
+  metadata_json?: string;
+  created_at: string;
+}
+
+export interface ExecutionRequest {
+  id: string;
+  crop_lot_id: string;
+  farmer_user_id: string;
+  decision_run_id?: string;
+  route_type: string;
+  status: 'SUBMITTED' | 'PROVIDER_ACCEPTED' | 'CONFIRMED' | 'IN_EXECUTION' | 'COMPLETED' | 'CANCELLED' | 'REJECTED';
+  buyer_id?: string;
+  buyer_offer_id?: string;
+  logistics_provider_id?: string;
+  cold_storage_facility_id?: string;
+  processing_facility_id?: string;
+  requested_quantity_kg: number;
+  indicative_unit_price: number;
+  indicative_total_value: number;
+  indicative_logistics_cost: number;
+  indicative_storage_cost: number;
+  indicative_processing_cost: number;
+  indicative_net_payout: number;
+  actual_quantity_kg?: number;
+  actual_unit_price?: number;
+  actual_gross_revenue?: number;
+  actual_logistics_cost?: number;
+  actual_storage_cost?: number;
+  actual_processing_cost?: number;
+  actual_net_payout?: number;
+  completion_notes?: string;
+  completed_at?: string;
+  pickup_location: string;
+  delivery_location: string;
+  scheduled_date?: string;
+  notes?: string;
+  data_mode: string;
+  created_at: string;
+  updated_at: string;
+  events: ExecutionRequestEvent[];
+}
+
+export interface RescuePathwayOption {
+  route_type: string;
+  title: string;
+  channel_name: string;
+  estimated_net_payout: number;
+  salvaged_value_pct: number;
+  time_to_safety_hours: number;
+  capacity_status: string;
+  risk_level: string;
+  action_button_label: string;
+  target_entity_id?: string;
+}
+
+export interface CropRescueAssessment {
+  crop_lot_id: string;
+  crop_name: string;
+  variety?: string;
+  quantity_kg: number;
+  quality_grade?: string;
+  urgency_level: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW';
+  urgency_score: number;
+  risk_reasons: string[];
+  weather_alert?: string;
+  mandi_price_signal?: string;
+  salvage_pathways: RescuePathwayOption[];
+  recommended_action: string;
+  missing_data_warnings?: string[];
+  disclaimer: string;
+}
+
+

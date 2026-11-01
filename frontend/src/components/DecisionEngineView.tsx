@@ -15,20 +15,23 @@ import {
   RefreshCw,
   Info,
   Sparkles,
+  Send,
 } from 'lucide-react';
-import type { CropLot, DecisionRun, FeasibilityStatus } from '../types';
+import type { CropLot, DecisionRun, DecisionOption, FeasibilityStatus } from '../types';
 import { api } from '../api';
 
 interface DecisionEngineViewProps {
   lots: CropLot[];
   selectedLotId?: string;
   onLotSelect?: (lotId: string) => void;
+  onNavigateToExecution?: () => void;
 }
 
 export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
   lots,
   selectedLotId,
   onLotSelect,
+  onNavigateToExecution,
 }) => {
   const activeLotId = selectedLotId || (lots.length > 0 ? lots[0].id : '');
   const activeLot = lots.find((l) => l.id === activeLotId) || lots[0];
@@ -38,6 +41,29 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedOptionId, setExpandedOptionId] = useState<string | null>(null);
+  const [actionSubmitting, setActionSubmitting] = useState<string | null>(null);
+
+  const handleActionOption = async (option: DecisionOption) => {
+    if (!decisionRun || !activeLot) return;
+    setActionSubmitting(option.id);
+    try {
+      await api.createExecutionRequest({
+        crop_lot_id: activeLot.id,
+        decision_run_id: decisionRun.id,
+        route_type: option.route_type,
+        requested_quantity_kg: activeLot.quantity_kg_normalized,
+        notes: `Smart Execution Network Request initiated from Engine Option: ${option.route_name}. Projected net profit: ₹${Number(option.net_profit).toLocaleString()}`,
+      });
+      alert(`Execution request created for ${option.route_name}! Redirecting to Execution Tracker.`);
+      if (onNavigateToExecution) {
+        onNavigateToExecution();
+      }
+    } catch (err: any) {
+      alert(`Booking request failed: ${err.message}`);
+    } finally {
+      setActionSubmitting(null);
+    }
+  };
 
   // Evaluate whenever active lot or scenario changes
   const runEvaluation = async (lotId: string, scenario: string) => {
@@ -282,6 +308,21 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
                 </div>
 
               </div>
+
+              {/* Action Banner for Recommended Option */}
+              <div className="mt-4 pt-4 border-t border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <span className="text-xs text-slate-300">
+                  Ready to execute this optimal pathway? Lodge an execution request directly with matched partners.
+                </span>
+                <button
+                  onClick={() => handleActionOption(recommendedOption)}
+                  disabled={actionSubmitting === recommendedOption.id}
+                  className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-950/60 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Action This Recommendation</span>
+                </button>
+              </div>
             </div>
           ) : (
             <div className="p-6 rounded-2xl glass-panel border border-amber-500/40 bg-amber-950/20 text-center space-y-2">
@@ -380,23 +421,34 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
                       {opt.explanation}
                     </p>
 
-                    {/* Itemized Cost Breakdown Toggle */}
-                    <button
-                      onClick={() => toggleExpand(opt.id)}
-                      className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1.5 transition-colors"
-                    >
-                      {expandedOptionId === opt.id ? (
-                        <>
-                          <ChevronUp className="w-3.5 h-3.5" />
-                          <span>Hide Itemized Cost Breakdown</span>
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown className="w-3.5 h-3.5" />
-                          <span>View Itemized Cost Breakdown ({opt.cost_breakdown.line_items?.length || 0} items)</span>
-                        </>
-                      )}
-                    </button>
+                    {/* Itemized Cost Breakdown Toggle & Action Button */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                      <button
+                        onClick={() => toggleExpand(opt.id)}
+                        className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        {expandedOptionId === opt.id ? (
+                          <>
+                            <ChevronUp className="w-3.5 h-3.5" />
+                            <span>Hide Itemized Cost Breakdown</span>
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="w-3.5 h-3.5" />
+                            <span>View Itemized Cost Breakdown ({opt.cost_breakdown.line_items?.length || 0} items)</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => handleActionOption(opt)}
+                        disabled={actionSubmitting === opt.id}
+                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-300 font-semibold text-xs rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Send className="w-3 h-3 text-emerald-400" />
+                        <span>Action Pathway</span>
+                      </button>
+                    </div>
 
                     {/* Expanded Cost Breakdown Drawer */}
                     {expandedOptionId === opt.id && (

@@ -1,8 +1,29 @@
 // frontend/src/components/Navigation.tsx
 import React from 'react';
-import { LayoutDashboard, Home, Wheat, Cpu, FileCode2, CloudSun } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Home,
+  Wheat,
+  Cpu,
+  FileCode2,
+  CloudSun,
+  Users,
+  Truck,
+  FileText,
+  Flame,
+} from 'lucide-react';
 
-export type TabKey = 'dashboard' | 'farms' | 'lots' | 'decision-preview' | 'market-weather' | 'specs';
+export type TabKey =
+  | 'dashboard'
+  | 'farms'
+  | 'lots'
+  | 'decision-preview'
+  | 'rescue'
+  | 'buyers'
+  | 'infrastructure'
+  | 'execution'
+  | 'market-weather'
+  | 'specs';
 
 interface NavigationProps {
   activeTab: TabKey;
@@ -25,10 +46,34 @@ export const Navigation: React.FC<NavigationProps> = ({
       badge: null,
     },
     {
-      key: 'farms' as TabKey,
-      label: 'Farms & Land',
-      icon: Home,
-      badge: farmCount > 0 ? farmCount : null,
+      key: 'rescue' as TabKey,
+      label: 'Crop Rescue',
+      icon: Flame,
+      badge: 'URGENT',
+    },
+    {
+      key: 'decision-preview' as TabKey,
+      label: 'Profit Engine',
+      icon: Cpu,
+      badge: 'Active',
+    },
+    {
+      key: 'buyers' as TabKey,
+      label: 'Buyer Network',
+      icon: Users,
+      badge: null,
+    },
+    {
+      key: 'infrastructure' as TabKey,
+      label: 'Logistics & Storage',
+      icon: Truck,
+      badge: null,
+    },
+    {
+      key: 'execution' as TabKey,
+      label: 'Execution Tracker',
+      icon: FileText,
+      badge: null,
     },
     {
       key: 'lots' as TabKey,
@@ -37,10 +82,10 @@ export const Navigation: React.FC<NavigationProps> = ({
       badge: lotCount > 0 ? lotCount : null,
     },
     {
-      key: 'decision-preview' as TabKey,
-      label: 'Profit Decision Engine',
-      icon: Cpu,
-      badge: 'Active',
+      key: 'farms' as TabKey,
+      label: 'Farms',
+      icon: Home,
+      badge: farmCount > 0 ? farmCount : null,
     },
     {
       key: 'market-weather' as TabKey,
@@ -50,7 +95,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     },
     {
       key: 'specs' as TabKey,
-      label: 'Architecture & Blueprint',
+      label: 'Architecture',
       icon: FileCode2,
       badge: null,
     },

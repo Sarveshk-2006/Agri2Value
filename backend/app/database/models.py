@@ -396,3 +396,434 @@ class DecisionOption(Base):
 
     def __repr__(self) -> str:
         return f"<DecisionOption id={self.id} route={self.route_type} net={self.net_profit}>"
+
+
+# =================================================================
+# PHASE 3: SMART EXECUTION NETWORK MODELS
+# =================================================================
+
+# ---- Buyer & Buyer Offers ---------------------------------------
+
+class Buyer(Base):
+    """
+    Commercial produce buyer or wholesale procurement aggregator.
+    Profiles are clearly demarcated as demo or genuine verification.
+    """
+    __tablename__ = "buyers"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    user_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    company_name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+    contact_person: Mapped[str] = mapped_column(String(200), nullable=False)
+    phone: Mapped[str] = mapped_column(String(20), nullable=False)
+    email: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    district: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    state: Mapped[str] = mapped_column(String(100), nullable=False, default="Maharashtra")
+    address: Mapped[str] = mapped_column(String(300), nullable=False)
+    buyer_type: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="DIRECT_RETAIL"
+    )
+    # Types: DIRECT_RETAIL | WHOLESALER | EXPORTER | INSTITUTIONAL | SUPERMARKET_CHAIN
+    service_radius_km: Mapped[Decimal] = mapped_column(
+        Numeric(8, 2), nullable=False, default=Decimal("100.00")
+    )
+    is_verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    verification_badge: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="DEMO_SIMULATION"
+    )
+    # DEMO_SIMULATION | UNVERIFIED | APMC_REGISTERED | FPO_PARTNER
+    rating: Mapped[Optional[Decimal]] = mapped_column(Numeric(3, 2), nullable=True)
+    data_mode: Mapped[str] = mapped_column(String(20), nullable=False, default="demo")
+    # demo | real
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    # Relationships
+    offers: Mapped[List["BuyerOffer"]] = relationship(
+        "BuyerOffer", back_populates="buyer", cascade="all, delete-orphan", lazy="selectin"
+    )
+
+    def __repr__(self) -> str:
+        return f"<Buyer id={self.id} company={self.company_name} verified={self.is_verified}>"
+
+
+class BuyerOffer(Base):
+    """
+    Active purchasing requirement or standing offer from a buyer.
+    """
+    __tablename__ = "buyer_offers"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    buyer_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("buyers.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    commodity: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    variety: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    accepted_grades: Mapped[str] = mapped_column(
+        String(100), nullable=False, default="A,B"
+    )
+    min_quantity_kg: Mapped[Decimal] = mapped_column(Numeric(12, 4), nullable=False)
+    max_quantity_kg: Mapped[Decimal] = mapped_column(Numeric(12, 4), nullable=False)
+    current_fulfilled_kg: Mapped[Decimal] = mapped_column(
+        Numeric(12, 4), nullable=False, default=Decimal("0.0000")
+    )
+    offered_price_per_kg: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2), nullable=False
+    )
+    price_unit: Mapped[str] = mapped_column(String(20), nullable=False, default="INR/kg")
+    logistics_requirement: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="PICKUP_AT_FARM"
+    )
+    # PICKUP_AT_FARM | DELIVERY_TO_BUYER | NEGOTIABLE
+    payment_terms_days: Mapped[int] = mapped_column(Integer, nullable=False, default=3)
+    valid_until: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    status: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="OPEN"
+    )
+    # OPEN | PAUSED | EXPIRED | FULFILLED
+    data_mode: Mapped[str] = mapped_column(String(20), nullable=False, default="demo")
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    # Relationship
+    buyer: Mapped["Buyer"] = relationship("Buyer", back_populates="offers")
+
+    def __repr__(self) -> str:
+        return f"<BuyerOffer id={self.id} commodity={self.commodity} rate={self.offered_price_per_kg}>"
+
+
+# ---- Logistics Provider -----------------------------------------
+
+class LogisticsProvider(Base):
+    """
+    Agricultural freight operator, tempo driver, or cold van transporter.
+    """
+    __tablename__ = "logistics_providers"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    provider_name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+    contact_phone: Mapped[str] = mapped_column(String(20), nullable=False)
+    vehicle_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    # PICKUP_TRUCK_1T | TEMPO_3T | MEDIUM_TRUCK_7T | REEFER_VAN_4T | HEAVY_TRUCK_16T
+    capacity_kg: Mapped[Decimal] = mapped_column(Numeric(12, 4), nullable=False)
+    current_available_capacity_kg: Mapped[Decimal] = mapped_column(
+        Numeric(12, 4), nullable=False
+    )
+    base_district: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    service_districts: Mapped[str] = mapped_column(String(300), nullable=False)
+    per_km_rate_per_kg: Mapped[Decimal] = mapped_column(
+        Numeric(8, 4), nullable=False, default=Decimal("0.0450")
+    )
+    minimum_fare: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2), nullable=False, default=Decimal("800.00")
+    )
+    pricing_unit: Mapped[str] = mapped_column(String(50), nullable=False, default="INR/kg/km")
+    is_temperature_controlled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    availability_status: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="AVAILABLE"
+    )
+    # AVAILABLE | PARTIALLY_BOOKED | UNAVAILABLE
+    data_mode: Mapped[str] = mapped_column(String(20), nullable=False, default="demo")
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    def __repr__(self) -> str:
+        return f"<LogisticsProvider id={self.id} name={self.provider_name} type={self.vehicle_type}>"
+
+
+# ---- Cold Storage Facility --------------------------------------
+
+class ColdStorageFacility(Base):
+    """
+    Temperature-controlled warehouse or post-harvest cold room.
+    """
+    __tablename__ = "cold_storage_facilities"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    facility_name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+    contact_phone: Mapped[str] = mapped_column(String(20), nullable=False)
+    location_district: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    location_taluka: Mapped[str] = mapped_column(String(100), nullable=False)
+    compatible_commodities: Mapped[str] = mapped_column(String(300), nullable=False)
+    total_capacity_kg: Mapped[Decimal] = mapped_column(Numeric(14, 4), nullable=False)
+    available_capacity_kg: Mapped[Decimal] = mapped_column(Numeric(14, 4), nullable=False)
+    storage_rate_per_kg_per_month: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2), nullable=False
+    )
+    pricing_unit: Mapped[str] = mapped_column(String(50), nullable=False, default="INR/kg/month")
+    min_holding_days: Mapped[int] = mapped_column(Integer, nullable=False, default=7)
+    max_holding_days: Mapped[int] = mapped_column(Integer, nullable=False, default=90)
+    temperature_range_celsius: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="8°C - 12°C"
+    )
+    humidity_range_pct: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="85% - 90%"
+    )
+    availability_status: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="AVAILABLE"
+    )
+    # AVAILABLE | LIMITED | FULL
+    data_mode: Mapped[str] = mapped_column(String(20), nullable=False, default="demo")
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    def __repr__(self) -> str:
+        return f"<ColdStorageFacility id={self.id} name={self.facility_name} district={self.location_district}>"
+
+
+# ---- Processing Facility ----------------------------------------
+
+class ProcessingFacility(Base):
+    """
+    Agro-processing unit (puree, pulp, dehydration, juice extraction).
+    """
+    __tablename__ = "processing_facilities"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    facility_name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+    contact_phone: Mapped[str] = mapped_column(String(20), nullable=False)
+    facility_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    # TOMATO_PUREE_PULP | ONION_DEHYDRATION | SOLAR_DRYING | JUICE_CONCENTRATE
+    accepted_commodities: Mapped[str] = mapped_column(String(300), nullable=False)
+    accepted_grades: Mapped[str] = mapped_column(String(100), nullable=False, default="A,B,C")
+    daily_capacity_kg: Mapped[Decimal] = mapped_column(Numeric(12, 4), nullable=False)
+    available_capacity_kg: Mapped[Decimal] = mapped_column(Numeric(12, 4), nullable=False)
+    processing_charge_per_kg: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2), nullable=False
+    )
+    pricing_unit: Mapped[str] = mapped_column(String(50), nullable=False, default="INR/input_kg")
+    output_recovery_ratio: Mapped[Decimal] = mapped_column(
+        Numeric(6, 4), nullable=False, default=Decimal("0.2800")
+    )
+    output_product_name: Mapped[str] = mapped_column(String(150), nullable=False)
+    location_district: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    location_taluka: Mapped[str] = mapped_column(String(100), nullable=False)
+    availability_status: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="OPERATIONAL"
+    )
+    # OPERATIONAL | LIMITED_CAPACITY | MAINTENANCE
+    data_mode: Mapped[str] = mapped_column(String(20), nullable=False, default="demo")
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    def __repr__(self) -> str:
+        return f"<ProcessingFacility id={self.id} name={self.facility_name} type={self.facility_type}>"
+
+
+# ---- Execution Request ------------------------------------------
+
+class ExecutionRequest(Base):
+    """
+    Actionable execution order submitted by a farmer to a buyer or provider.
+    Maintains a strict, traceable status lifecycle:
+    SUBMITTED → PROVIDER_ACCEPTED → CONFIRMED → IN_EXECUTION → COMPLETED (or CANCELLED / REJECTED)
+    """
+    __tablename__ = "execution_requests"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    crop_lot_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("crop_lots.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    farmer_user_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("users.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    decision_run_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("decision_runs.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    route_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    # DIRECT_BUYER | PROCESSING | COLD_STORAGE | LOGISTICS_ONLY | RESCUE_SALE
+    status: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="SUBMITTED"
+    )
+    # SUBMITTED | PROVIDER_ACCEPTED | CONFIRMED | IN_EXECUTION | COMPLETED | CANCELLED | REJECTED
+
+    # Provider linkages (nullable depending on route_type)
+    buyer_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("buyers.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    buyer_offer_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("buyer_offers.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    logistics_provider_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("logistics_providers.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    cold_storage_facility_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("cold_storage_facilities.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    processing_facility_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("processing_facilities.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+
+    # Requested quantities & indicative estimates (from Decision Engine)
+    requested_quantity_kg: Mapped[Decimal] = mapped_column(Numeric(14, 4), nullable=False)
+    indicative_unit_price: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2), nullable=False, default=Decimal("0.00")
+    )
+    indicative_total_value: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+    indicative_logistics_cost: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+    indicative_storage_cost: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+    indicative_processing_cost: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+    indicative_net_payout: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+
+    # Actual realization (recorded at completion — NEVER overwrites original decision run!)
+    actual_quantity_kg: Mapped[Optional[Decimal]] = mapped_column(Numeric(14, 4), nullable=True)
+    actual_unit_price: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
+    actual_gross_revenue: Mapped[Optional[Decimal]] = mapped_column(Numeric(14, 2), nullable=True)
+    actual_logistics_cost: Mapped[Optional[Decimal]] = mapped_column(Numeric(14, 2), nullable=True)
+    actual_storage_cost: Mapped[Optional[Decimal]] = mapped_column(Numeric(14, 2), nullable=True)
+    actual_processing_cost: Mapped[Optional[Decimal]] = mapped_column(Numeric(14, 2), nullable=True)
+    actual_net_payout: Mapped[Optional[Decimal]] = mapped_column(Numeric(14, 2), nullable=True)
+    completion_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Schedule & logistics particulars
+    pickup_location: Mapped[str] = mapped_column(String(300), nullable=False)
+    delivery_location: Mapped[str] = mapped_column(String(300), nullable=False)
+    scheduled_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    data_mode: Mapped[str] = mapped_column(String(20), nullable=False, default="demo")
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    # Relationships
+    crop_lot: Mapped["CropLot"] = relationship("CropLot")
+    farmer: Mapped["User"] = relationship("User")
+    decision_run: Mapped[Optional["DecisionRun"]] = relationship("DecisionRun")
+    buyer: Mapped[Optional["Buyer"]] = relationship("Buyer")
+    buyer_offer: Mapped[Optional["BuyerOffer"]] = relationship("BuyerOffer")
+    logistics_provider: Mapped[Optional["LogisticsProvider"]] = relationship("LogisticsProvider")
+    cold_storage_facility: Mapped[Optional["ColdStorageFacility"]] = relationship("ColdStorageFacility")
+    processing_facility: Mapped[Optional["ProcessingFacility"]] = relationship("ProcessingFacility")
+    events: Mapped[List["ExecutionRequestEvent"]] = relationship(
+        "ExecutionRequestEvent",
+        back_populates="request",
+        cascade="all, delete-orphan",
+        order_by="ExecutionRequestEvent.created_at",
+        lazy="selectin",
+    )
+
+    __table_args__ = (
+        Index("ix_execution_requests_farmer_status", "farmer_user_id", "status"),
+        Index("ix_execution_requests_lot", "crop_lot_id"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<ExecutionRequest id={self.id} lot={self.crop_lot_id} route={self.route_type} status={self.status}>"
+
+
+# ---- Execution Request Event ------------------------------------
+
+class ExecutionRequestEvent(Base):
+    """
+    Immutable audit trail event for ExecutionRequest status changes.
+    """
+    __tablename__ = "execution_request_events"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    request_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("execution_requests.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    from_status: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    to_status: Mapped[str] = mapped_column(String(50), nullable=False)
+    actor_user_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False), nullable=True
+    )
+    actor_role: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="FARMER"
+    )
+    # FARMER | BUYER | LOGISTICS_PROVIDER | FACILITY_OPERATOR | SYSTEM
+    message: Mapped[str] = mapped_column(Text, nullable=False)
+    metadata_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+
+    # Relationship
+    request: Mapped["ExecutionRequest"] = relationship("ExecutionRequest", back_populates="events")
+
+    def __repr__(self) -> str:
+        return f"<ExecutionRequestEvent id={self.id} {self.from_status} -> {self.to_status}>"
+

@@ -11,6 +11,7 @@ interface HarvestLotsViewProps {
   onCloseCreateModal: () => void;
   onOpenCreateModal: () => void;
   onNavigateToDecision?: (lotId?: string) => void;
+  onNavigateToRescue?: (lotId?: string) => void;
 }
 
 export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
@@ -21,6 +22,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
   onCloseCreateModal,
   onOpenCreateModal,
   onNavigateToDecision,
+  onNavigateToRescue,
 }) => {
   const [selectedFarmId, setSelectedFarmId] = useState(farms[0]?.id || '');
   const [cropName, setCropName] = useState('Tomato');
@@ -194,8 +196,16 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                 </div>
               )}
 
-              {/* Action Button */}
-              <div className="pt-2 flex justify-end">
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center justify-end gap-2">
+                {onNavigateToRescue && (
+                  <button
+                    onClick={() => onNavigateToRescue(lot.id)}
+                    className="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <span>Crop Rescue</span>
+                  </button>
+                )}
                 <button
                   onClick={() => onNavigateToDecision && onNavigateToDecision(lot.id)}
                   className="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"

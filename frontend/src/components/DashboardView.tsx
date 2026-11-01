@@ -50,17 +50,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-3">
               <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Phase 1 Vertical Foundation Active</span>
+              <span>Phase 3 Smart Execution Network Active</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Welcome, {user?.full_name || 'Farmer'}
             </h1>
             <p className="text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
-              Your farm profiles and harvest lots are persisted and ready. Proceed to Phase 2 to calculate optimal profit pathways across local Mandis, direct buyers, and food processing options.
+              Your farm profiles, real-time market/weather feeds, and execution network are connected. Turn Profit Engine recommendations into confirmed buyer contracts, cold storage bookings, and transport execution.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={onOpenCreateLot}
               className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-950/60 transition-all cursor-pointer"
@@ -77,6 +77,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Prominent Crop Rescue Alert Banner */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-rose-950/60 via-slate-900 to-amber-950/40 border border-rose-500/40 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start sm:items-center gap-3.5">
+          <div className="p-2.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 shrink-0 animate-pulse">
+            <span className="text-xl">🚨</span>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-slate-100">
+                Crop Rescue Alert: Perishable Harvest Protection Active
+              </span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500 text-slate-950">
+                HOT
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Rapid salvage pathways available for Tomato lots facing shelf-life expiry or APMC Mandi gluts. Direct factory processing and cold room buffering ready.
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => onSelectTab('rescue')}
+          className="px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-950/60 transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+        >
+          <span>Launch Crop Rescue</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
       </div>
 
       {/* KPI Cards */}

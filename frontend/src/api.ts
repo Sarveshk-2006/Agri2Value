@@ -7,6 +7,13 @@ import type {
   WeatherResponse,
   MandiPricesResponse,
   MandiQuoteResponse,
+  Buyer,
+  BuyerOffer,
+  LogisticsProvider,
+  ColdStorageFacility,
+  ProcessingFacility,
+  ExecutionRequest,
+  CropRescueAssessment,
 } from './types';
 
 const API_BASE = '/api/v1';
@@ -392,6 +399,181 @@ class ApiService {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || 'Failed to retrieve mandi quote');
+    }
+    return await res.json();
+  }
+
+  // ---- Phase 3: Smart Execution Network API ----
+
+  async getBuyers(params?: { commodity?: string; district?: string; buyer_type?: string; verified_only?: boolean }): Promise<Buyer[]> {
+    const q = new URLSearchParams();
+    if (params?.commodity) q.append('commodity', params.commodity);
+    if (params?.district) q.append('district', params.district);
+    if (params?.buyer_type) q.append('buyer_type', params.buyer_type);
+    if (params?.verified_only) q.append('verified_only', 'true');
+
+    const res = await fetch(`${API_BASE}/execution/buyers?${q.toString()}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to retrieve buyers');
+    }
+    return await res.json();
+  }
+
+  async getBuyerOffers(params?: { commodity?: string; district?: string; grade?: string }): Promise<BuyerOffer[]> {
+    const q = new URLSearchParams();
+    if (params?.commodity) q.append('commodity', params.commodity);
+    if (params?.district) q.append('district', params.district);
+    if (params?.grade) q.append('grade', params.grade);
+
+    const res = await fetch(`${API_BASE}/execution/buyer-offers?${q.toString()}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to retrieve buyer offers');
+    }
+    return await res.json();
+  }
+
+  async getLogisticsProviders(params?: { district?: string; min_capacity_kg?: number; temperature_controlled?: boolean; available_only?: boolean }): Promise<LogisticsProvider[]> {
+    const q = new URLSearchParams();
+    if (params?.district) q.append('district', params.district);
+    if (params?.min_capacity_kg) q.append('min_capacity_kg', params.min_capacity_kg.toString());
+    if (params?.temperature_controlled !== undefined) q.append('temperature_controlled', params.temperature_controlled.toString());
+    if (params?.available_only) q.append('available_only', 'true');
+
+    const res = await fetch(`${API_BASE}/execution/logistics?${q.toString()}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to retrieve logistics fleet');
+    }
+    return await res.json();
+  }
+
+  async getColdStorageFacilities(params?: { district?: string; commodity?: string; min_capacity_kg?: number; available_only?: boolean }): Promise<ColdStorageFacility[]> {
+    const q = new URLSearchParams();
+    if (params?.district) q.append('district', params.district);
+    if (params?.commodity) q.append('commodity', params.commodity);
+    if (params?.min_capacity_kg) q.append('min_capacity_kg', params.min_capacity_kg.toString());
+    if (params?.available_only) q.append('available_only', 'true');
+
+    const res = await fetch(`${API_BASE}/execution/cold-storage?${q.toString()}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to retrieve cold storage facilities');
+    }
+    return await res.json();
+  }
+
+  async getProcessingFacilities(params?: { commodity?: string; district?: string; facility_type?: string; available_only?: boolean }): Promise<ProcessingFacility[]> {
+    const q = new URLSearchParams();
+    if (params?.commodity) q.append('commodity', params.commodity);
+    if (params?.district) q.append('district', params.district);
+    if (params?.facility_type) q.append('facility_type', params.facility_type);
+    if (params?.available_only) q.append('available_only', 'true');
+
+    const res = await fetch(`${API_BASE}/execution/processing?${q.toString()}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to retrieve processing units');
+    }
+    return await res.json();
+  }
+
+  async createExecutionRequest(data: {
+    crop_lot_id: string;
+    route_type: string;
+    requested_quantity_kg: number;
+    decision_run_id?: string;
+    buyer_id?: string;
+    buyer_offer_id?: string;
+    logistics_provider_id?: string;
+    cold_storage_facility_id?: string;
+    processing_facility_id?: string;
+    pickup_location?: string;
+    delivery_location?: string;
+    scheduled_date?: string;
+    notes?: string;
+  }): Promise<ExecutionRequest> {
+    const res = await fetch(`${API_BASE}/execution/requests`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to submit execution request');
+    }
+    return await res.json();
+  }
+
+  async getExecutionRequests(status?: string): Promise<ExecutionRequest[]> {
+    const url = status ? `${API_BASE}/execution/requests?status=${status}` : `${API_BASE}/execution/requests`;
+    const res = await fetch(url, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to retrieve execution requests');
+    }
+    return await res.json();
+  }
+
+  async getExecutionRequest(requestId: string): Promise<ExecutionRequest> {
+    const res = await fetch(`${API_BASE}/execution/requests/${requestId}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to retrieve execution request details');
+    }
+    return await res.json();
+  }
+
+  async transitionExecutionStatus(requestId: string, toStatus: string, message: string): Promise<ExecutionRequest> {
+    const res = await fetch(`${API_BASE}/execution/requests/${requestId}/transition`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ to_status: toStatus, message }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Status transition rejected');
+    }
+    return await res.json();
+  }
+
+  async completeExecutionRequest(requestId: string, payload: {
+    actual_quantity_kg: number;
+    actual_unit_price: number;
+    actual_logistics_cost?: number;
+    actual_storage_cost?: number;
+    actual_processing_cost?: number;
+    completion_notes?: string;
+  }): Promise<ExecutionRequest> {
+    const res = await fetch(`${API_BASE}/execution/requests/${requestId}/complete`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to record completion');
+    }
+    return await res.json();
+  }
+
+  // ---- Crop Rescue Mode API ----
+
+  async getCropRescueAssessment(cropLotId: string): Promise<CropRescueAssessment> {
+    const res = await fetch(`${API_BASE}/crop-rescue/lot/${cropLotId}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to evaluate crop rescue assessment');
     }
     return await res.json();
   }
