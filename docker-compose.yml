@@ -1,0 +1,42 @@
+version: "3.9"
+
+# ============================================================
+# Agri2Value — Local Development Services
+# Provides PostgreSQL for local development only.
+# Backend and frontend are run directly (not in containers).
+# ============================================================
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: agri2value_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: agri2value
+      POSTGRES_PASSWORD: agri2value_dev
+      POSTGRES_DB: agri2value_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agri2value -d agri2value_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Uncomment to add Redis for session/rate-limiting in future phases
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: agri2value_redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  default:
+    name: agri2value_network
