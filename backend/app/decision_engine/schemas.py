@@ -24,6 +24,10 @@ class DecisionEvaluateRequest(BaseModel):
         None,
         description="Optional simulation scenario: 'PILOT_BASELINE' | 'MANDI_WINS' | 'PROCESSING_BOTTLENECK' | 'MISSING_DATA'",
     )
+    data_source_mode: Optional[str] = Field(
+        "PILOT_BENCHMARK",
+        description="Data source mode: 'PILOT_BENCHMARK' | 'LIVE_MANDI' | 'CUSTOM'",
+    )
     custom_parameters: Optional[Dict[str, Any]] = Field(
         None,
         description="Optional price/cost overrides for custom what-if scenario testing",

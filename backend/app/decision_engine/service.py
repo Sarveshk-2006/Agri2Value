@@ -4,10 +4,11 @@ Decision Engine Application Service.
 Hydrates farm, crop lot, and market data, executes the deterministic engine,
 and persists an immutable DecisionRun snapshot with ownership isolation.
 """
-import json
-import uuid
+from datetime import datetime, timezone
 from decimal import Decimal
+import json
 from typing import Any, Dict, List, Optional
+import uuid
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -95,13 +96,14 @@ async def evaluate_crop_lot_decision(
     crop_lot_id: str,
     current_user_id: str,
     scenario_preset: Optional[str] = None,
+    data_source_mode: Optional[str] = "PILOT_BENCHMARK",
     custom_params: Optional[Dict[str, Any]] = None,
     db: AsyncSession = None,
 ) -> DecisionRunResponse:
     """
     Evaluates harvest pathways for a farmer's crop lot.
     Enforces ownership isolation, executes pure decision engine,
-    and records an immutable audit snapshot.
+    and records an immutable audit snapshot with market provenance.
     """
     # 1. Fetch CropLot and ensure it belongs to authenticated user
     stmt = (
@@ -136,7 +138,6 @@ async def evaluate_crop_lot_decision(
     # 3. Configure scenario overrides
     overrides: Dict[str, Any] = {}
     if scenario_preset == "MANDI_WINS":
-        # Buyer is distant and imposes higher freight and grading rejection; processing facility at capacity
         overrides["direct_buyer"] = {
             "offer_price_per_kg": Decimal("15.50"),
             "distance_km": Decimal("90"),
@@ -147,13 +148,11 @@ async def evaluate_crop_lot_decision(
             "facility_operational": False,
         }
     elif scenario_preset == "PROCESSING_BOTTLENECK":
-        # Processing facility is unavailable or exceeds batch capacity
         overrides["processing"] = {
             "facility_operational": False,
             "max_batch_kg": Decimal("2000"),
         }
     elif scenario_preset == "MISSING_DATA":
-        # Missing processing conversion yield
         overrides["processing"] = {
             "yield_known": False,
         }
@@ -168,26 +167,42 @@ async def evaluate_crop_lot_decision(
                     f"but harvest lot is '{crop_lot.crop_name}'. Mismatched commodity rates are rejected."
                 )
 
-    # Ingest verified mandi quote for lot crop
-    try:
-        from app.mandi.service import mandi_service
-        quote = await mandi_service.get_verified_mandi_quote(
-            crop_name=crop_lot.crop_name,
-            district=farm.district if farm else "Nashik",
-        )
-        if "mandi" not in overrides:
-            overrides["mandi"] = {}
-        overrides["mandi"]["rate_per_kg"] = quote.rate_per_kg
-        overrides["mandi"]["mandi_name"] = f"APMC {quote.market_name} ({quote.district})"
-        overrides["mandi"]["data_source"] = quote.data_source
-        overrides["mandi"]["data_timestamp"] = f"Observed: {quote.observation_date} | Ingested: {quote.retrieval_date}"
-        overrides["mandi"]["is_live"] = quote.is_live
-        overrides["mandi"]["is_stale"] = quote.is_stale
-        overrides["mandi"]["staleness_warning"] = quote.staleness_warning
-    except ValidationError:
-        raise
-    except Exception as exc:
-        pass  # Fall back to default PILOT_SAMPLE_DATA in engine
+    # Ingest market data based on data_source_mode
+    freshness_status = "DEMO"
+    mandi_source_desc = "APMC Pimpalgaon Bulletin (Pilot Benchmark Archive)"
+    mandi_market_name = "APMC Pimpalgaon (Nashik)"
+    mandi_obs_date = "2026-11-01"
+    mandi_retrieved_at = datetime.now(timezone.utc).isoformat()
+
+    if data_source_mode == "LIVE_MANDI":
+        from app.services.mandi_service import mandi_service
+        try:
+            quote = await mandi_service.get_verified_mandi_quote(
+                crop_name=crop_lot.crop_name,
+                district=farm.district if farm else "Nashik",
+            )
+            if "mandi" not in overrides:
+                overrides["mandi"] = {}
+            overrides["mandi"]["rate_per_kg"] = quote.rate_per_kg
+            overrides["mandi"]["mandi_name"] = quote.market_name
+            overrides["mandi"]["data_source"] = quote.data_source
+            overrides["mandi"]["data_timestamp"] = f"Observed: {quote.observation_date} | Ingested: {quote.retrieval_date}"
+            overrides["mandi"]["is_live"] = quote.is_live
+            overrides["mandi"]["is_stale"] = quote.is_stale
+            overrides["mandi"]["staleness_warning"] = quote.staleness_warning
+
+            freshness_status = quote.freshness_status
+            mandi_source_desc = quote.data_source
+            mandi_market_name = quote.market_name
+            mandi_obs_date = quote.observation_date
+            mandi_retrieved_at = quote.retrieval_date
+        except ValidationError:
+            raise
+        except Exception as exc:
+            raise ValidationError(
+                f"Reliable market data unavailable for '{crop_lot.crop_name}'. "
+                f"Status: NEEDS_MORE_DATA. Error: {str(exc)}"
+            )
 
     if custom_params:
         for k, v in custom_params.items():
@@ -195,6 +210,7 @@ async def evaluate_crop_lot_decision(
                 overrides["mandi"].update(v)
             else:
                 overrides[k] = v
+        freshness_status = "CUSTOM"
 
     # 4. Run pure, deterministic DecisionEngine
     engine = DecisionEngine(sample_overrides=overrides)
@@ -209,6 +225,22 @@ async def evaluate_crop_lot_decision(
     rec_opt = decision_result.recommended_option
     baseline_opt = decision_result.baseline_mandi_option
 
+    snapshot_data = lot_snapshot.model_dump(mode="json")
+    snapshot_data.update({
+        "data_source_mode": data_source_mode or "PILOT_BENCHMARK",
+        "data_mode": freshness_status,
+        "mandi_name": mandi_market_name,
+        "price_observation_date": mandi_obs_date,
+        "retrieval_timestamp": mandi_retrieved_at,
+        "source": mandi_source_desc,
+        "unit_conversion": "1 Quintal = 100 kg",
+        "assumptions": [
+            "Local tempo transport tariff: ₹0.045/kg/km",
+            "APMC statutory cess: 1.05%, agent commission: 4.0%",
+            "Handling loss: 2.0% during transit and yard handling"
+        ]
+    })
+
     db_run = DecisionRun(
         id=run_id,
         crop_lot_id=crop_lot.id,
@@ -220,7 +252,7 @@ async def evaluate_crop_lot_decision(
         recommended_net_profit=rec_opt.net_profit if rec_opt else None,
         baseline_net_profit=baseline_opt.net_profit if baseline_opt else None,
         additional_profit_vs_baseline=rec_opt.additional_profit_vs_baseline if rec_opt else None,
-        input_snapshot=_serialize_for_db(lot_snapshot.model_dump(mode="json")),
+        input_snapshot=_serialize_for_db(snapshot_data),
         disclaimer=decision_result.disclaimer,
     )
     db.add(db_run)

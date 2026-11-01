@@ -5,14 +5,18 @@ Verifies:
 - Attribution to Open-Meteo under CC BY 4.0.
 - Strict separation of observed readings vs daily forecast.
 - Advisory guidelines logic and mandatory disclaimer.
-- Offline reference fallback behavior.
+- Offline reference fallback behavior on upstream failures.
+- Mocked HTTP requests (success, failure, timeout).
 """
+from unittest.mock import AsyncMock, patch, MagicMock
+import httpx
 import pytest
-from app.weather.schemas import WeatherObserved
-from app.weather.service import (
+
+from app.services.weather_service import (
     compute_field_work_advisory,
     _get_offline_reference_weather,
     _get_wmo_info,
+    WeatherObserved,
     WeatherService,
 )
 
@@ -100,12 +104,71 @@ def test_offline_reference_weather():
 
 
 @pytest.mark.asyncio
-async def test_weather_service_offline_or_live_contract():
-    svc = WeatherService()
-    weather = await svc.get_weather(latitude=20.0760, longitude=74.0534)
-    assert weather.latitude == 20.0760
-    assert weather.longitude == 74.0534
-    assert weather.attribution == "Weather data by Open-Meteo.com under CC BY 4.0"
-    assert weather.current.observed_at is not None
-    assert weather.retrieved_at is not None
-    assert len(weather.daily_forecast) >= 1
+async def test_weather_service_mocked_success():
+    mock_payload = {
+        "timezone": "Asia/Kolkata",
+        "current": {
+            "temperature_2m": 29.5,
+            "apparent_temperature": 30.2,
+            "relative_humidity_2m": 62.0,
+            "precipitation": 0.0,
+            "rain": 0.0,
+            "wind_speed_10m": 14.2,
+            "weather_code": 0,
+            "time": "2026-11-01T14:00:00Z",
+        },
+        "daily": {
+            "time": ["2026-11-01", "2026-11-02"],
+            "weather_code": [0, 1],
+            "temperature_2m_max": [31.0, 30.5],
+            "temperature_2m_min": [18.0, 17.5],
+            "precipitation_sum": [0.0, 0.0],
+            "wind_speed_10m_max": [15.0, 14.0],
+            "sunrise": ["06:28", "06:29"],
+            "sunset": ["18:02", "18:01"],
+        },
+    }
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = mock_payload
+
+    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+        mock_get.return_value = mock_response
+        svc = WeatherService(base_url="http://mock-open-meteo.com")
+        res = await svc.get_weather(latitude=19.99, longitude=73.78, force_refresh=True)
+
+        assert res.is_live is True
+        assert res.freshness_status == "LIVE"
+        assert res.current.temperature_c == 29.5
+        assert len(res.daily_forecast) == 2
+        assert res.daily_forecast[0].date == "2026-11-01"
+
+
+@pytest.mark.asyncio
+async def test_weather_service_mocked_failure_fallback():
+    mock_response = MagicMock()
+    mock_response.status_code = 503
+    mock_response.text = "Service Unavailable"
+
+    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+        mock_get.return_value = mock_response
+        svc = WeatherService(base_url="http://mock-open-meteo.com")
+        res = await svc.get_weather(latitude=18.52, longitude=73.85, force_refresh=True)
+
+        # Graceful fallback
+        assert res.is_live is False
+        assert res.freshness_status == "DEMO"
+        assert res.source_type == "offline_reference"
+        assert res.current.temperature_c == 27.4
+
+
+@pytest.mark.asyncio
+async def test_weather_service_mocked_timeout_fallback():
+    with patch("httpx.AsyncClient.get", side_effect=httpx.ConnectTimeout("Network timeout")):
+        svc = WeatherService(base_url="http://mock-open-meteo.com")
+        res = await svc.get_weather(latitude=18.52, longitude=73.85, force_refresh=True)
+
+        assert res.is_live is False
+        assert res.source_type == "offline_reference"
+        assert len(res.daily_forecast) == 7

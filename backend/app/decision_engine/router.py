@@ -49,6 +49,7 @@ async def evaluate_decision(
         crop_lot_id=request.crop_lot_id,
         current_user_id=current_user.id,
         scenario_preset=request.scenario_preset,
+        data_source_mode=request.data_source_mode,
         custom_params=request.custom_parameters,
         db=db,
     )

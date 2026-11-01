@@ -1,4 +1,4 @@
-"""Mandi prices module for Agri2Value."""
-from app.mandi.router import router
+"""Mandi and Market Prices module for Agri2Value."""
+from app.mandi.router import mandi_router, market_prices_router
 
-__all__ = ["router"]
+__all__ = ["mandi_router", "market_prices_router"]
