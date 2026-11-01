@@ -81,7 +81,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onSuccess }) => {
                   Ramesh Patil (Pilot Tomato Farmer)
                 </div>
                 <div className="text-[11px] text-slate-400">
-                  Narayangaon, Pune • 3.5 Acres • 4,000 kg Lot
+                  Niphad, Nashik • 3.5 Acres • 4,000 kg Lot
                 </div>
               </div>
             </div>

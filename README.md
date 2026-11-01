@@ -125,7 +125,7 @@ Open `http://localhost:5173` in your browser.
 | **Phone / Role** | `9876543210` / `FARMER` |
 | **Demo OTP Code** | `123456` |
 | **Farm Name** | Patil Krishi Farm |
-| **Location** | Narayangaon, Junnar, Pune, Maharashtra |
+| **Location** | Niphad, Nashik, Maharashtra |
 | **Land Area** | 3.5 Acres |
 | **On-Farm Resources** | Shaded shed (2 MT), 80 crates, 3 labourers |
 | **Harvest Lot** | 4,000 kg Summer Tomato (Abhinav, Grade A) |

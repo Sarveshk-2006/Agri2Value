@@ -1,6 +1,6 @@
 // frontend/src/components/DecisionEnginePreview.tsx
 import React from 'react';
-import { Cpu, Calculator, ShieldCheck, TrendingUp, CheckCircle2, Clock } from 'lucide-react';
+import { Cpu, Calculator, ShieldCheck, TrendingUp, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
 import type { CropLot } from '../types';
 
 interface DecisionEnginePreviewProps {
@@ -44,9 +44,22 @@ export const DecisionEnginePreview: React.FC<DecisionEnginePreviewProps> = ({ pr
 
       {/* 3 Pathway Comparison (Simulation for 4,000 kg Tomato) */}
       <div>
-        <div className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-emerald-400" />
-          <span>Simulation for Active Lot ({lotQty.toLocaleString()} kg Tomato)</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+          <div className="text-sm font-bold text-white flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <span>Simulation for Active Lot ({lotQty.toLocaleString()} kg Tomato)</span>
+          </div>
+          <span className="text-[11px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+            Illustrative Sample Calculations Only
+          </span>
+        </div>
+
+        {/* Prominent Sample Data Notice */}
+        <div className="mb-4 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-2.5">
+          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <div className="text-xs text-amber-300 leading-relaxed">
+            <strong className="font-semibold text-white">Illustrative Sample Values Notice:</strong> All Mandi benchmark rates, direct buyer quotes, and processing conversion yields displayed below are sample illustrative values for simulation and architecture verification. They do not represent live real-time market data feeds.
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -54,18 +67,18 @@ export const DecisionEnginePreview: React.FC<DecisionEnginePreviewProps> = ({ pr
           {/* Path 1: Raw Mandi */}
           <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400 uppercase">Path A</span>
+              <span className="text-xs font-bold text-slate-400 uppercase">Path A (Raw Mandi)</span>
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
                 FEASIBLE
               </span>
             </div>
-            <h3 className="text-base font-bold text-white">APMC Narayangaon Mandi</h3>
-            <p className="text-xs text-slate-400">Direct open auction sale. Immediate cash, but high price volatility.</p>
+            <h3 className="text-base font-bold text-white">APMC Pimpalgaon (Nashik)</h3>
+            <p className="text-xs text-slate-400">Direct open auction sale at Asia's largest tomato market. Immediate payment, high price volatility.</p>
             
             <div className="pt-3 border-t border-slate-800/80 space-y-2 text-xs">
               <div className="flex justify-between text-slate-400">
-                <span>Avg Mandi Rate:</span>
-                <span className="font-mono text-slate-200">₹14.00 / kg</span>
+                <span>Sample Mandi Rate:</span>
+                <span className="font-mono text-slate-200">₹14.00 / kg (Sample)</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Gross Revenue:</span>
@@ -85,18 +98,18 @@ export const DecisionEnginePreview: React.FC<DecisionEnginePreviewProps> = ({ pr
           {/* Path 2: Direct Buyer */}
           <div className="glass-panel rounded-2xl p-5 border border-slate-800 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400 uppercase">Path B</span>
+              <span className="text-xs font-bold text-slate-400 uppercase">Path B (Direct Buyer)</span>
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
                 PENDING QUOTE
               </span>
             </div>
             <h3 className="text-base font-bold text-white">Direct Retail Buyer</h3>
-            <p className="text-xs text-slate-400">Direct farm-gate procurement with contracted Grade A standard.</p>
+            <p className="text-xs text-slate-400">Direct farm-gate procurement contract with pre-agreed Grade A specifications.</p>
             
             <div className="pt-3 border-t border-slate-800/80 space-y-2 text-xs">
               <div className="flex justify-between text-slate-400">
-                <span>Offered Rate:</span>
-                <span className="font-mono text-slate-200">₹18.50 / kg</span>
+                <span>Sample Buyer Rate:</span>
+                <span className="font-mono text-slate-200">₹18.50 / kg (Sample)</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Gross Revenue:</span>
@@ -123,7 +136,7 @@ export const DecisionEnginePreview: React.FC<DecisionEnginePreviewProps> = ({ pr
             </div>
             <h3 className="text-base font-bold text-white">Tomato Puree & Pulping</h3>
             <p className="text-xs text-slate-300">
-              Contract processing at Junnar Agro Cluster (yield: 28% puree, 1,120 kg paste).
+              Contract processing at Nashik Agro Processing Cluster (yield: 28% puree, 1,120 kg paste).
             </p>
             
             <div className="pt-3 border-t border-slate-800/80 space-y-2 text-xs">

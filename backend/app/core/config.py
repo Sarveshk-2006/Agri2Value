@@ -5,6 +5,10 @@ All values are loaded from environment variables or .env file.
 """
 from functools import lru_cache
 from typing import List
+import os
+
+from dotenv import load_dotenv
+load_dotenv(".env", override=True)
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict

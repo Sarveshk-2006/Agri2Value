@@ -63,10 +63,10 @@ async def seed_data():
                 owner_user_id=farmer.id,
                 farm_name="Patil Krishi Farm",
                 state="Maharashtra",
-                district="Pune",
-                village="Narayangaon",
-                latitude=Decimal("19.1136"),
-                longitude=Decimal("73.9723"),
+                district="Nashik",
+                village="Niphad",
+                latitude=Decimal("20.0768"),
+                longitude=Decimal("74.0375"),
                 land_area=Decimal("3.5"),
                 land_area_unit="acre",
                 is_active=True,
@@ -103,7 +103,13 @@ async def seed_data():
             await session.flush()
             print(f"  [+] Created Farm: {farm.farm_name} with 3 resources [ID: {farm.id}]")
         else:
-            print(f"  [i] Found existing Farm: {farm.farm_name} [ID: {farm.id}]")
+            # Non-destructively align geography to agreed pilot location: Nashik
+            farm.district = "Nashik"
+            farm.village = "Niphad"
+            farm.latitude = Decimal("20.0768")
+            farm.longitude = Decimal("74.0375")
+            await session.flush()
+            print(f"  [i] Found and aligned Farm geography to Nashik (Niphad) [ID: {farm.id}]")
 
         # 3. Seed or find Crop Lot
         result = await session.execute(

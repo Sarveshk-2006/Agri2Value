@@ -21,12 +21,12 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
   // Form state
   const [farmName, setFarmName] = useState('');
   const [state, setState] = useState('Maharashtra');
-  const [district, setDistrict] = useState('Pune');
-  const [village, setVillage] = useState('Narayangaon');
+  const [district, setDistrict] = useState('Nashik');
+  const [village, setVillage] = useState('Niphad');
   const [landArea, setLandArea] = useState('3.5');
   const [landAreaUnit, setLandAreaUnit] = useState('acre');
-  const [latitude, setLatitude] = useState('19.1136');
-  const [longitude, setLongitude] = useState('73.9723');
+  const [latitude, setLatitude] = useState('20.0768');
+  const [longitude, setLongitude] = useState('74.0375');
 
   // Resource inputs
   const [resources, setResources] = useState<Array<{ resource_type: string; name: string; quantity?: number; unit?: string }>>([

@@ -111,7 +111,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className="text-2xl font-bold text-emerald-400">Tomato</div>
           <div className="text-xs text-slate-400 mt-1">
-            <span>Abhinav (Grade A) • Narayangaon</span>
+            <span>Abhinav (Grade A) • Niphad, Nashik</span>
           </div>
         </div>
 
@@ -172,7 +172,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     <div className="flex items-center gap-3 text-xs text-slate-400 mt-0.5">
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3 h-3 text-slate-500" />
-                        <span>{primaryFarm ? `${primaryFarm.village}, ${primaryFarm.district}` : 'Pune, MH'}</span>
+                        <span>{primaryFarm ? `${primaryFarm.village}, ${primaryFarm.district}` : 'Niphad, Nashik, MH'}</span>
                       </span>
                       <span>•</span>
                       <span>Grade: <strong className="text-emerald-400">{primaryLot.quality_grade || 'A'}</strong></span>
