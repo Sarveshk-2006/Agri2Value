@@ -75,3 +75,92 @@ export interface AuthTokens {
   role: string;
   demo_mode: boolean;
 }
+
+// ---- Phase 2 Decision Engine Types ------------------------------
+
+export type RouteType = 'RAW_MANDI' | 'DIRECT_BUYER' | 'PROCESSING' | 'STORAGE' | 'GROUP_SELLING';
+export type FeasibilityStatus = 'FEASIBLE' | 'CONDITIONALLY_FEASIBLE' | 'INFEASIBLE' | 'NEEDS_MORE_DATA';
+
+export interface CostItem {
+  name: string;
+  category: string;
+  amount: number;
+  unit_rate?: number;
+  unit_name?: string;
+  is_estimated: boolean;
+  source?: string;
+}
+
+export interface CostBreakdown {
+  transport: number;
+  labour: number;
+  packaging: number;
+  commission_and_fees: number;
+  processing: number;
+  storage: number;
+  wastage_loss: number;
+  other: number;
+  total_costs: number;
+  line_items: CostItem[];
+}
+
+export interface FeasibilityReasons {
+  status: FeasibilityStatus;
+  is_feasible: boolean;
+  passed_checks: string[];
+  failed_checks: string[];
+  unmet_prerequisites: string[];
+  data_gaps: string[];
+}
+
+export interface DecisionOption {
+  id: string;
+  decision_run_id: string;
+  route_type: RouteType;
+  route_name: string;
+  feasibility_status: FeasibilityStatus;
+  rank?: number;
+  is_recommended: boolean;
+  saleable_quantity: number;
+  saleable_quantity_unit: string;
+  gross_revenue: number;
+  total_costs: number;
+  net_profit: number;
+  net_profit_per_kg: number;
+  effective_realization_per_kg: number;
+  additional_profit_vs_baseline: number;
+  time_to_payment_days?: number;
+  cost_breakdown: CostBreakdown;
+  feasibility_reasons: FeasibilityReasons;
+  risks_and_confidence: Record<string, any>;
+  explanation: string;
+  data_source: string;
+  data_timestamp: string;
+}
+
+export interface DecisionRun {
+  id: string;
+  crop_lot_id: string;
+  owner_user_id: string;
+  algorithm_version: string;
+  status: string;
+  recommended_option_id?: string;
+  recommended_route_type?: string;
+  recommended_net_profit?: number;
+  baseline_net_profit?: number;
+  additional_profit_vs_baseline?: number;
+  input_snapshot: {
+    lot_id: string;
+    crop_name: string;
+    variety?: string;
+    quantity_kg: number;
+    quality_grade?: string;
+    harvest_date?: string;
+    farm_district?: string;
+    farm_village?: string;
+  };
+  disclaimer: string;
+  created_at: string;
+  options: DecisionOption[];
+}
+

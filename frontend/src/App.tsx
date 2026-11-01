@@ -5,7 +5,7 @@ import { Navigation, type TabKey } from './components/Navigation';
 import { DashboardView } from './components/DashboardView';
 import { FarmsView } from './components/FarmsView';
 import { HarvestLotsView } from './components/HarvestLotsView';
-import { DecisionEnginePreview } from './components/DecisionEnginePreview';
+import { DecisionEngineView } from './components/DecisionEngineView';
 import { SpecsView } from './components/SpecsView';
 import { AuthModal } from './components/AuthModal';
 import { api, DEFAULT_DEMO_USER } from './api';
@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const [farms, setFarms] = useState<Farm[]>([]);
   const [cropLots, setCropLots] = useState<CropLot[]>([]);
   const [activeTab, setActiveTab] = useState<TabKey>('dashboard');
+  const [selectedLotIdForDecision, setSelectedLotIdForDecision] = useState<string | undefined>(undefined);
   const [backendOnline, setBackendOnline] = useState<boolean>(false);
 
   // Modals
@@ -144,12 +145,19 @@ export const App: React.FC = () => {
             isOpenCreateModal={isCreateLotOpen}
             onCloseCreateModal={() => setIsCreateLotOpen(false)}
             onOpenCreateModal={() => setIsCreateLotOpen(true)}
-            onNavigateToDecision={() => setActiveTab('decision-preview')}
+            onNavigateToDecision={(lotId) => {
+              if (lotId) setSelectedLotIdForDecision(lotId);
+              setActiveTab('decision-preview');
+            }}
           />
         )}
 
         {activeTab === 'decision-preview' && (
-          <DecisionEnginePreview primaryLot={cropLots[0]} />
+          <DecisionEngineView
+            lots={cropLots}
+            selectedLotId={selectedLotIdForDecision}
+            onLotSelect={setSelectedLotIdForDecision}
+          />
         )}
 
         {activeTab === 'specs' && <SpecsView />}
@@ -160,7 +168,7 @@ export const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-slate-400 font-medium">Agri2Value — Phase 1 Project Scaffold</span>
+            <span className="text-slate-400 font-medium">Agri2Value — Feasibility-Aware Profit Engine (Phase 2)</span>
             <span>•</span>
             <span>Indradhanu: PCCOE International Grand Challenge 2026</span>
           </div>

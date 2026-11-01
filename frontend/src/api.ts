@@ -1,4 +1,4 @@
-import type { AuthTokens, CropLot, Farm, User } from './types';
+import type { AuthTokens, CropLot, Farm, User, DecisionRun } from './types';
 
 const API_BASE = '/api/v1';
 
@@ -295,6 +295,55 @@ class ApiService {
     lots.unshift(newLot);
     localStorage.setItem('a2v_crop_lots', JSON.stringify(lots));
     return newLot;
+  }
+
+  // ---- Phase 2: Profit Decision Engine Endpoints ------------------
+
+  async evaluateDecision(
+    cropLotId: string,
+    scenarioPreset?: string,
+    customParams?: Record<string, any>
+  ): Promise<DecisionRun> {
+    const payload: Record<string, any> = { crop_lot_id: cropLotId };
+    if (scenarioPreset) payload.scenario_preset = scenarioPreset;
+    if (customParams) payload.custom_parameters = customParams;
+
+    const res = await fetch(`${API_BASE}/decision-engine/evaluate`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: 'Decision evaluation failed' }));
+      throw new Error(err.message || 'Decision evaluation failed');
+    }
+
+    return await res.json();
+  }
+
+  async getDecision(decisionId: string): Promise<DecisionRun> {
+    const res = await fetch(`${API_BASE}/decision-engine/decisions/${decisionId}`, {
+      headers: this.getHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to retrieve decision snapshot');
+    }
+
+    return await res.json();
+  }
+
+  async getLotDecisions(lotId: string): Promise<DecisionRun[]> {
+    const res = await fetch(`${API_BASE}/decision-engine/lots/${lotId}/decisions`, {
+      headers: this.getHeaders(),
+    });
+
+    if (!res.ok) {
+      return [];
+    }
+
+    return await res.json();
   }
 
   resetDemoData() {

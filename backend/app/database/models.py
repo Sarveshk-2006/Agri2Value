@@ -211,6 +211,9 @@ class CropLot(Base):
     events: Mapped[List["CropLotEvent"]] = relationship(
         "CropLotEvent", back_populates="crop_lot", order_by="CropLotEvent.created_at", lazy="selectin"
     )
+    decision_runs: Mapped[List["DecisionRun"]] = relationship(
+        "DecisionRun", back_populates="crop_lot", order_by="DecisionRun.created_at.desc()", lazy="selectin"
+    )
 
     __table_args__ = (
         Index("ix_crop_lots_owner_status", "owner_user_id", "status"),
@@ -240,7 +243,7 @@ class CropLotEvent(Base):
         index=True,
     )
     event_type: Mapped[str] = mapped_column(String(100), nullable=False)
-    # e.g. CREATED | STATUS_CHANGED | QUANTITY_UPDATED | NOTE_ADDED
+    # e.g. CREATED | STATUS_CHANGED | QUANTITY_UPDATED | NOTE_ADDED | DECISION_EVALUATED
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     actor_user_id: Mapped[Optional[str]] = mapped_column(
         UUID(as_uuid=False),
@@ -256,3 +259,140 @@ class CropLotEvent(Base):
 
     def __repr__(self) -> str:
         return f"<CropLotEvent id={self.id} type={self.event_type}>"
+
+
+# ---- DecisionRun ------------------------------------------------
+
+class DecisionRun(Base):
+    """
+    Immutable evaluation run produced by the Profit Decision Engine.
+    Stores the exact parameters and inputs used for auditing.
+    """
+    __tablename__ = "decision_runs"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    crop_lot_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("crop_lots.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    owner_user_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("users.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    algorithm_version: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="v2.0-deterministic"
+    )
+    status: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="COMPLETED"
+    )
+    # Status: COMPLETED | NEEDS_MORE_DATA | FAILED
+
+    recommended_option_id: Mapped[Optional[str]] = mapped_column(
+        String(50), nullable=True
+    )
+    recommended_route_type: Mapped[Optional[str]] = mapped_column(
+        String(50), nullable=True
+    )
+    recommended_net_profit: Mapped[Optional[Decimal]] = mapped_column(
+        Numeric(14, 2), nullable=True
+    )
+    baseline_net_profit: Mapped[Optional[Decimal]] = mapped_column(
+        Numeric(14, 2), nullable=True
+    )
+    additional_profit_vs_baseline: Mapped[Optional[Decimal]] = mapped_column(
+        Numeric(14, 2), nullable=True
+    )
+
+    # Input and context snapshot stored as JSON text for reproducible audit
+    input_snapshot: Mapped[str] = mapped_column(Text, nullable=False)
+    disclaimer: Mapped[str] = mapped_column(
+        Text,
+        nullable=False,
+        default="Illustrative sample values used for demonstration. Not live market guarantees."
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+
+    # Relationships
+    crop_lot: Mapped["CropLot"] = relationship("CropLot", back_populates="decision_runs")
+    owner: Mapped["User"] = relationship("User")
+    options: Mapped[List["DecisionOption"]] = relationship(
+        "DecisionOption",
+        back_populates="decision_run",
+        cascade="all, delete-orphan",
+        order_by="DecisionOption.rank",
+        lazy="selectin",
+    )
+
+    __table_args__ = (
+        Index("ix_decision_runs_owner_lot", "owner_user_id", "crop_lot_id"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<DecisionRun id={self.id} lot={self.crop_lot_id} recommended={self.recommended_route_type}>"
+
+
+# ---- DecisionOption ---------------------------------------------
+
+class DecisionOption(Base):
+    """
+    Evaluated pathway result within a DecisionRun.
+    Contains both financial breakdown and feasibility gating status.
+    """
+    __tablename__ = "decision_options"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    decision_run_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("decision_runs.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    route_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    # RAW_MANDI | DIRECT_BUYER | PROCESSING | STORAGE | GROUP_SELLING
+    route_name: Mapped[str] = mapped_column(String(200), nullable=False)
+
+    feasibility_status: Mapped[str] = mapped_column(String(50), nullable=False)
+    # FEASIBLE | CONDITIONALLY_FEASIBLE | INFEASIBLE | NEEDS_MORE_DATA
+
+    rank: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    is_recommended: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    saleable_quantity: Mapped[Decimal] = mapped_column(Numeric(14, 4), nullable=False)
+    saleable_quantity_unit: Mapped[str] = mapped_column(String(20), nullable=False)
+
+    gross_revenue: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
+    total_costs: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
+    net_profit: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
+    net_profit_per_kg: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
+    effective_realization_per_kg: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
+    additional_profit_vs_baseline: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+    time_to_payment_days: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+
+    # Detailed serialized structures
+    cost_breakdown: Mapped[str] = mapped_column(Text, nullable=False)
+    feasibility_reasons: Mapped[str] = mapped_column(Text, nullable=False)
+    risks_and_confidence: Mapped[str] = mapped_column(Text, nullable=False)
+    explanation: Mapped[str] = mapped_column(Text, nullable=False)
+
+    data_source: Mapped[str] = mapped_column(String(200), nullable=False)
+    data_timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+
+    # Relationship
+    decision_run: Mapped["DecisionRun"] = relationship("DecisionRun", back_populates="options")
+
+    def __repr__(self) -> str:
+        return f"<DecisionOption id={self.id} route={self.route_type} net={self.net_profit}>"

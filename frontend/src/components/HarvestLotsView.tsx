@@ -10,7 +10,7 @@ interface HarvestLotsViewProps {
   isOpenCreateModal: boolean;
   onCloseCreateModal: () => void;
   onOpenCreateModal: () => void;
-  onNavigateToDecision: () => void;
+  onNavigateToDecision?: (lotId?: string) => void;
 }
 
 export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
@@ -197,7 +197,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
               {/* Action Button */}
               <div className="pt-2 flex justify-end">
                 <button
-                  onClick={onNavigateToDecision}
+                  onClick={() => onNavigateToDecision && onNavigateToDecision(lot.id)}
                   className="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <span>Evaluate Profit Options</span>

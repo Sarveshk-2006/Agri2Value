@@ -38,9 +38,9 @@ export const Navigation: React.FC<NavigationProps> = ({
     },
     {
       key: 'decision-preview' as TabKey,
-      label: 'Decision Engine (Phase 2)',
+      label: 'Profit Decision Engine',
       icon: Cpu,
-      badge: 'Next',
+      badge: 'Active',
     },
     {
       key: 'specs' as TabKey,

@@ -1,0 +1,519 @@
+// frontend/src/components/DecisionEngineView.tsx
+import React, { useState, useEffect } from 'react';
+import {
+  Cpu,
+  Calculator,
+  ShieldCheck,
+  TrendingUp,
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
+  RefreshCw,
+  Info,
+  Sparkles,
+} from 'lucide-react';
+import type { CropLot, DecisionRun, FeasibilityStatus } from '../types';
+import { api } from '../api';
+
+interface DecisionEngineViewProps {
+  lots: CropLot[];
+  selectedLotId?: string;
+  onLotSelect?: (lotId: string) => void;
+}
+
+export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
+  lots,
+  selectedLotId,
+  onLotSelect,
+}) => {
+  const activeLotId = selectedLotId || (lots.length > 0 ? lots[0].id : '');
+  const activeLot = lots.find((l) => l.id === activeLotId) || lots[0];
+
+  const [selectedScenario, setSelectedScenario] = useState<string>('PILOT_BASELINE');
+  const [decisionRun, setDecisionRun] = useState<DecisionRun | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedOptionId, setExpandedOptionId] = useState<string | null>(null);
+
+  // Evaluate whenever active lot or scenario changes
+  const runEvaluation = async (lotId: string, scenario: string) => {
+    if (!lotId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const scenarioParam = scenario === 'PILOT_BASELINE' ? undefined : scenario;
+      const result = await api.evaluateDecision(lotId, scenarioParam);
+      setDecisionRun(result);
+    } catch (err: any) {
+      console.error('Failed to run decision engine:', err);
+      setError(err.message || 'Decision evaluation failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeLotId) {
+      runEvaluation(activeLotId, selectedScenario);
+    }
+  }, [activeLotId, selectedScenario]);
+
+  const toggleExpand = (optId: string) => {
+    setExpandedOptionId(expandedOptionId === optId ? null : optId);
+  };
+
+  // Segregate feasible vs infeasible options from the decision run
+  const feasibleOptions = decisionRun
+    ? decisionRun.options.filter(
+        (o) => o.feasibility_status === 'FEASIBLE' || o.feasibility_status === 'CONDITIONALLY_FEASIBLE'
+      )
+    : [];
+
+  const infeasibleOptions = decisionRun
+    ? decisionRun.options.filter(
+        (o) => o.feasibility_status === 'INFEASIBLE' || o.feasibility_status === 'NEEDS_MORE_DATA'
+      )
+    : [];
+
+  const recommendedOption = decisionRun?.options.find((o) => o.is_recommended);
+  const baselineOption = decisionRun?.options.find((o) => o.route_type === 'RAW_MANDI');
+
+  const getFeasibilityBadge = (status: FeasibilityStatus) => {
+    switch (status) {
+      case 'FEASIBLE':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>FEASIBLE</span>
+          </span>
+        );
+      case 'CONDITIONALLY_FEASIBLE':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span>CONDITIONAL</span>
+          </span>
+        );
+      case 'INFEASIBLE':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30">
+            <XCircle className="w-3.5 h-3.5" />
+            <span>INFEASIBLE</span>
+          </span>
+        );
+      case 'NEEDS_MORE_DATA':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/15 text-purple-300 border border-purple-500/30">
+            <Info className="w-3.5 h-3.5" />
+            <span>NEEDS MORE DATA</span>
+          </span>
+        );
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      
+      {/* Header Banner */}
+      <div className="rounded-2xl glass-panel p-6 sm:p-8 border border-slate-800 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Phase 2 Verified: Feasibility-Aware Profit Decision Engine</span>
+          </div>
+          <span className="text-xs font-mono text-slate-400 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg">
+            Version: v2.0-deterministic
+          </span>
+        </div>
+
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-3">
+            <Cpu className="w-7 h-7 text-emerald-400" />
+            <span>Feasibility-Aware Profit Decision Engine</span>
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-3xl leading-relaxed">
+            Evaluates your harvest lot against real market pathways, itemized transit and handling costs, 
+            and strict feasibility constraints. Infeasible routes are filtered out before ranking.
+          </p>
+        </div>
+
+        {/* Harvest Lot Selection & Scenario Controls */}
+        <div className="pt-4 border-t border-slate-800/80 grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          {/* Lot Selector */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-slate-400">Select Harvest Lot to Evaluate:</label>
+            <select
+              value={activeLotId}
+              onChange={(e) => onLotSelect && onLotSelect(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+            >
+              {lots.map((lot) => (
+                <option key={lot.id} value={lot.id}>
+                  {lot.crop_name} {lot.variety ? `(${lot.variety})` : ''} — {Number(lot.quantity_kg_normalized).toLocaleString()} kg (Grade {lot.quality_grade || 'Ungraded'})
+                </option>
+              ))}
+            </select>
+            {activeLot && (
+              <div className="text-[11px] text-slate-400">
+                Active Lot: {activeLot.crop_name} {activeLot.variety ? `(${activeLot.variety})` : ''} • {Number(activeLot.quantity_kg_normalized).toLocaleString()} kg • Status: {activeLot.status}
+              </div>
+            )}
+          </div>
+
+          {/* Test Scenario Switcher */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-slate-400">Simulation Scenario (Verification Test):</label>
+            <div className="flex gap-2">
+              <select
+                value={selectedScenario}
+                onChange={(e) => setSelectedScenario(e.target.value)}
+                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+              >
+                <option value="PILOT_BASELINE">Realistic Nashik Pilot (Direct Buyer Wins)</option>
+                <option value="MANDI_WINS">Mandi Wins (Distant Buyer & High Logistics)</option>
+                <option value="PROCESSING_BOTTLENECK">Processing Infeasible (Capacity Limit / Facility Down)</option>
+                <option value="MISSING_DATA">Incomplete Data (Missing Processing Yield)</option>
+              </select>
+
+              <button
+                onClick={() => activeLotId && runEvaluation(activeLotId, selectedScenario)}
+                disabled={loading}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0 disabled:opacity-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                <span>Re-Evaluate</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Prominent Sample Data Notice */}
+      <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-3">
+        <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+        <div className="space-y-1 text-xs text-amber-200 leading-relaxed">
+          <div className="font-bold text-amber-300">
+            Illustrative Sample Data Disclosure (PCCOE Grand Challenge Pilot)
+          </div>
+          <p>
+            All Mandi benchmark rates, institutional buyer quotes, processing yields, and cold storage rates displayed below 
+            are explicitly labelled <strong>illustrative sample parameters</strong> based on the Niphad / Pimpalgaon cluster. 
+            They are used for software calculation verification and do not represent live real-time API market guarantees.
+          </p>
+        </div>
+      </div>
+
+      {/* Error Banner */}
+      {error && (
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+          <XCircle className="w-4 h-4 text-rose-400" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {/* Loading state */}
+      {loading && (
+        <div className="p-12 text-center glass-panel rounded-2xl border border-slate-800 space-y-3">
+          <RefreshCw className="w-8 h-8 text-emerald-400 animate-spin mx-auto" />
+          <div className="text-sm font-semibold text-white">Running Deterministic Financial Engine...</div>
+          <p className="text-xs text-slate-400">Validating hard constraints, calculating itemized deductions, and ranking feasible routes.</p>
+        </div>
+      )}
+
+      {!loading && decisionRun && (
+        <>
+          {/* RECOMMENDED WINNER BANNER */}
+          {recommendedOption ? (
+            <div className="rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-950/40 via-slate-900 to-slate-950 p-6 sm:p-8 space-y-5 shadow-xl relative overflow-hidden">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500 text-slate-950 shadow-sm">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>RECOMMENDED BEST ROUTE</span>
+                </span>
+                
+                {recommendedOption.time_to_payment_days && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+                    <Clock className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Payment: ~{recommendedOption.time_to_payment_days} days</span>
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                
+                {/* Left: Route Name and Explanation */}
+                <div className="lg:col-span-2 space-y-3">
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+                    {recommendedOption.route_name}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                    {recommendedOption.explanation}
+                  </p>
+                  
+                  {/* Additional Profit vs Mandi callout */}
+                  {baselineOption && recommendedOption.route_type !== 'RAW_MANDI' && (
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold">
+                      <TrendingUp className="w-4 h-4 text-emerald-400" />
+                      <span>
+                        +₹{Number(recommendedOption.additional_profit_vs_baseline).toLocaleString()} additional net profit vs local APMC mandi
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Right: Net Profit Metric Box */}
+                <div className="bg-slate-950 p-5 rounded-2xl border border-emerald-500/40 text-center space-y-2">
+                  <div className="text-xs uppercase font-bold text-slate-400">Estimated Net Profit</div>
+                  <div className="text-3xl sm:text-4xl font-extrabold font-mono text-emerald-400">
+                    ₹{Number(recommendedOption.net_profit).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-slate-300 font-mono">
+                    ₹{Number(recommendedOption.net_profit_per_kg).toFixed(2)} / kg net realization
+                  </div>
+                  <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-400">
+                    Gross: ₹{Number(recommendedOption.gross_revenue).toLocaleString()} | Costs: ₹{Number(recommendedOption.total_costs).toLocaleString()}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          ) : (
+            <div className="p-6 rounded-2xl glass-panel border border-amber-500/40 bg-amber-950/20 text-center space-y-2">
+              <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto" />
+              <div className="text-base font-bold text-white">No Feasible Route Confirmed</div>
+              <p className="text-xs text-slate-300 max-w-xl mx-auto">
+                None of the evaluated routes passed hard feasibility checks. Review the rejected routes below to see why they failed.
+              </p>
+            </div>
+          )}
+
+          {/* RANKED FEASIBLE ROUTES */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-emerald-400" />
+                <span>Ranked Feasible Routes ({feasibleOptions.length})</span>
+              </h3>
+              <span className="text-xs text-slate-400">Sorted by Net Profit per kg</span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              {feasibleOptions.map((opt) => (
+                <div
+                  key={opt.id}
+                  className={`glass-panel rounded-2xl border transition-all ${
+                    opt.is_recommended
+                      ? 'border-emerald-500/60 bg-emerald-950/10'
+                      : 'border-slate-800 bg-slate-900/60 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="p-5 sm:p-6 space-y-4">
+                    
+                    {/* Header Row */}
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 text-white font-extrabold text-xs flex items-center justify-center">
+                          #{opt.rank}
+                        </span>
+                        <div>
+                          <div className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                            <span>{opt.route_name}</span>
+                            {opt.is_recommended && (
+                              <span className="text-[10px] bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-full font-extrabold uppercase">
+                                Winner
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-slate-400">{opt.data_source}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {getFeasibilityBadge(opt.feasibility_status)}
+                        <div className="text-right">
+                          <div className="text-lg font-bold font-mono text-emerald-400">
+                            ₹{Number(opt.net_profit).toLocaleString()}
+                          </div>
+                          <div className="text-[11px] text-slate-400 font-mono">
+                            ₹{Number(opt.net_profit_per_kg).toFixed(2)} / kg
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Financial Summary Strip */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs">
+                      <div>
+                        <span className="text-slate-400 block">Saleable Output:</span>
+                        <span className="font-mono text-slate-200 font-semibold">
+                          {Number(opt.saleable_quantity).toLocaleString()} {opt.saleable_quantity_unit}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block">Gross Revenue:</span>
+                        <span className="font-mono text-slate-200 font-semibold">
+                          ₹{Number(opt.gross_revenue).toLocaleString()}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block">Total Deductions:</span>
+                        <span className="font-mono text-red-400 font-semibold">
+                          -₹{Number(opt.total_costs).toLocaleString()}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block">vs Mandi Baseline:</span>
+                        <span className={`font-mono font-semibold ${opt.additional_profit_vs_baseline >= 0 ? 'text-emerald-400' : 'text-slate-400'}`}>
+                          {opt.additional_profit_vs_baseline >= 0 ? '+' : ''}₹{Number(opt.additional_profit_vs_baseline).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Explanation */}
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      {opt.explanation}
+                    </p>
+
+                    {/* Itemized Cost Breakdown Toggle */}
+                    <button
+                      onClick={() => toggleExpand(opt.id)}
+                      className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1.5 transition-colors"
+                    >
+                      {expandedOptionId === opt.id ? (
+                        <>
+                          <ChevronUp className="w-3.5 h-3.5" />
+                          <span>Hide Itemized Cost Breakdown</span>
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-3.5 h-3.5" />
+                          <span>View Itemized Cost Breakdown ({opt.cost_breakdown.line_items?.length || 0} items)</span>
+                        </>
+                      )}
+                    </button>
+
+                    {/* Expanded Cost Breakdown Drawer */}
+                    {expandedOptionId === opt.id && (
+                      <div className="pt-3 border-t border-slate-800 space-y-3">
+                        <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                          <Calculator className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Transparent Itemized Deductions (No Hidden Costs)</span>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs">
+                            <thead className="bg-slate-950 text-slate-400">
+                              <tr>
+                                <th className="p-2.5 rounded-l-lg">Cost Item</th>
+                                <th className="p-2.5">Category</th>
+                                <th className="p-2.5">Unit Rate</th>
+                                <th className="p-2.5 text-right rounded-r-lg">Amount (INR)</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-800/60 font-mono text-slate-300">
+                              {opt.cost_breakdown.line_items?.map((item, idx) => (
+                                <tr key={idx} className="hover:bg-slate-800/30">
+                                  <td className="p-2.5 font-sans font-medium text-white">{item.name}</td>
+                                  <td className="p-2.5 text-slate-400 capitalize">{item.category}</td>
+                                  <td className="p-2.5 text-slate-400">
+                                    {item.unit_rate ? `₹${item.unit_rate} ${item.unit_name || ''}` : '—'}
+                                  </td>
+                                  <td className="p-2.5 text-right font-bold text-red-400">
+                                    -₹{Number(item.amount).toLocaleString()}
+                                  </td>
+                                </tr>
+                              ))}
+                              <tr className="bg-slate-950/80 font-bold">
+                                <td colSpan={3} className="p-2.5 font-sans text-white text-right">
+                                  Total Deductions:
+                                </td>
+                                <td className="p-2.5 text-right text-red-400 font-mono">
+                                  -₹{Number(opt.total_costs).toLocaleString()}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* INFEASIBLE & NEEDS MORE DATA ROUTES */}
+          {infeasibleOptions.length > 0 && (
+            <div className="space-y-4 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-rose-400" />
+                  <span>Infeasible & Incomplete Routes ({infeasibleOptions.length})</span>
+                </h3>
+                <span className="text-xs text-slate-400">Guaranteed Gating: Infeasible routes never win</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {infeasibleOptions.map((opt) => (
+                  <div
+                    key={opt.id}
+                    className="p-5 rounded-2xl glass-panel border border-rose-500/30 bg-rose-950/10 space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-bold text-white">{opt.route_name}</h4>
+                      {getFeasibilityBadge(opt.feasibility_status)}
+                    </div>
+
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      {opt.explanation}
+                    </p>
+
+                    {/* Failed Constraint Details */}
+                    <div className="p-3 rounded-xl bg-slate-950/80 border border-rose-500/20 space-y-1.5 text-xs">
+                      <div className="font-semibold text-rose-400 flex items-center gap-1.5">
+                        <XCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>Hard Constraint / Data Gap:</span>
+                      </div>
+                      <ul className="list-disc list-inside space-y-1 text-slate-300 text-[11px]">
+                        {opt.feasibility_reasons.failed_checks?.map((f, idx) => (
+                          <li key={idx}>{f}</li>
+                        ))}
+                        {opt.feasibility_reasons.data_gaps?.map((g, idx) => (
+                          <li key={idx} className="text-purple-300">{g}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Transparent Input Snapshot & Audit Footer */}
+          <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 text-xs text-slate-400">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-slate-300">Auditable Calculation Snapshot:</span>
+              <span className="font-mono text-[11px]">Run ID: {decisionRun.id.substring(0, 8)}...</span>
+            </div>
+            <p>
+              Inputs: {decisionRun.input_snapshot.crop_name} {decisionRun.input_snapshot.variety ? `(${decisionRun.input_snapshot.variety})` : ''} — {decisionRun.input_snapshot.quantity_kg} kg | Grade {decisionRun.input_snapshot.quality_grade || 'Ungraded'} | Farm: {decisionRun.input_snapshot.farm_village}, {decisionRun.input_snapshot.farm_district}.
+            </p>
+            <div className="text-[11px] text-slate-500 font-mono">
+              Timestamp: {new Date(decisionRun.created_at).toLocaleString()} | Algorithm: {decisionRun.algorithm_version}
+            </div>
+          </div>
+
+        </>
+      )}
+
+    </div>
+  );
+};
