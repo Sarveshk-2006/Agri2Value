@@ -1,6 +1,6 @@
 // frontend/src/components/Header.tsx
 import React from 'react';
-import { Sprout, Wifi, WifiOff, LogOut, ShieldAlert, Bell, HelpCircle } from 'lucide-react';
+import { Sprout, Wifi, WifiOff, LogOut, ShieldAlert, Bell, HelpCircle, Globe } from 'lucide-react';
 import type { User } from '../types';
 
 interface HeaderProps {
@@ -8,6 +8,7 @@ interface HeaderProps {
   backendOnline: boolean;
   onLogout: () => void;
   onOpenInfo: () => void;
+  onOpenProfile?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -15,6 +16,7 @@ export const Header: React.FC<HeaderProps> = ({
   backendOnline,
   onLogout,
   onOpenInfo,
+  onOpenProfile,
 }) => {
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
@@ -72,10 +74,20 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* User Profile & Right Actions (JSPM Winners Inspired) */}
         <div className="flex items-center gap-3">
+          {/* Public Website Link */}
+          <a
+            href="/"
+            className="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-700 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"
+            title="Return to Public Website"
+          >
+            <Globe className="w-3.5 h-3.5 text-slate-400" />
+            <span>Public Site</span>
+          </a>
+
           {/* Architecture / Specs Button */}
           <button
             onClick={onOpenInfo}
-            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-700 px-3 py-2 rounded-xl border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all cursor-pointer"
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-700 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all cursor-pointer"
             title="System Specifications & Architecture"
           >
             <HelpCircle className="w-4 h-4 text-slate-400 group-hover:text-emerald-600" />
@@ -91,7 +103,12 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
 
               {/* Farmer Profile Chip */}
-              <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-100 hover:border-emerald-300 transition-colors shadow-2xs">
+              <button
+                type="button"
+                onClick={onOpenProfile}
+                className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-100 hover:border-emerald-300 transition-colors shadow-2xs cursor-pointer text-left"
+                title="View Farmer Profile & Settings"
+              >
                 <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
                   👨‍🌾
                 </div>
@@ -103,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {user.role} • Patil Krishi Farm
                   </div>
                 </div>
-              </div>
+              </button>
 
               {/* Logout Button */}
               <button

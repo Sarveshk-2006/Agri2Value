@@ -16,7 +16,9 @@ import {
   ChevronRight,
   Menu,
   X,
-  ArrowUpRight
+  ArrowUpRight,
+  UserCheck,
+  Globe
 } from 'lucide-react';
 import type { TabKey } from '../types';
 
@@ -57,6 +59,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           key: 'dashboard',
           label: 'Dashboard',
           icon: LayoutDashboard,
+          badge: null,
+        },
+        {
+          key: 'profile',
+          label: 'Farmer Profile',
+          icon: UserCheck,
           badge: null,
         },
       ],
@@ -346,12 +354,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <p className="text-[11px] text-emerald-800 leading-tight">
                 APMC Pimpalgaon & Open-Meteo live sync active.
               </p>
-              <button
-                onClick={() => handleSelect('specs')}
-                className="mt-2 text-[10px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer"
-              >
-                Engine Rules <ArrowUpRight className="w-3 h-3" />
-              </button>
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-emerald-200/60">
+                <button
+                  onClick={() => handleSelect('specs')}
+                  className="text-[10px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer"
+                >
+                  Engine Rules <ArrowUpRight className="w-3 h-3" />
+                </button>
+                <a
+                  href="/"
+                  className="text-[10px] font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 cursor-pointer"
+                >
+                  <Globe className="w-3 h-3" />
+                  <span>Public Site</span>
+                </a>
+              </div>
             </div>
           </div>
         )}

@@ -1,7 +1,23 @@
 // frontend/src/App.tsx
 import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
+import { PublicNavbar } from './components/public/PublicNavbar';
+import { PublicFooter } from './components/public/PublicFooter';
+
+// Public Pages
+import { HomeView } from './pages/public/HomeView';
+import { AboutView } from './pages/public/AboutView';
+import { HowItWorksView } from './pages/public/HowItWorksView';
+import { FeaturesView } from './pages/public/FeaturesView';
+import { ContactView } from './pages/public/ContactView';
+
+// Auth Pages
+import { LoginView } from './pages/auth/LoginView';
+import { RegisterView } from './pages/auth/RegisterView';
+
+// Authenticated Application Views
 import { DashboardView } from './components/DashboardView';
 import { FarmsView } from './components/FarmsView';
 import { HarvestLotsView } from './components/HarvestLotsView';
@@ -13,21 +29,184 @@ import { ExecutionRequestsView } from './components/ExecutionRequestsView';
 import { CropRescueView } from './components/CropRescueView';
 import { IoTMonitoringView } from './components/IoTMonitoringView';
 import { SpecsView } from './components/SpecsView';
-import { AuthModal } from './components/AuthModal';
+import { ProfileView } from './pages/app/ProfileView';
+import { NotFoundView } from './pages/NotFoundView';
+
 import { api, DEFAULT_DEMO_USER } from './api';
 import type { CropLot, Farm, User, TabKey } from './types';
 import { RotateCcw, CheckCircle2 } from 'lucide-react';
 
+/* ──────────────────────────────────────────────────────────
+   1. PUBLIC WEBSITE WRAPPER COMPONENT
+   ────────────────────────────────────────────────────────── */
+interface PublicLayoutProps {
+  user: User | null;
+  onLogout: () => void;
+}
+
+const PublicLayout: React.FC<PublicLayoutProps> = ({ user, onLogout }) => {
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-600 selection:text-white">
+      <PublicNavbar user={user} onLogout={onLogout} />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      <PublicFooter />
+    </div>
+  );
+};
+
+/* ──────────────────────────────────────────────────────────
+   2. AUTHENTICATED APP WRAPPER COMPONENT
+   ────────────────────────────────────────────────────────── */
+interface AppLayoutProps {
+  user: User | null;
+  backendOnline: boolean;
+  farms: Farm[];
+  cropLots: CropLot[];
+  onLogout: () => void;
+  onResetDemoData: () => void;
+}
+
+const AppLayout: React.FC<AppLayoutProps> = ({
+  user,
+  backendOnline,
+  farms,
+  cropLots,
+  onLogout,
+  onResetDemoData,
+}) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Map route pathname to active TabKey
+  const getTabKeyFromPath = (path: string): TabKey => {
+    if (path.includes('/app/farms')) return 'farms';
+    if (path.includes('/app/lots')) return 'lots';
+    if (path.includes('/app/decision')) return 'decision-preview';
+    if (path.includes('/app/market')) return 'market-weather';
+    if (path.includes('/app/buyers')) return 'buyers';
+    if (path.includes('/app/infra')) return 'infrastructure';
+    if (path.includes('/app/execution')) return 'execution';
+    if (path.includes('/app/rescue')) return 'rescue';
+    if (path.includes('/app/iot')) return 'iot-monitoring';
+    if (path.includes('/app/profile')) return 'profile';
+    if (path.includes('/app/specs')) return 'specs';
+    return 'dashboard';
+  };
+
+  const activeTab = getTabKeyFromPath(location.pathname);
+
+  const handleSelectTab = (tab: TabKey) => {
+    switch (tab) {
+      case 'dashboard':
+        navigate('/app/dashboard');
+        break;
+      case 'farms':
+        navigate('/app/farms');
+        break;
+      case 'lots':
+        navigate('/app/lots');
+        break;
+      case 'decision-preview':
+        navigate('/app/decision');
+        break;
+      case 'market-weather':
+        navigate('/app/market');
+        break;
+      case 'buyers':
+        navigate('/app/buyers');
+        break;
+      case 'infrastructure':
+        navigate('/app/infra');
+        break;
+      case 'execution':
+        navigate('/app/execution');
+        break;
+      case 'rescue':
+        navigate('/app/rescue');
+        break;
+      case 'iot-monitoring':
+        navigate('/app/iot');
+        break;
+      case 'profile':
+        navigate('/app/profile');
+        break;
+      case 'specs':
+        navigate('/app/specs');
+        break;
+      default:
+        navigate('/app/dashboard');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-600 selection:text-white">
+      
+      {/* Top Header */}
+      <Header
+        user={user}
+        backendOnline={backendOnline}
+        onLogout={onLogout}
+        onOpenInfo={() => navigate('/app/specs')}
+        onOpenProfile={() => navigate('/app/profile')}
+      />
+
+      {/* Main Layout with Sidebar */}
+      <div className="flex-1 flex w-full">
+        <Sidebar
+          activeTab={activeTab}
+          onSelectTab={handleSelectTab}
+          farmCount={farms.length}
+          lotCount={cropLots.length}
+          urgentRescueCount={1}
+        />
+
+        {/* Content Area */}
+        <main className="flex-1 min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-20 md:pb-8">
+          <Outlet />
+        </main>
+      </div>
+
+      {/* Footer / Demo Control Bar */}
+      <footer className="border-t border-slate-200 bg-white py-4 text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-slate-700 font-bold">Agri2Value (कृषि-मूल्य) — Smart Farm-to-Profit Execution Platform</span>
+            <span>•</span>
+            <span className="text-slate-500">Indradhanu: PCCOE International Grand Challenge 2026</span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onResetDemoData}
+              className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-amber-600 transition-colors cursor-pointer font-semibold"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset Demo Seed</span>
+            </button>
+            <span>•</span>
+            <span className="font-mono text-[11px] text-slate-400">v1.0.0-competition</span>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  );
+};
+
+/* ──────────────────────────────────────────────────────────
+   3. ROOT APPLICATION CONTAINER
+   ────────────────────────────────────────────────────────── */
 export const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(DEFAULT_DEMO_USER);
   const [farms, setFarms] = useState<Farm[]>([]);
   const [cropLots, setCropLots] = useState<CropLot[]>([]);
-  const [activeTab, setActiveTab] = useState<TabKey>('dashboard');
   const [selectedLotIdForDecision, setSelectedLotIdForDecision] = useState<string | undefined>(undefined);
   const [backendOnline, setBackendOnline] = useState<boolean>(false);
 
   // Modals
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCreateFarmOpen, setIsCreateFarmOpen] = useState(false);
   const [isCreateLotOpen, setIsCreateLotOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -52,7 +231,6 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     loadData();
-    // Re-check health every 15s
     const interval = setInterval(async () => {
       const health = await api.checkHealth();
       setBackendOnline(health.backendOnline);
@@ -63,12 +241,11 @@ export const App: React.FC = () => {
   const handleLogout = () => {
     api.setToken(null);
     setUser(null);
-    setIsAuthModalOpen(true);
+    showToast('Signed out of session');
   };
 
   const handleLoginSuccess = (loggedInUser: User) => {
     setUser(loggedInUser);
-    setIsAuthModalOpen(false);
     showToast(`Signed in as ${loggedInUser.full_name}`);
     loadData();
   };
@@ -94,163 +271,160 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-600 selection:text-white">
-      
+    <BrowserRouter>
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-emerald-600/30">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-emerald-600/30 animate-in fade-in slide-in-from-bottom-3">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Top Header */}
-      <Header
-        user={user}
-        backendOnline={backendOnline}
-        onLogout={handleLogout}
-        onOpenInfo={() => setActiveTab('specs')}
-      />
+      <Routes>
+        
+        {/* ─── Public Website Routes ─── */}
+        <Route element={<PublicLayout user={user} onLogout={handleLogout} />}>
+          <Route path="/" element={<HomeView />} />
+          <Route path="/about" element={<AboutView />} />
+          <Route path="/how-it-works" element={<HowItWorksView />} />
+          <Route path="/features" element={<FeaturesView />} />
+          <Route path="/contact" element={<ContactView />} />
+        </Route>
 
-      {/* Main Layout with Sidebar */}
-      <div className="flex-1 flex w-full">
-        <Sidebar
-          activeTab={activeTab}
-          onSelectTab={setActiveTab}
-          farmCount={farms.length}
-          lotCount={cropLots.length}
-          urgentRescueCount={1}
-        />
+        {/* ─── Dedicated Auth Routes ─── */}
+        <Route path="/login" element={<LoginView onLoginSuccess={handleLoginSuccess} />} />
+        <Route path="/register" element={<RegisterView onRegisterSuccess={handleLoginSuccess} />} />
 
-        {/* Content Area */}
-        <main className="flex-1 min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-20 md:pb-8">
-          {activeTab === 'dashboard' && (
-            <DashboardView
+        {/* ─── Authenticated Application Routes ─── */}
+        <Route
+          path="/app"
+          element={
+            <AppLayout
               user={user}
+              backendOnline={backendOnline}
               farms={farms}
               cropLots={cropLots}
-              onSelectTab={setActiveTab}
-              onOpenCreateLot={() => setIsCreateLotOpen(true)}
-              onOpenCreateFarm={() => setIsCreateFarmOpen(true)}
+              onLogout={handleLogout}
+              onResetDemoData={handleResetDemoData}
             />
-          )}
+          }
+        >
+          <Route index element={<Navigate to="/app/dashboard" replace />} />
+          
+          <Route
+            path="dashboard"
+            element={
+              <DashboardView
+                user={user}
+                farms={farms}
+                cropLots={cropLots}
+                onSelectTab={() => {}}
+                onOpenCreateLot={() => setIsCreateLotOpen(true)}
+                onOpenCreateFarm={() => setIsCreateFarmOpen(true)}
+              />
+            }
+          />
 
-          {activeTab === 'farms' && (
-            <FarmsView
-              farms={farms}
-              onCreateFarm={handleCreateFarm}
-              isOpenCreateModal={isCreateFarmOpen}
-              onCloseCreateModal={() => setIsCreateFarmOpen(false)}
-              onOpenCreateModal={() => setIsCreateFarmOpen(true)}
-            />
-          )}
+          <Route
+            path="farms"
+            element={
+              <FarmsView
+                farms={farms}
+                onCreateFarm={handleCreateFarm}
+                isOpenCreateModal={isCreateFarmOpen}
+                onCloseCreateModal={() => setIsCreateFarmOpen(false)}
+                onOpenCreateModal={() => setIsCreateFarmOpen(true)}
+              />
+            }
+          />
 
-          {activeTab === 'lots' && (
-            <HarvestLotsView
-              cropLots={cropLots}
-              farms={farms}
-              onCreateLot={handleCreateLot}
-              isOpenCreateModal={isCreateLotOpen}
-              onCloseCreateModal={() => setIsCreateLotOpen(false)}
-              onOpenCreateModal={() => setIsCreateLotOpen(true)}
-              onNavigateToDecision={(lotId) => {
-                if (lotId) setSelectedLotIdForDecision(lotId);
-                setActiveTab('decision-preview');
-              }}
-              onNavigateToRescue={(lotId) => {
-                if (lotId) setSelectedLotIdForDecision(lotId);
-                setActiveTab('rescue');
-              }}
-            />
-          )}
+          <Route
+            path="lots"
+            element={
+              <HarvestLotsView
+                cropLots={cropLots}
+                farms={farms}
+                onCreateLot={handleCreateLot}
+                isOpenCreateModal={isCreateLotOpen}
+                onCloseCreateModal={() => setIsCreateLotOpen(false)}
+                onOpenCreateModal={() => setIsCreateLotOpen(true)}
+                onNavigateToDecision={(lotId) => {
+                  if (lotId) setSelectedLotIdForDecision(lotId);
+                }}
+                onNavigateToRescue={(lotId) => {
+                  if (lotId) setSelectedLotIdForDecision(lotId);
+                }}
+              />
+            }
+          />
 
-          {activeTab === 'decision-preview' && (
-            <DecisionEngineView
-              lots={cropLots}
-              selectedLotId={selectedLotIdForDecision}
-              onLotSelect={setSelectedLotIdForDecision}
-              onNavigateToExecution={() => setActiveTab('execution')}
-            />
-          )}
+          <Route
+            path="decision"
+            element={
+              <DecisionEngineView
+                lots={cropLots}
+                selectedLotId={selectedLotIdForDecision}
+                onLotSelect={setSelectedLotIdForDecision}
+                onNavigateToExecution={() => {}}
+              />
+            }
+          />
 
-          {activeTab === 'rescue' && (
-            <CropRescueView
-              cropLots={cropLots}
-              selectedLotId={selectedLotIdForDecision}
-              onLotSelect={setSelectedLotIdForDecision}
-              onNavigateToExecution={() => setActiveTab('execution')}
-            />
-          )}
+          <Route
+            path="market"
+            element={<MarketWeatherView />}
+          />
 
-          {activeTab === 'buyers' && (
-            <BuyersView
-              cropLots={cropLots}
-              onNavigateToExecution={() => setActiveTab('execution')}
-            />
-          )}
+          <Route
+            path="buyers"
+            element={<BuyersView cropLots={cropLots} />}
+          />
 
-          {activeTab === 'infrastructure' && (
-            <InfrastructureView
-              cropLots={cropLots}
-              onNavigateToExecution={() => setActiveTab('execution')}
-            />
-          )}
+          <Route
+            path="infra"
+            element={<InfrastructureView cropLots={cropLots} />}
+          />
 
-          {activeTab === 'execution' && (
-            <ExecutionRequestsView
-              cropLots={cropLots}
-              onNavigateToBuyers={() => setActiveTab('buyers')}
-              onNavigateToInfra={() => setActiveTab('infrastructure')}
-            />
-          )}
+          <Route
+            path="execution"
+            element={<ExecutionRequestsView cropLots={cropLots} />}
+          />
 
-          {activeTab === 'market-weather' && (
-            <MarketWeatherView
-              onNavigateToDecision={() => setActiveTab('decision-preview')}
-            />
-          )}
+          <Route
+            path="rescue"
+            element={
+              <CropRescueView
+                cropLots={cropLots}
+                selectedLotId={selectedLotIdForDecision}
+                onLotSelect={setSelectedLotIdForDecision}
+              />
+            }
+          />
 
-          {activeTab === 'iot-monitoring' && (
-            <IoTMonitoringView
-              farms={farms}
-              onNavigateToRescue={() => setActiveTab('rescue')}
-            />
-          )}
+          <Route
+            path="iot"
+            element={<IoTMonitoringView farms={farms} />}
+          />
 
-          {activeTab === 'specs' && <SpecsView />}
-        </main>
-      </div>
+          <Route
+            path="profile"
+            element={
+              <ProfileView
+                user={user}
+                farms={farms}
+                onResetDemoData={handleResetDemoData}
+                onLogout={handleLogout}
+              />
+            }
+          />
 
-      {/* Footer / Demo Control Bar */}
-      <footer className="border-t border-slate-200 bg-white py-4 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-slate-700 font-bold">Agri2Value (कृषि-मूल्य) — Smart Farm-to-Profit Execution Platform</span>
-            <span>•</span>
-            <span className="text-slate-500">Indradhanu: PCCOE International Grand Challenge 2026</span>
-          </div>
+          <Route path="specs" element={<SpecsView />} />
+        </Route>
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleResetDemoData}
-              className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-amber-600 transition-colors cursor-pointer font-semibold"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Demo Seed</span>
-            </button>
-            <span>•</span>
-            <span className="font-mono text-[11px] text-slate-400">v1.0.0-competition</span>
-          </div>
-        </div>
-      </footer>
+        {/* ─── 404 Catch-All ─── */}
+        <Route path="*" element={<NotFoundView />} />
 
-      {/* Authentication Modal */}
-      <AuthModal
-        isOpen={isAuthModalOpen || !user}
-        onSuccess={handleLoginSuccess}
-      />
-
-    </div>
+      </Routes>
+    </BrowserRouter>
   );
 };

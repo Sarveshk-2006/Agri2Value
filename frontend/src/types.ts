@@ -450,6 +450,7 @@ export type TabKey =
   | 'execution'
   | 'market-weather'
   | 'iot-monitoring'
+  | 'profile'
   | 'specs';
 
 export interface IoTTelemetrySample {
