@@ -158,9 +158,43 @@ async def evaluate_crop_lot_decision(
             "yield_known": False,
         }
 
+    # Validate custom mandi parameters for commodity mismatch
+    if custom_params and "mandi" in custom_params:
+        custom_mandi = custom_params["mandi"]
+        if "commodity" in custom_mandi and custom_mandi["commodity"]:
+            if custom_mandi["commodity"].strip().lower() != crop_lot.crop_name.strip().lower():
+                raise ValidationError(
+                    f"Commodity mismatch: custom mandi parameter is for '{custom_mandi['commodity']}', "
+                    f"but harvest lot is '{crop_lot.crop_name}'. Mismatched commodity rates are rejected."
+                )
+
+    # Ingest verified mandi quote for lot crop
+    try:
+        from app.mandi.service import mandi_service
+        quote = await mandi_service.get_verified_mandi_quote(
+            crop_name=crop_lot.crop_name,
+            district=farm.district if farm else "Nashik",
+        )
+        if "mandi" not in overrides:
+            overrides["mandi"] = {}
+        overrides["mandi"]["rate_per_kg"] = quote.rate_per_kg
+        overrides["mandi"]["mandi_name"] = f"APMC {quote.market_name} ({quote.district})"
+        overrides["mandi"]["data_source"] = quote.data_source
+        overrides["mandi"]["data_timestamp"] = f"Observed: {quote.observation_date} | Ingested: {quote.retrieval_date}"
+        overrides["mandi"]["is_live"] = quote.is_live
+        overrides["mandi"]["is_stale"] = quote.is_stale
+        overrides["mandi"]["staleness_warning"] = quote.staleness_warning
+    except ValidationError:
+        raise
+    except Exception as exc:
+        pass  # Fall back to default PILOT_SAMPLE_DATA in engine
+
     if custom_params:
         for k, v in custom_params.items():
-            overrides[k] = v
+            if k == "mandi" and "mandi" in overrides:
+                overrides["mandi"].update(v)
+            else:
+                overrides[k] = v
 
     # 4. Run pure, deterministic DecisionEngine
     engine = DecisionEngine(sample_overrides=overrides)

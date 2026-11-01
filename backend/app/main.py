@@ -25,6 +25,8 @@ from app.auth.router import router as auth_router
 from app.farms.router import router as farms_router
 from app.crop_lots.router import farm_crop_lots_router, crop_lots_router
 from app.decision_engine.router import router as decision_engine_router
+from app.weather.router import router as weather_router
+from app.mandi.router import router as mandi_router
 
 settings = get_settings()
 configure_logging(debug=settings.DEBUG)
@@ -119,6 +121,8 @@ def create_app() -> FastAPI:
     app.include_router(farm_crop_lots_router, prefix=prefix)
     app.include_router(crop_lots_router, prefix=prefix)
     app.include_router(decision_engine_router, prefix=prefix)
+    app.include_router(weather_router, prefix=prefix)
+    app.include_router(mandi_router, prefix=prefix)
 
     return app
 

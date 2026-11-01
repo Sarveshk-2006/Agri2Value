@@ -67,6 +67,9 @@ class DecisionEngine:
             sorting_loss_pct=mandi_cfg.get("sorting_loss_pct", Decimal("0.02")),
             data_source=mandi_cfg.get("data_source", "APMC Pimpalgaon Bulletin (Sample Data)"),
             data_timestamp=mandi_cfg.get("data_timestamp", "2026-11-01T08:00:00Z"),
+            is_live=mandi_cfg.get("is_live", False),
+            is_stale=mandi_cfg.get("is_stale", False),
+            staleness_warning=mandi_cfg.get("staleness_warning", None),
         )
         options.append(opt_raw)
 

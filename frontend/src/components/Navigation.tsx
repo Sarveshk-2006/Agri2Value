@@ -1,8 +1,8 @@
 // frontend/src/components/Navigation.tsx
 import React from 'react';
-import { LayoutDashboard, Home, Wheat, Cpu, FileCode2 } from 'lucide-react';
+import { LayoutDashboard, Home, Wheat, Cpu, FileCode2, CloudSun } from 'lucide-react';
 
-export type TabKey = 'dashboard' | 'farms' | 'lots' | 'decision-preview' | 'specs';
+export type TabKey = 'dashboard' | 'farms' | 'lots' | 'decision-preview' | 'market-weather' | 'specs';
 
 interface NavigationProps {
   activeTab: TabKey;
@@ -41,6 +41,12 @@ export const Navigation: React.FC<NavigationProps> = ({
       label: 'Profit Decision Engine',
       icon: Cpu,
       badge: 'Active',
+    },
+    {
+      key: 'market-weather' as TabKey,
+      label: 'Market & Weather',
+      icon: CloudSun,
+      badge: 'Live',
     },
     {
       key: 'specs' as TabKey,

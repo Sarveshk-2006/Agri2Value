@@ -164,3 +164,101 @@ export interface DecisionRun {
   options: DecisionOption[];
 }
 
+// ---- Weather Interfaces (Phase 2.6) ----
+
+export interface WeatherObserved {
+  temperature_c: number;
+  apparent_temperature_c: number;
+  relative_humidity_pct: number;
+  precipitation_mm: number;
+  rain_mm: number;
+  wind_speed_kmh: number;
+  weather_code: number;
+  weather_description: string;
+  weather_icon: string;
+  observed_at: string;
+}
+
+export interface DailyForecastItem {
+  date: string;
+  weather_code: number;
+  weather_description: string;
+  weather_icon: string;
+  temp_max_c: number;
+  temp_min_c: number;
+  precipitation_sum_mm: number;
+  max_wind_speed_kmh: number;
+  sunrise?: string;
+  sunset?: string;
+}
+
+export interface FieldWorkAdvisory {
+  status: 'FAVORABLE' | 'CAUTION' | 'UNFAVORABLE' | 'UNKNOWN';
+  headline: string;
+  reasons: string[];
+  disclaimer: string;
+}
+
+export interface WeatherResponse {
+  latitude: number;
+  longitude: number;
+  timezone: string;
+  is_live: boolean;
+  source_type: string;
+  attribution: string;
+  retrieved_at: string;
+  current: WeatherObserved;
+  daily_forecast: DailyForecastItem[];
+  advisory: FieldWorkAdvisory;
+}
+
+// ---- Mandi Interfaces (Phase 2.6) ----
+
+export interface MandiRecord {
+  state: string;
+  district: string;
+  market: string;
+  commodity: string;
+  variety?: string;
+  observation_date: string;
+  retrieval_timestamp: string;
+  min_price: number;
+  max_price: number;
+  modal_price: number;
+  source_unit: string;
+  unit_normalized: boolean;
+  normalized_unit?: string;
+  normalized_modal_price_per_kg?: number;
+  is_live: boolean;
+  source_type: string;
+  data_source: string;
+  is_stale: boolean;
+  staleness_warning?: string;
+}
+
+export interface MandiPricesResponse {
+  records: MandiRecord[];
+  total_records: number;
+  is_live: boolean;
+  data_source: string;
+  retrieved_at: string;
+  disclaimer: string;
+}
+
+export interface MandiQuoteResponse {
+  commodity: string;
+  market_name: string;
+  district: string;
+  state: string;
+  rate_per_kg: number;
+  observation_date: string;
+  retrieval_date: string;
+  source_unit: string;
+  normalized_unit: string;
+  is_live: boolean;
+  source_type: string;
+  data_source: string;
+  is_stale: boolean;
+  staleness_warning?: string;
+}
+

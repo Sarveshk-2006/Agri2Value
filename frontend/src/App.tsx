@@ -6,6 +6,7 @@ import { DashboardView } from './components/DashboardView';
 import { FarmsView } from './components/FarmsView';
 import { HarvestLotsView } from './components/HarvestLotsView';
 import { DecisionEngineView } from './components/DecisionEngineView';
+import { MarketWeatherView } from './components/MarketWeatherView';
 import { SpecsView } from './components/SpecsView';
 import { AuthModal } from './components/AuthModal';
 import { api, DEFAULT_DEMO_USER } from './api';
@@ -160,6 +161,12 @@ export const App: React.FC = () => {
           />
         )}
 
+        {activeTab === 'market-weather' && (
+          <MarketWeatherView
+            onNavigateToDecision={() => setActiveTab('decision-preview')}
+          />
+        )}
+
         {activeTab === 'specs' && <SpecsView />}
       </main>
 
@@ -168,7 +175,7 @@ export const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-slate-400 font-medium">Agri2Value — Feasibility-Aware Profit Engine (Phase 2)</span>
+            <span className="text-slate-400 font-medium">Agri2Value — Feasibility-Aware Profit Engine (Phase 2.6)</span>
             <span>•</span>
             <span>Indradhanu: PCCOE International Grand Challenge 2026</span>
           </div>

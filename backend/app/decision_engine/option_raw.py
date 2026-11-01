@@ -32,6 +32,9 @@ def calculate_raw_mandi_option(
     sorting_loss_pct: Decimal = Decimal("0.02"),            # 2% handling discard
     data_source: str = "APMC Pimpalgaon Daily Benchmark Bulletin (Sample Data)",
     data_timestamp: str = "2026-11-01T08:00:00Z",
+    is_live: bool = False,
+    is_stale: bool = False,
+    staleness_warning: Optional[str] = None,
 ) -> CalculatedOption:
     """Calculate financials and feasibility for Raw Mandi sale."""
     feasibility = evaluate_raw_mandi_feasibility(lot, distance_km=distance_km)
@@ -136,15 +139,16 @@ def calculate_raw_mandi_option(
         effective_realization_per_kg=effective_realization,
         additional_profit_vs_baseline=Decimal("0.00"),  # Mandi is the baseline
         time_to_payment_days=1,
-        risk_level=RiskLevel.MEDIUM,
-        confidence_label="Benchmark Sample (Daily APMC)",
+        risk_level=RiskLevel.HIGH if is_stale else RiskLevel.MEDIUM,
+        confidence_label="Verified Live APMC Rate" if is_live else ("Stale APMC Quote (>7 days)" if is_stale else "Benchmark Sample (Daily APMC)"),
         risks_and_confidence={
             "price_volatility": "High (open auction price fluctuates hourly)",
             "payment_risk": "Low (settled via APMC authorized trader within 24h)",
             "sorting_risk": f"{sorting_loss_pct * 100:.1f}% estimated handling loss",
+            **({"data_staleness_warning": staleness_warning} if is_stale and staleness_warning else {}),
         },
         explanation=explanation,
         data_source=data_source,
         data_timestamp=data_timestamp,
-        is_demo_data=True,
+        is_demo_data=not is_live,
     )

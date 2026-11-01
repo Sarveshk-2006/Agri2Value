@@ -1,4 +1,13 @@
-import type { AuthTokens, CropLot, Farm, User, DecisionRun } from './types';
+import type {
+  AuthTokens,
+  CropLot,
+  Farm,
+  User,
+  DecisionRun,
+  WeatherResponse,
+  MandiPricesResponse,
+  MandiQuoteResponse,
+} from './types';
 
 const API_BASE = '/api/v1';
 
@@ -343,6 +352,47 @@ class ApiService {
       return [];
     }
 
+    return await res.json();
+  }
+
+  // ---- Weather API (Phase 2.6) ----
+
+  async getWeather(lat = 20.0760, lon = 74.0534): Promise<WeatherResponse> {
+    const res = await fetch(`${API_BASE}/weather?latitude=${lat}&longitude=${lon}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to retrieve weather data');
+    }
+    return await res.json();
+  }
+
+  // ---- Mandi API (Phase 2.6) ----
+
+  async getMandiPrices(state = 'Maharashtra', commodity?: string): Promise<MandiPricesResponse> {
+    const url = commodity
+      ? `${API_BASE}/mandi/prices?state=${encodeURIComponent(state)}&commodity=${encodeURIComponent(commodity)}`
+      : `${API_BASE}/mandi/prices?state=${encodeURIComponent(state)}`;
+    const res = await fetch(url, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to retrieve mandi prices');
+    }
+    return await res.json();
+  }
+
+  async getMandiQuote(cropName: string, district = 'Nashik', market?: string): Promise<MandiQuoteResponse> {
+    const url = market
+      ? `${API_BASE}/mandi/quote?crop_name=${encodeURIComponent(cropName)}&district=${encodeURIComponent(district)}&market=${encodeURIComponent(market)}`
+      : `${API_BASE}/mandi/quote?crop_name=${encodeURIComponent(cropName)}&district=${encodeURIComponent(district)}`;
+    const res = await fetch(url, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to retrieve mandi quote');
+    }
     return await res.json();
   }
 

@@ -42,6 +42,12 @@ class Settings(BaseSettings):
     DEMO_OTP_CODE: str = "123456"
     DEMO_MODE: bool = True
 
+    # ---- External Data Integrations (Phase 2.6) ----
+    OPEN_METEO_BASE_URL: str = "https://api.open-meteo.com/v1"
+    DATA_GOV_IN_API_KEY: str = ""
+    DATA_GOV_IN_RESOURCE_ID: str = "9ef84268-d588-465a-a308-a864a43d0070"
+    DATA_GOV_IN_BASE_URL: str = "https://api.data.gov.in/resource"
+
     # ---- CORS ----
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
 

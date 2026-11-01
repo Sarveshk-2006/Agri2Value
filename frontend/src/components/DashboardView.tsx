@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import type { CropLot, Farm, User } from '../types';
 import type { TabKey } from './Navigation';
+import { WeatherSprayWidget } from './WeatherSprayWidget';
 
 interface DashboardViewProps {
   user: User | null;
@@ -126,6 +127,50 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className="text-xs text-emerald-400 mt-1">
             <span>Awaiting Phase 2 Execution</span>
+          </div>
+        </div>
+      </div>
+
+      {/* External Intelligence Strip (Phase 2.6) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <WeatherSprayWidget
+            latitude={primaryFarm?.latitude || 20.0768}
+            longitude={primaryFarm?.longitude || 74.0375}
+            locationName={primaryFarm ? `${primaryFarm.village}, ${primaryFarm.district}` : 'Niphad, Nashik'}
+          />
+        </div>
+
+        {/* Mandi Intelligence Shortcut Card */}
+        <div className="glass-panel rounded-2xl p-5 border border-slate-800/90 shadow-lg flex flex-col justify-between space-y-3">
+          <div>
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <span className="flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                <span>APMC Mandi Benchmark</span>
+              </span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                Pimpalgaon APMC
+              </span>
+            </div>
+
+            <div className="text-2xl font-black text-white font-mono">
+              ₹14.00 <span className="text-xs text-slate-400 font-normal">/kg</span>
+            </div>
+            <p className="text-xs text-slate-300 mt-1">
+              Tomato (Hybrid Abhinav) • Modal Yard Rate. Normalizes ₹1,400/Quintal standard auction rate.
+            </p>
+          </div>
+
+          <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
+            <span className="text-[10px] text-slate-500 font-mono">Data.gov.in / Agmarknet</span>
+            <button
+              onClick={() => onSelectTab('market-weather')}
+              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer"
+            >
+              <span>Explore Mandi Hub</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       </div>
