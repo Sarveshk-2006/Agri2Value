@@ -9,15 +9,12 @@ import {
   Warehouse,
   Factory,
   TrendingUp,
-  ShieldCheck,
   ChevronDown,
   ChevronUp,
   RefreshCw,
   Coins,
-  History,
   X,
-  PlayCircle,
-  UserCheck,
+  UserCheck
 } from 'lucide-react';
 import type { ExecutionRequest, CropLot } from '../types';
 import { api } from '../api';
@@ -154,28 +151,31 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
   };
 
   const getRouteIcon = (route: string) => {
-    if (route.includes('BUYER')) return <UserCheck className="w-4 h-4 text-emerald-400" />;
-    if (route.includes('STORAGE')) return <Warehouse className="w-4 h-4 text-cyan-400" />;
-    if (route.includes('PROCESSING')) return <Factory className="w-4 h-4 text-purple-400" />;
-    return <Truck className="w-4 h-4 text-amber-400" />;
+    if (route.includes('BUYER')) return <UserCheck className="w-5 h-5 text-emerald-600" />;
+    if (route.includes('STORAGE')) return <Warehouse className="w-5 h-5 text-blue-600" />;
+    if (route.includes('PROCESSING')) return <Factory className="w-5 h-5 text-purple-600" />;
+    return <Truck className="w-5 h-5 text-amber-600" />;
   };
 
   return (
     <div className="space-y-6">
+      
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
-              <FileText className="w-6 h-6 text-emerald-400" />
+            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+              <FileText className="w-4 h-4" />
+            </div>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight font-display">
               Smart Execution Tracker
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            <span className="badge-green">
               Traceable Workflow
             </span>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
-            End-to-end lifecycle from profit recommendation to confirmed booking and realized settlement.
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            End-to-end lifecycle from profit recommendation to confirmed booking, in-transit tracking, and realized settlement.
           </p>
         </div>
 
@@ -183,16 +183,16 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
           <button
             onClick={loadRequests}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg border border-slate-700 transition-colors"
+            className="btn-secondary text-xs py-2 px-3"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
+            <span>Refresh</span>
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2 font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
@@ -204,10 +204,10 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
           <button
             key={status}
             onClick={() => setFilterStatus(status)}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
               filterStatus === status
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                : 'bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
             }`}
           >
             {status} ({
@@ -224,22 +224,22 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
 
       {/* Requests List */}
       {loading ? (
-        <div className="py-20 text-center text-slate-400 flex flex-col items-center">
-          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-3" />
+        <div className="py-20 text-center text-slate-400 card">
+          <div className="w-8 h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-sm">Retrieving your execution workflow history...</p>
         </div>
       ) : filteredRequests.length === 0 ? (
-        <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-3">
-          <Clock className="w-10 h-10 text-slate-600 mx-auto" />
-          <h3 className="text-base font-semibold text-slate-200">No execution requests found</h3>
-          <p className="text-xs text-slate-400 max-w-md mx-auto">
+        <div className="p-8 rounded-2xl card text-center space-y-3">
+          <Clock className="w-10 h-10 text-slate-400 mx-auto" />
+          <h3 className="text-base font-bold text-slate-800">No execution requests found</h3>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">
             You haven't initiated any harvest sale or infrastructure bookings yet. Browse verified commercial buyers or reserve cold storage / processing facilities to get started.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             {onNavigateToBuyers && (
               <button
                 onClick={onNavigateToBuyers}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-semibold text-xs rounded-xl shadow-lg transition-colors cursor-pointer"
+                className="btn-primary text-xs"
               >
                 Browse Buyers
               </button>
@@ -247,7 +247,7 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
             {onNavigateToInfra && (
               <button
                 onClick={onNavigateToInfra}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs rounded-xl border border-slate-700 transition-colors cursor-pointer"
+                className="btn-secondary text-xs"
               >
                 Book Infrastructure
               </button>
@@ -264,48 +264,48 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
             return (
               <div
                 key={req.id}
-                className="rounded-2xl bg-slate-900/70 border border-slate-800 overflow-hidden shadow-lg transition-all"
+                className="card overflow-hidden hover:border-slate-300 transition-all"
               >
                 {/* Header Card Summary */}
                 <div
                   onClick={() => setExpandedRequestId(isExpanded ? null : req.id)}
-                  className="p-5 cursor-pointer hover:bg-slate-800/40 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  className="p-5 cursor-pointer hover:bg-slate-50/70 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
-                  <div className="flex items-start sm:items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/60">
+                  <div className="flex items-start sm:items-center gap-3.5">
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                       {getRouteIcon(req.route_type)}
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-slate-100 text-base">
+                        <span className="font-extrabold text-slate-900 text-base">
                           {req.route_type.replace(/_/g, ' ')}
                         </span>
-                        <span className="text-xs font-mono text-slate-400">
+                        <span className="text-xs font-mono font-bold text-slate-400">
                           #{req.id.substring(0, 8)}
                         </span>
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide ${
+                          className={
                             req.status === 'COMPLETED'
-                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                              ? 'badge-green'
                               : req.status === 'CONFIRMED'
-                              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                              ? 'badge-blue'
                               : req.status === 'IN_EXECUTION'
-                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse'
+                              ? 'badge-yellow soft-pulse'
                               : isTerminated
-                              ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                              : 'bg-slate-800 text-slate-300 border border-slate-700'
-                          }`}
+                              ? 'badge-red'
+                              : 'badge-slate'
+                          }
                         >
                           {req.status}
                         </span>
                         {req.data_mode === 'DEMO_SIMULATION' && (
-                          <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                          <span className="badge-yellow text-[9px]">
                             DEMO
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-slate-400 mt-1 flex items-center gap-3 flex-wrap">
-                        <span>Quantity: <strong className="text-slate-200">{req.requested_quantity_kg.toLocaleString()} kg</strong></span>
+                      <div className="text-xs text-slate-500 mt-1 flex items-center gap-3 flex-wrap">
+                        <span>Quantity: <strong className="text-slate-800">{req.requested_quantity_kg.toLocaleString()} kg</strong></span>
                         <span>•</span>
                         <span>Date: {new Date(req.created_at).toLocaleDateString()}</span>
                         <span>•</span>
@@ -316,8 +316,8 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
 
                   <div className="flex items-center justify-between sm:justify-end gap-5">
                     <div className="text-right">
-                      <div className="text-xs text-slate-400">Indicative Net Payout</div>
-                      <div className="text-lg font-bold text-emerald-400">
+                      <div className="label text-[10px] mb-0">Indicative Net Payout</div>
+                      <div className="text-xl font-black font-mono text-emerald-700">
                         ₹{Math.round(req.indicative_net_payout).toLocaleString()}
                       </div>
                     </div>
@@ -333,14 +333,14 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="border-t border-slate-800/80 bg-slate-950/40 p-5 space-y-6">
+                  <div className="border-t border-slate-100 bg-slate-50/50 p-6 space-y-6">
                     {/* Stepper Workflow Progress */}
                     <div>
-                      <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+                      <div className="label text-[10px] mb-3">
                         Execution Stage & Verification State
-                      </h4>
+                      </div>
                       {isTerminated ? (
-                        <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+                        <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2 font-semibold">
                           <AlertCircle className="w-4 h-4 shrink-0" />
                           <span>This request was {req.status.toLowerCase()}. Capacity reservations have been released.</span>
                         </div>
@@ -354,25 +354,25 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
                                 key={step.key}
                                 className={`p-3 rounded-xl border transition-all ${
                                   isCurrent
-                                    ? 'bg-emerald-500/15 border-emerald-500/40 shadow-sm'
+                                    ? 'bg-emerald-50 border-emerald-400 shadow-xs'
                                     : isDone
-                                    ? 'bg-slate-900 border-slate-700/80'
-                                    : 'bg-slate-900/40 border-slate-800 opacity-50'
+                                    ? 'bg-white border-slate-200'
+                                    : 'bg-white/60 border-slate-200/60 opacity-50'
                                 }`}
                               >
                                 <div className="flex items-center gap-1.5 mb-1">
                                   {isDone ? (
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                                   ) : (
-                                    <div className="w-3.5 h-3.5 rounded-full border border-slate-600 flex items-center justify-center text-[9px] text-slate-400">
+                                    <div className="w-4 h-4 rounded-full border border-slate-400 flex items-center justify-center text-[9px] text-slate-600 font-bold">
                                       {idx + 1}
                                     </div>
                                   )}
-                                  <span className={`text-xs font-semibold ${isCurrent ? 'text-emerald-300' : isDone ? 'text-slate-200' : 'text-slate-500'}`}>
+                                  <span className={`text-xs font-bold ${isCurrent ? 'text-emerald-800' : isDone ? 'text-slate-800' : 'text-slate-500'}`}>
                                     {step.label}
                                   </span>
                                 </div>
-                                <p className="text-[10px] text-slate-400 leading-tight">
+                                <p className="text-[10px] text-slate-500 leading-tight">
                                   {step.desc}
                                 </p>
                               </div>
@@ -385,225 +385,148 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
                     {/* Financial Reconciliation (Estimates vs Actual Realized) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Indicative Decision Estimates */}
-                      <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2.5">
-                        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                          <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                            <TrendingUp className="w-3.5 h-3.5 text-blue-400" />
+                      <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2.5">
+                        <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                          <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <TrendingUp className="w-3.5 h-3.5 text-blue-600" />
                             Decision Engine Estimate (Snapshot)
                           </span>
-                          <span className="text-[10px] text-slate-500 font-mono">Immutable</span>
+                          <span className="text-[10px] text-slate-400 font-mono">Immutable</span>
                         </div>
                         <div className="space-y-1.5 text-xs">
-                          <div className="flex justify-between text-slate-400">
+                          <div className="flex justify-between text-slate-600">
                             <span>Indicative Volume</span>
-                            <span className="text-slate-200">{req.requested_quantity_kg.toLocaleString()} kg</span>
+                            <span className="font-bold text-slate-800">{req.requested_quantity_kg.toLocaleString()} kg</span>
                           </div>
-                          <div className="flex justify-between text-slate-400">
+                          <div className="flex justify-between text-slate-600">
                             <span>Indicative Unit Price</span>
-                            <span className="text-slate-200">₹{req.indicative_unit_price}/kg</span>
+                            <span className="font-bold text-slate-800">₹{req.indicative_unit_price}/kg</span>
                           </div>
-                          <div className="flex justify-between text-slate-400">
+                          <div className="flex justify-between text-slate-600">
                             <span>Gross Cargo Value</span>
-                            <span className="text-slate-200">₹{Math.round(req.indicative_total_value).toLocaleString()}</span>
+                            <span className="font-bold text-slate-800">₹{Math.round(req.indicative_total_value).toLocaleString()}</span>
                           </div>
                           {req.indicative_logistics_cost > 0 && (
-                            <div className="flex justify-between text-slate-400">
+                            <div className="flex justify-between text-slate-600">
                               <span>Logistics & Transport</span>
-                              <span className="text-rose-400">-₹{Math.round(req.indicative_logistics_cost).toLocaleString()}</span>
+                              <span className="text-rose-600 font-bold">-₹{Math.round(req.indicative_logistics_cost).toLocaleString()}</span>
                             </div>
                           )}
                           {req.indicative_storage_cost > 0 && (
-                            <div className="flex justify-between text-slate-400">
+                            <div className="flex justify-between text-slate-600">
                               <span>Cold Storage Tariff</span>
-                              <span className="text-rose-400">-₹{Math.round(req.indicative_storage_cost).toLocaleString()}</span>
+                              <span className="text-rose-600 font-bold">-₹{Math.round(req.indicative_storage_cost).toLocaleString()}</span>
                             </div>
                           )}
                           {req.indicative_processing_cost > 0 && (
-                            <div className="flex justify-between text-slate-400">
+                            <div className="flex justify-between text-slate-600">
                               <span>Processing Charge</span>
-                              <span className="text-rose-400">-₹{Math.round(req.indicative_processing_cost).toLocaleString()}</span>
+                              <span className="text-rose-600 font-bold">-₹{Math.round(req.indicative_processing_cost).toLocaleString()}</span>
                             </div>
                           )}
-                          <div className="pt-2 border-t border-slate-800 flex justify-between font-semibold">
-                            <span className="text-slate-200">Estimated Net Payout</span>
-                            <span className="text-emerald-400">₹{Math.round(req.indicative_net_payout).toLocaleString()}</span>
+                          <div className="pt-2 border-t border-slate-100 flex justify-between font-bold">
+                            <span className="text-slate-800">Estimated Net Payout</span>
+                            <span className="text-emerald-700 font-mono">₹{Math.round(req.indicative_net_payout).toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Actual Realized Settlement */}
-                      <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2.5">
-                        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                          <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                            <Coins className="w-3.5 h-3.5 text-amber-400" />
+                      <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2.5">
+                        <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                          <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <Coins className="w-3.5 h-3.5 text-amber-500" />
                             Actual Realized Outcome
                           </span>
-                          <span className={`text-[10px] px-1.5 py-0.2 rounded font-medium ${req.status === 'COMPLETED' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-400'}`}>
-                            {req.status === 'COMPLETED' ? 'Settled' : 'Pending Completion'}
+                          <span className={req.status === 'COMPLETED' ? 'badge-green text-[10px]' : 'badge-slate text-[10px]'}>
+                            {req.status === 'COMPLETED' ? 'Settled' : 'Pending Settlement'}
                           </span>
                         </div>
                         {req.status === 'COMPLETED' && req.actual_net_payout !== undefined ? (
                           <div className="space-y-1.5 text-xs">
-                            <div className="flex justify-between text-slate-400">
+                            <div className="flex justify-between text-slate-600">
                               <span>Weighbridge Verified Qty</span>
-                              <span className="text-slate-200 font-semibold">{req.actual_quantity_kg?.toLocaleString()} kg</span>
+                              <span className="text-slate-800 font-bold">{req.actual_quantity_kg?.toLocaleString()} kg</span>
                             </div>
-                            <div className="flex justify-between text-slate-400">
-                              <span>Settled Unit Price</span>
-                              <span className="text-slate-200 font-semibold">₹{req.actual_unit_price}/kg</span>
+                            <div className="flex justify-between text-slate-600">
+                              <span>Settlement Rate</span>
+                              <span className="text-slate-800 font-bold">₹{req.actual_unit_price}/kg</span>
                             </div>
-                            <div className="flex justify-between text-slate-400">
-                              <span>Realized Gross Revenue</span>
-                              <span className="text-slate-200">₹{Math.round(req.actual_gross_revenue || 0).toLocaleString()}</span>
+                            <div className="flex justify-between text-slate-600">
+                              <span>Actual Realized Gross</span>
+                              <span className="text-slate-800 font-bold">₹{Math.round(req.actual_gross_revenue || 0).toLocaleString()}</span>
                             </div>
-                            {(req.actual_logistics_cost || 0) > 0 && (
-                              <div className="flex justify-between text-slate-400">
+                            {req.actual_logistics_cost ? (
+                              <div className="flex justify-between text-slate-600">
                                 <span>Actual Transport Cost</span>
-                                <span className="text-rose-400">-₹{Math.round(req.actual_logistics_cost || 0).toLocaleString()}</span>
+                                <span className="text-rose-600 font-bold">-₹{Math.round(req.actual_logistics_cost).toLocaleString()}</span>
                               </div>
-                            )}
-                            {(req.actual_storage_cost || 0) > 0 && (
-                              <div className="flex justify-between text-slate-400">
-                                <span>Actual Storage Cost</span>
-                                <span className="text-rose-400">-₹{Math.round(req.actual_storage_cost || 0).toLocaleString()}</span>
-                              </div>
-                            )}
-                            {(req.actual_processing_cost || 0) > 0 && (
-                              <div className="flex justify-between text-slate-400">
-                                <span>Actual Processing Fee</span>
-                                <span className="text-rose-400">-₹{Math.round(req.actual_processing_cost || 0).toLocaleString()}</span>
-                              </div>
-                            )}
-                            <div className="pt-2 border-t border-slate-800 flex justify-between font-bold">
-                              <span className="text-slate-200">Realized Farmer Payout</span>
-                              <span className="text-emerald-400 text-sm">₹{Math.round(req.actual_net_payout).toLocaleString()}</span>
+                            ) : null}
+                            <div className="pt-2 border-t border-slate-100 flex justify-between font-extrabold text-sm">
+                              <span className="text-slate-900">Realized Farmer Payout</span>
+                              <span className="text-emerald-700 font-mono">₹{Math.round(req.actual_net_payout).toLocaleString()}</span>
                             </div>
-                            {req.completion_notes && (
-                              <p className="text-[11px] text-slate-400 italic pt-1">
-                                Note: {req.completion_notes}
-                              </p>
-                            )}
                           </div>
                         ) : (
-                          <div className="py-6 text-center text-xs text-slate-500">
-                            Realized receipts and weighbridge quantities will be recorded upon completion.
+                          <div className="py-6 text-center text-slate-400 space-y-1">
+                            <p className="text-xs">Financial settlement pending execution completion.</p>
+                            <span className="text-[11px] text-slate-500">Values update upon delivery & weighbridge verification.</span>
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* Timeline & Audit Events */}
-                    <div>
-                      <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <History className="w-3.5 h-3.5 text-slate-400" />
-                        Audit Trail & Timestamped Events ({req.events?.length || 0})
-                      </h4>
-                      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                        {req.events && req.events.length > 0 ? (
-                          req.events.map(ev => (
-                            <div
-                              key={ev.id}
-                              className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs flex items-start justify-between gap-3"
-                            >
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-semibold text-slate-200">
-                                    {ev.to_status}
-                                  </span>
-                                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">
-                                    {ev.actor_role}
-                                  </span>
-                                </div>
-                                <p className="text-slate-400 mt-0.5">{ev.message}</p>
-                              </div>
-                              <span className="text-[10px] text-slate-500 shrink-0 whitespace-nowrap">
-                                {new Date(ev.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                              </span>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-xs text-slate-500 italic">No events logged yet.</div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Action Controls */}
-                    <div className="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
-                      <div className="text-[11px] text-slate-500">
-                        {req.data_mode === 'DEMO_SIMULATION' && (
-                          <span>Demo mode allows you to simulate each step in the commercial execution lifecycle.</span>
-                        )}
-                      </div>
-
+                    {/* Operational Action Controls */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200">
                       <div className="flex items-center gap-2">
                         {req.status === 'SUBMITTED' && (
-                          <>
-                            <button
-                              onClick={() => handleCancelRequest(req)}
-                              disabled={actionLoading === req.id}
-                              className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs rounded-lg border border-rose-500/30 transition-colors"
-                            >
-                              Cancel Request
-                            </button>
-                            <button
-                              onClick={() => handleAdvanceStatus(req, 'PROVIDER_ACCEPTED')}
-                              disabled={actionLoading === req.id}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow transition-colors"
-                            >
-                              <PlayCircle className="w-3.5 h-3.5" />
-                              Simulate: Accept Request
-                            </button>
-                          </>
+                          <button
+                            onClick={() => handleAdvanceStatus(req, 'PROVIDER_ACCEPTED')}
+                            disabled={actionLoading === req.id}
+                            className="btn-primary text-xs py-1.5 px-3"
+                          >
+                            <span>Accept Terms (Provider)</span>
+                          </button>
                         )}
-
                         {req.status === 'PROVIDER_ACCEPTED' && (
-                          <>
-                            <button
-                              onClick={() => handleCancelRequest(req)}
-                              disabled={actionLoading === req.id}
-                              className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs rounded-lg border border-rose-500/30 transition-colors"
-                            >
-                              Decline & Cancel
-                            </button>
-                            <button
-                              onClick={() => handleAdvanceStatus(req, 'CONFIRMED')}
-                              disabled={actionLoading === req.id}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold rounded-lg shadow transition-colors"
-                            >
-                              <ShieldCheck className="w-3.5 h-3.5" />
-                              Confirm & Reserve Capacity
-                            </button>
-                          </>
+                          <button
+                            onClick={() => handleAdvanceStatus(req, 'CONFIRMED')}
+                            disabled={actionLoading === req.id}
+                            className="btn-primary text-xs py-1.5 px-3"
+                          >
+                            <span>Confirm & Lock Capacity</span>
+                          </button>
                         )}
-
                         {req.status === 'CONFIRMED' && (
                           <button
                             onClick={() => handleAdvanceStatus(req, 'IN_EXECUTION')}
                             disabled={actionLoading === req.id}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-slate-950 text-xs font-bold rounded-lg shadow transition-colors"
+                            className="btn-primary text-xs py-1.5 px-3"
                           >
-                            <Truck className="w-3.5 h-3.5" />
-                            Dispatch / Start Transit
+                            <span>Mark In Execution / Transit</span>
                           </button>
                         )}
-
                         {req.status === 'IN_EXECUTION' && (
                           <button
                             onClick={() => handleOpenCompleteModal(req)}
                             disabled={actionLoading === req.id}
-                            className="flex items-center gap-1.5 px-4 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-lg shadow transition-colors"
+                            className="btn-primary text-xs py-1.5 px-3"
                           >
                             <Coins className="w-3.5 h-3.5" />
-                            Record Completion Settlement
+                            <span>Complete & Settle Financials</span>
                           </button>
                         )}
-
-                        {req.status === 'COMPLETED' && (
-                          <span className="text-xs text-emerald-400 font-medium flex items-center gap-1">
-                            <CheckCircle2 className="w-4 h-4" /> Order Fulfilled & Closed
-                          </span>
-                        )}
                       </div>
+
+                      {!isTerminated && req.status !== 'COMPLETED' && (
+                        <button
+                          onClick={() => handleCancelRequest(req)}
+                          disabled={actionLoading === req.id}
+                          className="text-xs text-rose-600 hover:text-rose-800 font-bold cursor-pointer"
+                        >
+                          Cancel Request
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
@@ -613,128 +536,114 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
         </div>
       )}
 
-      {/* Completion Modal */}
+      {/* Complete & Settle Financials Modal */}
       {completingRequest && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <Coins className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-base font-bold text-slate-100">
-                  Record Settlement & Actuals
-                </h3>
-              </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="text-base font-extrabold text-slate-900">
+                Complete & Settle Execution Request
+              </h3>
               <button
                 onClick={() => setCompletingRequest(null)}
-                className="text-slate-400 hover:text-slate-200"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-400">
-              Record final weighbridge numbers and realized deductions. Note: This updates the execution record only; the original Profit Engine recommendation snapshot remains permanently immutable.
-            </p>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="block text-slate-300 font-medium mb-1">
-                  Weighbridge Quantity (kg)
-                </label>
-                <input
-                  type="number"
-                  value={actualQty}
-                  onChange={e => setActualQty(Number(e.target.value))}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-300 font-medium mb-1">
-                  Settled Unit Price (₹/kg)
-                </label>
-                <input
-                  type="number"
-                  value={actualPrice}
-                  onChange={e => setActualPrice(Number(e.target.value))}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 text-sm focus:outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
+            <div className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">Transport (₹)</label>
+                  <label className="label">Actual Delivered Quantity (kg):</label>
+                  <input
+                    type="number"
+                    value={actualQty}
+                    onChange={(e) => setActualQty(Number(e.target.value))}
+                    className="input-field font-mono font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="label">Settled Unit Price (₹/kg):</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={actualPrice}
+                    onChange={(e) => setActualPrice(Number(e.target.value))}
+                    className="input-field font-mono font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="label">Transport Cost (₹):</label>
                   <input
                     type="number"
                     value={actualLogistics}
-                    onChange={e => setActualLogistics(Number(e.target.value))}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs"
+                    onChange={(e) => setActualLogistics(Number(e.target.value))}
+                    className="input-field font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">Storage (₹)</label>
+                  <label className="label">Storage Cost (₹):</label>
                   <input
                     type="number"
                     value={actualStorage}
-                    onChange={e => setActualStorage(Number(e.target.value))}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs"
+                    onChange={(e) => setActualStorage(Number(e.target.value))}
+                    className="input-field font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">Processing (₹)</label>
+                  <label className="label">Processing Cost (₹):</label>
                   <input
                     type="number"
                     value={actualProcessing}
-                    onChange={e => setActualProcessing(Number(e.target.value))}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 text-xs"
+                    onChange={(e) => setActualProcessing(Number(e.target.value))}
+                    className="input-field font-mono"
                   />
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
-                <span className="text-slate-300 font-semibold">Calculated Net Payout:</span>
-                <span className="text-base font-bold text-emerald-400">
-                  ₹{Math.round(actualQty * actualPrice - actualLogistics - actualStorage - actualProcessing).toLocaleString()}
+              <div>
+                <label className="label">Completion Verification Notes:</label>
+                <textarea
+                  rows={2}
+                  value={completionNotes}
+                  onChange={(e) => setCompletionNotes(e.target.value)}
+                  className="input-field resize-none text-xs"
+                />
+              </div>
+
+              {/* Calculated Net Realized Preview */}
+              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+                <span className="text-emerald-800 font-bold">Calculated Net Farmer Payout:</span>
+                <span className="font-mono font-black text-emerald-900 text-base">
+                  ₹{(actualQty * actualPrice - actualLogistics - actualStorage - actualProcessing).toLocaleString()}
                 </span>
               </div>
 
-              <div>
-                <label className="block text-slate-300 font-medium mb-1">
-                  Completion Notes / Weighment Slip Ref
-                </label>
-                <textarea
-                  value={completionNotes}
-                  onChange={e => setCompletionNotes(e.target.value)}
-                  rows={2}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
-                  placeholder="e.g. Weighbridge slip #WB-88192 from Pimpalgaon Yard"
-                />
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setCompletingRequest(null)}
+                  className="btn-secondary text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmitComplete}
+                  className="btn-primary text-xs"
+                >
+                  Confirm Settlement
+                </button>
               </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
-              <button
-                onClick={() => setCompletingRequest(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitComplete}
-                disabled={actionLoading === completingRequest.id}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold rounded-xl shadow-lg transition-colors flex items-center gap-1.5"
-              >
-                {actionLoading === completingRequest.id ? (
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                )}
-                Confirm Settlement
-              </button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };

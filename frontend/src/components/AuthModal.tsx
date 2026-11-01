@@ -1,6 +1,6 @@
 // frontend/src/components/AuthModal.tsx
 import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Smartphone, KeyRound, AlertTriangle, ArrowRight } from 'lucide-react';
+import { UserCheck, Smartphone, KeyRound, AlertTriangle, ArrowRight, Sprout } from 'lucide-react';
 import { api } from '../api';
 import type { User } from '../types';
 
@@ -43,56 +43,56 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-      <div className="w-full max-w-md rounded-2xl glass-panel p-6 sm:p-8 border border-slate-700/60 shadow-2xl shadow-emerald-950/40 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 sm:p-8 border border-slate-200 shadow-2xl relative space-y-5">
         
         {/* Header */}
-        <div className="text-center mb-6">
-          <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-            <ShieldCheck className="w-6 h-6" />
+        <div className="text-center">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-xs border border-emerald-100">
+            <Sprout className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Farmer Sign In</h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Agri2Value Phase 1 Demonstration Environment
+          <h2 className="text-xl font-extrabold text-slate-900 tracking-tight font-display">Farmer Sign In</h2>
+          <p className="text-xs text-slate-500 mt-1">
+            Agri2Value (कृषि-मूल्य) • Indradhanu Grand Challenge 2026
           </p>
         </div>
 
         {/* Demo Warning Banner */}
-        <div className="mb-6 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-2.5">
-          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-          <div className="text-[11px] text-amber-300 leading-relaxed">
-            <span className="font-semibold">Demo Authentication Notice:</span> No real SMS is sent. Use demo OTP code <strong className="font-mono text-white bg-amber-400/20 px-1 py-0.5 rounded">123456</strong> for any phone number.
+        <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-2.5">
+          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="text-[11px] text-amber-900 leading-relaxed font-medium">
+            <span className="font-bold">Demonstration Authentication:</span> No real SMS required. Use demo OTP code <strong className="font-mono text-amber-950 bg-amber-200/60 px-1 py-0.5 rounded">123456</strong> for any 10-digit number.
           </div>
         </div>
 
         {/* Quick Pilot Selector */}
-        <div className="mb-6">
+        <div>
           <button
             type="button"
             onClick={setPilotPersona}
-            className="w-full p-3 rounded-xl bg-slate-900 hover:bg-slate-800/80 border border-slate-700/80 hover:border-emerald-500/40 text-left transition-all duration-150 flex items-center justify-between group cursor-pointer"
+            className="w-full p-3 rounded-xl bg-emerald-50/60 hover:bg-emerald-50 border border-emerald-200 text-left transition-all duration-150 flex items-center justify-between group cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300 font-bold text-sm">
+              <div className="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-extrabold text-sm shadow-xs">
                 RP
               </div>
               <div>
-                <div className="text-xs font-semibold text-slate-200 group-hover:text-emerald-300 transition-colors">
+                <div className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
                   Ramesh Patil (Pilot Tomato Farmer)
                 </div>
-                <div className="text-[11px] text-slate-400">
+                <div className="text-[11px] text-slate-500 font-medium">
                   Niphad, Nashik • 3.5 Acres • 4,000 kg Lot
                 </div>
               </div>
             </div>
-            <UserCheck className="w-4 h-4 text-emerald-400" />
+            <UserCheck className="w-4 h-4 text-emerald-600" />
           </button>
         </div>
 
         {/* Form */}
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
+            <label className="label">
               Farmer Full Name
             </label>
             <input
@@ -100,51 +100,51 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onSuccess }) => {
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm text-slate-100 placeholder-slate-500 transition-colors"
+              className="input-field"
               placeholder="e.g. Ramesh Patil"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
+            <label className="label flex items-center justify-between">
               <span>Mobile Phone Number</span>
-              <span className="text-[10px] text-slate-400">10-digit Indian Number</span>
+              <span className="text-[10px] text-slate-400 font-normal">10-digit Indian Number</span>
             </label>
             <div className="relative">
-              <Smartphone className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+              <Smartphone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
                 type="tel"
                 required
                 maxLength={10}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm font-mono text-slate-100 placeholder-slate-500 transition-colors"
+                className="input-field pl-10 font-mono font-bold"
                 placeholder="9876543210"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
+            <label className="label flex items-center justify-between">
               <span>Demo OTP Code</span>
-              <span className="text-[10px] text-emerald-400 font-mono">Default: 123456</span>
+              <span className="text-[10px] text-emerald-700 font-bold font-mono">Default: 123456</span>
             </label>
             <div className="relative">
-              <KeyRound className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+              <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
                 type="text"
                 required
                 maxLength={6}
                 value={demoCode}
                 onChange={(e) => setDemoCode(e.target.value)}
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm font-mono tracking-widest text-slate-100 placeholder-slate-500 transition-colors"
+                className="input-field pl-10 font-mono tracking-widest font-extrabold"
                 placeholder="123456"
               />
             </div>
           </div>
 
           {error && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-xs text-red-400">
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-semibold">
               {error}
             </div>
           )}
@@ -152,7 +152,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onSuccess }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-semibold text-sm transition-all duration-150 shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full btn-primary py-3"
           >
             {loading ? (
               <span>Authenticating...</span>

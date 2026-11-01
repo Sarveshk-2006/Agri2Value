@@ -1,7 +1,7 @@
 // frontend/src/App.tsx
 import React, { useEffect, useState } from 'react';
 import { Header } from './components/Header';
-import { Navigation, type TabKey } from './components/Navigation';
+import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './components/DashboardView';
 import { FarmsView } from './components/FarmsView';
 import { HarvestLotsView } from './components/HarvestLotsView';
@@ -11,10 +11,11 @@ import { BuyersView } from './components/BuyersView';
 import { InfrastructureView } from './components/InfrastructureView';
 import { ExecutionRequestsView } from './components/ExecutionRequestsView';
 import { CropRescueView } from './components/CropRescueView';
+import { IoTMonitoringView } from './components/IoTMonitoringView';
 import { SpecsView } from './components/SpecsView';
 import { AuthModal } from './components/AuthModal';
 import { api, DEFAULT_DEMO_USER } from './api';
-import type { CropLot, Farm, User } from './types';
+import type { CropLot, Farm, User, TabKey } from './types';
 import { RotateCcw, CheckCircle2 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -93,17 +94,17 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-600 selection:text-white">
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-500 text-slate-950 font-semibold text-xs sm:text-sm shadow-2xl shadow-emerald-950/80 animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-emerald-600/30">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header */}
+      {/* Top Header */}
       <Header
         user={user}
         backendOnline={backendOnline}
@@ -111,125 +112,135 @@ export const App: React.FC = () => {
         onOpenInfo={() => setActiveTab('specs')}
       />
 
-      {/* Navigation */}
-      <Navigation
-        activeTab={activeTab}
-        onSelectTab={setActiveTab}
-        farmCount={farms.length}
-        lotCount={cropLots.length}
-      />
+      {/* Main Layout with Sidebar */}
+      <div className="flex-1 flex w-full">
+        <Sidebar
+          activeTab={activeTab}
+          onSelectTab={setActiveTab}
+          farmCount={farms.length}
+          lotCount={cropLots.length}
+          urgentRescueCount={1}
+        />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {activeTab === 'dashboard' && (
-          <DashboardView
-            user={user}
-            farms={farms}
-            cropLots={cropLots}
-            onSelectTab={setActiveTab}
-            onOpenCreateLot={() => setIsCreateLotOpen(true)}
-            onOpenCreateFarm={() => setIsCreateFarmOpen(true)}
-          />
-        )}
+        {/* Content Area */}
+        <main className="flex-1 min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-20 md:pb-8">
+          {activeTab === 'dashboard' && (
+            <DashboardView
+              user={user}
+              farms={farms}
+              cropLots={cropLots}
+              onSelectTab={setActiveTab}
+              onOpenCreateLot={() => setIsCreateLotOpen(true)}
+              onOpenCreateFarm={() => setIsCreateFarmOpen(true)}
+            />
+          )}
 
-        {activeTab === 'farms' && (
-          <FarmsView
-            farms={farms}
-            onCreateFarm={handleCreateFarm}
-            isOpenCreateModal={isCreateFarmOpen}
-            onCloseCreateModal={() => setIsCreateFarmOpen(false)}
-            onOpenCreateModal={() => setIsCreateFarmOpen(true)}
-          />
-        )}
+          {activeTab === 'farms' && (
+            <FarmsView
+              farms={farms}
+              onCreateFarm={handleCreateFarm}
+              isOpenCreateModal={isCreateFarmOpen}
+              onCloseCreateModal={() => setIsCreateFarmOpen(false)}
+              onOpenCreateModal={() => setIsCreateFarmOpen(true)}
+            />
+          )}
 
-        {activeTab === 'lots' && (
-          <HarvestLotsView
-            cropLots={cropLots}
-            farms={farms}
-            onCreateLot={handleCreateLot}
-            isOpenCreateModal={isCreateLotOpen}
-            onCloseCreateModal={() => setIsCreateLotOpen(false)}
-            onOpenCreateModal={() => setIsCreateLotOpen(true)}
-            onNavigateToDecision={(lotId) => {
-              if (lotId) setSelectedLotIdForDecision(lotId);
-              setActiveTab('decision-preview');
-            }}
-            onNavigateToRescue={(lotId) => {
-              if (lotId) setSelectedLotIdForDecision(lotId);
-              setActiveTab('rescue');
-            }}
-          />
-        )}
+          {activeTab === 'lots' && (
+            <HarvestLotsView
+              cropLots={cropLots}
+              farms={farms}
+              onCreateLot={handleCreateLot}
+              isOpenCreateModal={isCreateLotOpen}
+              onCloseCreateModal={() => setIsCreateLotOpen(false)}
+              onOpenCreateModal={() => setIsCreateLotOpen(true)}
+              onNavigateToDecision={(lotId) => {
+                if (lotId) setSelectedLotIdForDecision(lotId);
+                setActiveTab('decision-preview');
+              }}
+              onNavigateToRescue={(lotId) => {
+                if (lotId) setSelectedLotIdForDecision(lotId);
+                setActiveTab('rescue');
+              }}
+            />
+          )}
 
-        {activeTab === 'decision-preview' && (
-          <DecisionEngineView
-            lots={cropLots}
-            selectedLotId={selectedLotIdForDecision}
-            onLotSelect={setSelectedLotIdForDecision}
-            onNavigateToExecution={() => setActiveTab('execution')}
-          />
-        )}
+          {activeTab === 'decision-preview' && (
+            <DecisionEngineView
+              lots={cropLots}
+              selectedLotId={selectedLotIdForDecision}
+              onLotSelect={setSelectedLotIdForDecision}
+              onNavigateToExecution={() => setActiveTab('execution')}
+            />
+          )}
 
-        {activeTab === 'rescue' && (
-          <CropRescueView
-            cropLots={cropLots}
-            selectedLotId={selectedLotIdForDecision}
-            onLotSelect={setSelectedLotIdForDecision}
-            onNavigateToExecution={() => setActiveTab('execution')}
-          />
-        )}
+          {activeTab === 'rescue' && (
+            <CropRescueView
+              cropLots={cropLots}
+              selectedLotId={selectedLotIdForDecision}
+              onLotSelect={setSelectedLotIdForDecision}
+              onNavigateToExecution={() => setActiveTab('execution')}
+            />
+          )}
 
-        {activeTab === 'buyers' && (
-          <BuyersView
-            cropLots={cropLots}
-            onNavigateToExecution={() => setActiveTab('execution')}
-          />
-        )}
+          {activeTab === 'buyers' && (
+            <BuyersView
+              cropLots={cropLots}
+              onNavigateToExecution={() => setActiveTab('execution')}
+            />
+          )}
 
-        {activeTab === 'infrastructure' && (
-          <InfrastructureView
-            cropLots={cropLots}
-            onNavigateToExecution={() => setActiveTab('execution')}
-          />
-        )}
+          {activeTab === 'infrastructure' && (
+            <InfrastructureView
+              cropLots={cropLots}
+              onNavigateToExecution={() => setActiveTab('execution')}
+            />
+          )}
 
-        {activeTab === 'execution' && (
-          <ExecutionRequestsView
-            cropLots={cropLots}
-            onNavigateToBuyers={() => setActiveTab('buyers')}
-            onNavigateToInfra={() => setActiveTab('infrastructure')}
-          />
-        )}
+          {activeTab === 'execution' && (
+            <ExecutionRequestsView
+              cropLots={cropLots}
+              onNavigateToBuyers={() => setActiveTab('buyers')}
+              onNavigateToInfra={() => setActiveTab('infrastructure')}
+            />
+          )}
 
-        {activeTab === 'market-weather' && (
-          <MarketWeatherView
-            onNavigateToDecision={() => setActiveTab('decision-preview')}
-          />
-        )}
+          {activeTab === 'market-weather' && (
+            <MarketWeatherView
+              onNavigateToDecision={() => setActiveTab('decision-preview')}
+            />
+          )}
 
-        {activeTab === 'specs' && <SpecsView />}
-      </main>
+          {activeTab === 'iot-monitoring' && (
+            <IoTMonitoringView
+              farms={farms}
+              onNavigateToRescue={() => setActiveTab('rescue')}
+            />
+          )}
+
+          {activeTab === 'specs' && <SpecsView />}
+        </main>
+      </div>
 
       {/* Footer / Demo Control Bar */}
-      <footer className="border-t border-slate-900 bg-slate-950/90 py-4 text-xs text-slate-500">
+      <footer className="border-t border-slate-200 bg-white py-4 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-slate-400 font-medium">Agri2Value — Smart Execution Network & Rescue (Phase 3)</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-slate-700 font-bold">Agri2Value (कृषि-मूल्य) — Smart Farm-to-Profit Execution Platform</span>
             <span>•</span>
-            <span>Indradhanu: PCCOE International Grand Challenge 2026</span>
+            <span className="text-slate-500">Indradhanu: PCCOE International Grand Challenge 2026</span>
           </div>
 
           <div className="flex items-center gap-4">
             <button
               onClick={handleResetDemoData}
-              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-400 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-amber-600 transition-colors cursor-pointer font-semibold"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset Demo Seed</span>
             </button>
             <span>•</span>
-            <span className="font-mono text-[11px] text-slate-600">v0.1.0-alpha</span>
+            <span className="font-mono text-[11px] text-slate-400">v1.0.0-competition</span>
           </div>
         </div>
       </footer>

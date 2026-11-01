@@ -439,4 +439,45 @@ export interface CropRescueAssessment {
   disclaimer: string;
 }
 
+export type TabKey =
+  | 'dashboard'
+  | 'farms'
+  | 'lots'
+  | 'decision-preview'
+  | 'rescue'
+  | 'buyers'
+  | 'infrastructure'
+  | 'execution'
+  | 'market-weather'
+  | 'iot-monitoring'
+  | 'specs';
+
+export interface IoTTelemetrySample {
+  reading_id: string;
+  sensor_type: 'SOIL_MOISTURE' | 'AIR_TEMP' | 'HUMIDITY' | 'RAINFALL' | 'BATTERY_VOLTAGE' | 'SOLAR_LUX';
+  value: number;
+  unit: string;
+  device_timestamp: string;
+  server_ingested_at: string;
+  source_type: 'SIMULATED' | 'PHYSICAL';
+  quality_flag: string;
+}
+
+export interface IoTDevicePreview {
+  id: string;
+  device_code: string;
+  device_name: string;
+  farm_name: string;
+  device_type: string;
+  firmware_version: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'REVOKED';
+  data_source: 'SIMULATED' | 'PHYSICAL';
+  last_seen_at?: string;
+  moisture_pct?: number;
+  temperature_c?: number;
+  humidity_pct?: number;
+  rainfall_mm?: number;
+  battery_v?: number;
+}
+
 

@@ -10,7 +10,9 @@ import {
   CheckCircle2, 
   Sparkles,
   ArrowRight,
-  Database
+  Database,
+  Flame,
+  Activity
 } from 'lucide-react';
 import type { CropLot, Farm, User } from '../types';
 import type { TabKey } from './Navigation';
@@ -42,59 +44,62 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="space-y-6">
       
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-2xl glass-panel p-6 sm:p-8 border border-emerald-500/20 shadow-xl">
-        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Hero Welcome Banner (JSPM Winners Inspired) */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 via-green-600 to-teal-700 text-white p-6 sm:p-8 shadow-sm">
+        {/* Subtle decorative circles */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute bottom-0 right-24 -mb-12 w-48 h-48 bg-emerald-400/20 rounded-full blur-xl pointer-events-none" />
         
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Phase 3 Smart Execution Network Active</span>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/20 text-white text-xs font-bold backdrop-blur-xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-200" />
+              <span>Smart Execution Network Active • Competition-Ready</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Welcome, {user?.full_name || 'Farmer'}
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-display">
+              Namaste, {user?.full_name?.split(' ')[0] || 'Ramesh'}! 🌾
             </h1>
-            <p className="text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
-              Your farm profiles, real-time market/weather feeds, and execution network are connected. Turn Profit Engine recommendations into confirmed buyer contracts, cold storage bookings, and transport execution.
+            <p className="text-sm text-emerald-50 max-w-2xl leading-relaxed">
+              Your farm profiles, real-time APMC Mandi feeds, Open-Meteo microclimate, and Smart Execution Network are synchronized. Maximize your harvest profit through feasibility-checked routes.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              onClick={onOpenCreateLot}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-950/60 transition-all cursor-pointer"
+              onClick={() => onSelectTab('decision-preview')}
+              className="px-5 py-2.5 rounded-xl bg-white text-emerald-800 hover:bg-emerald-50 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm hover:shadow-md transition-all cursor-pointer active:scale-98"
             >
-              <PlusCircle className="w-4 h-4" />
-              <span>Register Harvest</span>
+              <Sparkles className="w-4 h-4 text-emerald-600" />
+              <span>Run Profit Engine</span>
+              <ArrowRight className="w-4 h-4 text-emerald-600" />
             </button>
             <button
-              onClick={() => onSelectTab('decision-preview')}
-              className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer"
+              onClick={onOpenCreateLot}
+              className="px-4 py-2.5 rounded-xl bg-emerald-800/60 hover:bg-emerald-800/90 text-white border border-white/20 font-semibold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer"
             >
-              <span>Explore Engine</span>
-              <ArrowRight className="w-4 h-4 text-emerald-400" />
+              <PlusCircle className="w-4 h-4" />
+              <span>Register Lot</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Prominent Crop Rescue Alert Banner */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-rose-950/60 via-slate-900 to-amber-950/40 border border-rose-500/40 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-rose-50 via-amber-50 to-orange-50 border border-rose-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start sm:items-center gap-3.5">
-          <div className="p-2.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 shrink-0 animate-pulse">
-            <span className="text-xl">🚨</span>
+          <div className="p-2.5 rounded-xl bg-rose-600 text-white shadow-xs shrink-0">
+            <Flame className="w-5 h-5 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-slate-100">
+              <span className="text-sm font-extrabold text-slate-900">
                 Crop Rescue Alert: Perishable Harvest Protection Active
               </span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500 text-slate-950">
-                HOT
+              <span className="px-2 py-0.5 rounded text-[10px] font-black bg-rose-600 text-white tracking-wide">
+                HIGH URGENCY
               </span>
             </div>
-            <p className="text-xs text-slate-300 mt-0.5">
+            <p className="text-xs text-slate-600 mt-0.5">
               Rapid salvage pathways available for Tomato lots facing shelf-life expiry or APMC Mandi gluts. Direct factory processing and cold room buffering ready.
             </p>
           </div>
@@ -102,66 +107,81 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         <button
           onClick={() => onSelectTab('rescue')}
-          className="px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-950/60 transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+          className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0 cursor-pointer active:scale-98"
         >
           <span>Launch Crop Rescue</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards (JSPM Winners Inspired Grid) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div className="glass-card rounded-xl p-5 border border-slate-800">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-medium uppercase tracking-wider">Registered Farms</span>
-            <Layers className="w-4 h-4 text-emerald-400" />
+        {/* Metric 1 */}
+        <div className="card p-5 flex items-center justify-between">
+          <div>
+            <span className="label">Registered Farms</span>
+            <div className="text-2xl font-black text-slate-900 mt-1">{farms.length}</div>
+            <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+              <span>{totalAcres.toFixed(1)} Acres</span>
+              {primaryFarm && <span>• {primaryFarm.district}</span>}
+            </div>
           </div>
-          <div className="text-2xl font-bold text-white">{farms.length}</div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
-            <span>{totalAcres.toFixed(1)} Acres total</span>
-            {primaryFarm && <span>• {primaryFarm.district}</span>}
-          </div>
-        </div>
-
-        <div className="glass-card rounded-xl p-5 border border-slate-800">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-medium uppercase tracking-wider">Harvest Lots</span>
-            <Wheat className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="text-2xl font-bold text-white">{cropLots.length}</div>
-          <div className="text-xs text-slate-400 mt-1">
-            <span>{totalKg.toLocaleString()} kg normalized weight</span>
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+            <Layers className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-card rounded-xl p-5 border border-slate-800">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-medium uppercase tracking-wider">Pilot Scenario</span>
-            <Database className="w-4 h-4 text-amber-400" />
+        {/* Metric 2 */}
+        <div className="card p-5 flex items-center justify-between">
+          <div>
+            <span className="label">Harvest Lots</span>
+            <div className="text-2xl font-black text-slate-900 mt-1">{cropLots.length}</div>
+            <div className="text-xs text-slate-500 mt-1">
+              <span>{totalKg.toLocaleString()} kg normalized</span>
+            </div>
           </div>
-          <div className="text-2xl font-bold text-emerald-400">Tomato</div>
-          <div className="text-xs text-slate-400 mt-1">
-            <span>Abhinav (Grade A) • Niphad, Nashik</span>
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
+            <Wheat className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-card rounded-xl p-5 border border-slate-800">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-medium uppercase tracking-wider">Engine Status</span>
-            <TrendingUp className="w-4 h-4 text-teal-400" />
+        {/* Metric 3 */}
+        <div className="card p-5 flex items-center justify-between">
+          <div>
+            <span className="label">APMC Benchmark</span>
+            <div className="text-2xl font-black text-slate-900 mt-1 font-mono">
+              ₹14.00 <span className="text-xs font-normal text-slate-500">/kg</span>
+            </div>
+            <div className="text-xs text-emerald-600 font-semibold mt-1">
+              <span>Tomato (Pimpalgaon APMC)</span>
+            </div>
           </div>
-          <div className="text-2xl font-bold text-slate-100 flex items-center gap-2">
-            <span>Ready</span>
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-          </div>
-          <div className="text-xs text-emerald-400 mt-1">
-            <span>Awaiting Phase 2 Execution</span>
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+            <TrendingUp className="w-6 h-6" />
           </div>
         </div>
+
+        {/* Metric 4 */}
+        <div className="card p-5 flex items-center justify-between">
+          <div>
+            <span className="label">Execution Engine</span>
+            <div className="text-2xl font-black text-emerald-700 mt-1 flex items-center gap-2">
+              <span>Optimized</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            </div>
+            <div className="text-xs text-slate-500 mt-1">
+              <span>Direct Buyer & Processing Active</span>
+            </div>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100">
+            <Sparkles className="w-6 h-6" />
+          </div>
+        </div>
+
       </div>
 
-      {/* External Intelligence Strip (Phase 2.6) */}
+      {/* External Intelligence Strip (Weather & Mandi) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <WeatherSprayWidget
@@ -171,32 +191,30 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           />
         </div>
 
-        {/* Mandi Intelligence Shortcut Card */}
-        <div className="glass-panel rounded-2xl p-5 border border-slate-800/90 shadow-lg flex flex-col justify-between space-y-3">
+        {/* Mandi Intelligence Card */}
+        <div className="card p-6 flex flex-col justify-between space-y-4">
           <div>
-            <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              <span className="flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                <span>APMC Mandi Benchmark</span>
-              </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
-                Pimpalgaon APMC
+            <div className="flex items-center justify-between mb-2">
+              <span className="label mb-0">Mandi Benchmark</span>
+              <span className="badge-green text-[10px]">
+                LIVE BENCHMARK
               </span>
             </div>
 
-            <div className="text-2xl font-black text-white font-mono">
-              ₹14.00 <span className="text-xs text-slate-400 font-normal">/kg</span>
+            <h3 className="text-base font-bold text-slate-900 mt-1">Pimpalgaon Baswant APMC</h3>
+            <div className="text-3xl font-black text-slate-900 font-mono mt-2">
+              ₹14.00 <span className="text-xs text-slate-500 font-normal">/kg</span>
             </div>
-            <p className="text-xs text-slate-300 mt-1">
-              Tomato (Hybrid Abhinav) • Modal Yard Rate. Normalizes ₹1,400/Quintal standard auction rate.
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+              Tomato (Hybrid Abhinav) • Modal Yard Rate. Converted from ₹1,400/Quintal standard auction batch.
             </p>
           </div>
 
-          <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
-            <span className="text-[10px] text-slate-500 font-mono">Data.gov.in / Agmarknet</span>
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[11px] text-slate-400 font-mono">Agmarknet Provenance</span>
             <button
               onClick={() => onSelectTab('market-weather')}
-              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer"
+              className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
             >
               <span>Explore Mandi Hub</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -209,114 +227,116 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Active Lot Focus Card (2 cols) */}
-        <div className="lg:col-span-2 glass-panel rounded-2xl p-6 border border-slate-800 space-y-5">
-          <div className="flex items-center justify-between">
+        <div className="lg:col-span-2 card p-6 space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <span>Active Harvest Scenario</span>
-                <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                <span className="badge-yellow text-[10px]">
                   {primaryLot?.data_mode === 'demo' ? 'DEMO SEED' : 'LIVE'}
                 </span>
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Current pilot lot registered for value-add decision analysis
               </p>
             </div>
             <button
               onClick={() => onSelectTab('lots')}
-              className="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
+              className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
             >
-              View all ({cropLots.length}) &rarr;
+              <span>View all ({cropLots.length})</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {primaryLot ? (
-            <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-5 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/80">
+            <div className="rounded-xl bg-slate-50/80 border border-slate-200/80 p-5 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-lg">
+                  <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center text-2xl">
                     🍅
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                       <span>{primaryLot.crop_name}</span>
                       {primaryLot.variety && (
-                        <span className="text-xs font-normal text-slate-400">({primaryLot.variety})</span>
+                        <span className="text-xs font-medium text-slate-500">({primaryLot.variety})</span>
                       )}
                     </h3>
-                    <div className="flex items-center gap-3 text-xs text-slate-400 mt-0.5">
+                    <div className="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-slate-500" />
+                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
                         <span>{primaryFarm ? `${primaryFarm.village}, ${primaryFarm.district}` : 'Niphad, Nashik, MH'}</span>
                       </span>
                       <span>•</span>
-                      <span>Grade: <strong className="text-emerald-400">{primaryLot.quality_grade || 'A'}</strong></span>
+                      <span>Grade: <strong className="text-emerald-700">{primaryLot.quality_grade || 'A'}</strong></span>
                     </div>
                   </div>
                 </div>
 
                 <div className="text-left sm:text-right">
-                  <div className="text-xl font-mono font-bold text-white">
+                  <div className="text-xl font-mono font-black text-slate-900">
                     {Number(primaryLot.quantity).toLocaleString()} {primaryLot.quantity_unit}
                   </div>
-                  <div className="text-xs text-emerald-400 font-mono">
-                    = {Number(primaryLot.quantity_kg_normalized).toLocaleString()} kg
+                  <div className="text-xs text-emerald-700 font-semibold font-mono">
+                    = {Number(primaryLot.quantity_kg_normalized).toLocaleString()} kg normalized
                   </div>
                 </div>
               </div>
 
               {/* Status pill & notes */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                  <div className="text-slate-500 mb-1">Lot Status</div>
-                  <div className="font-semibold text-emerald-300 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <div className="p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                  <div className="label text-[10px] mb-1">Lot Status</div>
+                  <div className="font-bold text-emerald-700 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     <span>{primaryLot.status}</span>
                   </div>
                 </div>
-                <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                  <div className="text-slate-500 mb-1">Harvest Date</div>
-                  <div className="font-semibold text-slate-300 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
+                <div className="p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                  <div className="label text-[10px] mb-1">Harvest Date</div>
+                  <div className="font-bold text-slate-700 flex items-center gap-1.5">
+                    <Clock className="w-4 h-4 text-slate-400" />
                     <span>{primaryLot.harvest_date ? new Date(primaryLot.harvest_date).toLocaleDateString() : 'Recent'}</span>
                   </div>
                 </div>
-                <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800">
-                  <div className="text-slate-500 mb-1">Provenance</div>
-                  <div className="font-semibold text-amber-300 flex items-center gap-1.5">
-                    <Database className="w-3.5 h-3.5 text-amber-400" />
+                <div className="p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                  <div className="label text-[10px] mb-1">Data Provenance</div>
+                  <div className="font-bold text-amber-700 flex items-center gap-1.5">
+                    <Database className="w-4 h-4 text-amber-500" />
                     <span>{primaryLot.data_mode.toUpperCase()}</span>
                   </div>
                 </div>
               </div>
 
               {primaryLot.notes && (
-                <div className="p-3 rounded-lg bg-slate-950/40 border border-slate-800/80 text-xs text-slate-300 leading-relaxed font-mono">
+                <div className="p-3 rounded-xl bg-white border border-slate-200/80 text-xs text-slate-600 leading-relaxed font-mono">
                   {primaryLot.notes}
                 </div>
               )}
 
-              {/* Call to Action for Phase 2 */}
-              <div className="pt-2 flex items-center justify-between">
-                <div className="text-xs text-slate-400">
-                  Feasibility Check: <span className="text-emerald-400 font-medium">Local Shed + Crates Available</span>
+              {/* Call to Action for Profit Engine */}
+              <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="text-xs text-slate-500">
+                  Feasibility Check: <span className="text-emerald-700 font-bold">Local Shed + Crates Available</span>
                 </div>
                 <button
                   onClick={() => onSelectTab('decision-preview')}
-                  className="px-4 py-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="btn-primary text-xs py-2 px-4 shadow-sm"
                 >
-                  <span>Preview Profit Analysis</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <Sparkles className="w-4 h-4" />
+                  <span>Analyze Profit Recommendation</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
           ) : (
-            <div className="text-center py-12 rounded-xl bg-slate-900/50 border border-slate-800">
-              <Wheat className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-              <p className="text-sm text-slate-300">No crop lots registered yet.</p>
+            <div className="text-center py-12 rounded-xl bg-slate-50 border border-slate-200">
+              <Wheat className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+              <p className="text-sm text-slate-600 font-medium">No crop lots registered yet.</p>
               <button
                 onClick={onOpenCreateLot}
-                className="mt-3 px-4 py-2 rounded-lg bg-emerald-500 text-slate-950 font-semibold text-xs"
+                className="btn-primary mt-3 text-xs"
               >
                 Register First Harvest Lot
               </button>
@@ -325,12 +345,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Primary Farm & Resources Card (1 col) */}
-        <div className="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white">Registered Farm</h2>
+        <div className="card p-6 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h2 className="text-lg font-bold text-slate-900">Registered Farm</h2>
             <button
               onClick={() => onSelectTab('farms')}
-              className="text-xs font-medium text-emerald-400 hover:text-emerald-300"
+              className="text-xs font-semibold text-emerald-600 hover:text-emerald-700"
             >
               Manage &rarr;
             </button>
@@ -338,48 +358,62 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {primaryFarm ? (
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-                <div className="text-sm font-bold text-white">{primaryFarm.farm_name}</div>
-                <div className="text-xs text-slate-400 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-slate-500" />
+              <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 space-y-2">
+                <div className="text-base font-extrabold text-slate-900">{primaryFarm.farm_name}</div>
+                <div className="text-xs text-slate-600 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-emerald-600" />
                   <span>{primaryFarm.village}, {primaryFarm.district}, {primaryFarm.state}</span>
                 </div>
-                <div className="text-xs text-slate-300 pt-1 border-t border-slate-800/80 flex items-center justify-between">
+                <div className="text-xs text-slate-700 pt-2 border-t border-emerald-100/80 flex items-center justify-between">
                   <span>Land Area:</span>
-                  <span className="font-semibold text-emerald-400">{primaryFarm.land_area} {primaryFarm.land_area_unit}</span>
+                  <span className="font-bold text-emerald-800">{primaryFarm.land_area} {primaryFarm.land_area_unit}</span>
                 </div>
               </div>
 
               <div>
-                <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <div className="label mb-2">
                   Farm Resources ({primaryFarm.resources?.length || 0})
                 </div>
                 <div className="space-y-2">
                   {primaryFarm.resources && primaryFarm.resources.length > 0 ? (
                     primaryFarm.resources.map((res, i) => (
-                      <div key={i} className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 text-xs flex items-center justify-between">
+                      <div key={i} className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs flex items-center justify-between hover:bg-white transition-colors">
                         <div>
-                          <div className="font-medium text-slate-200">{res.name}</div>
-                          <div className="text-[10px] text-slate-400 capitalize">{res.resource_type}</div>
+                          <div className="font-bold text-slate-800">{res.name}</div>
+                          <div className="text-[10px] text-slate-500 capitalize">{res.resource_type}</div>
                         </div>
                         {res.quantity && (
-                          <div className="text-right font-mono font-semibold text-slate-300 text-xs">
+                          <div className="text-right font-mono font-bold text-slate-700 text-xs bg-white px-2 py-0.5 rounded border border-slate-200">
                             {res.quantity} {res.unit}
                           </div>
                         )}
                       </div>
                     ))
                   ) : (
-                    <div className="text-xs text-slate-500 italic">No resources added.</div>
+                    <div className="text-xs text-slate-400 italic">No resources added.</div>
                   )}
                 </div>
+              </div>
+
+              {/* Quick shortcut to IoT Monitoring */}
+              <div className="pt-2 border-t border-slate-100">
+                <button
+                  onClick={() => onSelectTab('iot-monitoring')}
+                  className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 hover:border-blue-200 transition-all text-xs font-bold text-blue-900 cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-blue-600" />
+                    <span>Microclimate & IoT Telematics</span>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-blue-600" />
+                </button>
               </div>
             </div>
           ) : (
             <div className="text-center py-8">
               <button
                 onClick={onOpenCreateFarm}
-                className="px-4 py-2 rounded-lg bg-emerald-500 text-slate-950 font-semibold text-xs"
+                className="btn-primary text-xs"
               >
                 Create Farm Profile
               </button>

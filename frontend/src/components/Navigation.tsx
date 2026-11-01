@@ -4,26 +4,18 @@ import {
   LayoutDashboard,
   Home,
   Wheat,
-  Cpu,
+  Sparkles,
   FileCode2,
   CloudSun,
   Users,
   Truck,
   FileText,
   Flame,
+  Activity
 } from 'lucide-react';
+import type { TabKey } from '../types';
 
-export type TabKey =
-  | 'dashboard'
-  | 'farms'
-  | 'lots'
-  | 'decision-preview'
-  | 'rescue'
-  | 'buyers'
-  | 'infrastructure'
-  | 'execution'
-  | 'market-weather'
-  | 'specs';
+export type { TabKey };
 
 interface NavigationProps {
   activeTab: TabKey;
@@ -46,16 +38,34 @@ export const Navigation: React.FC<NavigationProps> = ({
       badge: null,
     },
     {
+      key: 'farms' as TabKey,
+      label: 'Farms',
+      icon: Home,
+      badge: farmCount > 0 ? farmCount : null,
+    },
+    {
+      key: 'lots' as TabKey,
+      label: 'Harvest Lots',
+      icon: Wheat,
+      badge: lotCount > 0 ? lotCount : null,
+    },
+    {
+      key: 'decision-preview' as TabKey,
+      label: 'Profit Engine',
+      icon: Sparkles,
+      badge: 'Active',
+    },
+    {
       key: 'rescue' as TabKey,
       label: 'Crop Rescue',
       icon: Flame,
       badge: 'URGENT',
     },
     {
-      key: 'decision-preview' as TabKey,
-      label: 'Profit Engine',
-      icon: Cpu,
-      badge: 'Active',
+      key: 'market-weather' as TabKey,
+      label: 'Market & Weather',
+      icon: CloudSun,
+      badge: 'Live',
     },
     {
       key: 'buyers' as TabKey,
@@ -76,22 +86,10 @@ export const Navigation: React.FC<NavigationProps> = ({
       badge: null,
     },
     {
-      key: 'lots' as TabKey,
-      label: 'Harvest Lots',
-      icon: Wheat,
-      badge: lotCount > 0 ? lotCount : null,
-    },
-    {
-      key: 'farms' as TabKey,
-      label: 'Farms',
-      icon: Home,
-      badge: farmCount > 0 ? farmCount : null,
-    },
-    {
-      key: 'market-weather' as TabKey,
-      label: 'Market & Weather',
-      icon: CloudSun,
-      badge: 'Live',
+      key: 'iot-monitoring' as TabKey,
+      label: 'IoT Monitoring',
+      icon: Activity,
+      badge: 'Simulated',
     },
     {
       key: 'specs' as TabKey,
@@ -102,7 +100,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   ];
 
   return (
-    <nav className="w-full border-b border-slate-800/80 bg-slate-900/40 backdrop-blur-sm">
+    <nav className="w-full border-b border-slate-200 bg-white shadow-2xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex space-x-1 sm:space-x-2 overflow-x-auto py-2 no-scrollbar">
           {tabs.map((tab) => {
@@ -112,22 +110,22 @@ export const Navigation: React.FC<NavigationProps> = ({
               <button
                 key={tab.key}
                 onClick={() => onSelectTab(tab.key)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-150 whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-150 whitespace-nowrap cursor-pointer ${
                   isActive
-                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm shadow-emerald-950/40'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                 <span>{tab.label}</span>
                 {tab.badge !== null && (
                   <span
-                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
+                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
                       isActive
-                        ? 'bg-emerald-500/30 text-emerald-200'
+                        ? 'bg-white/20 text-white'
                         : typeof tab.badge === 'string'
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                        : 'bg-slate-800 text-slate-400'
+                        ? 'bg-amber-100 text-amber-800'
+                        : 'bg-slate-100 text-slate-600'
                     }`}
                   >
                     {tab.badge}
