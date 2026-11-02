@@ -29,6 +29,7 @@ from app.weather.router import router as weather_router
 from app.mandi.router import mandi_router, market_prices_router
 from app.execution.router import execution_router, crop_rescue_router
 from app.iot.router import iot_router
+from app.protection.router import protection_router
 
 settings = get_settings()
 configure_logging(debug=settings.DEBUG)
@@ -129,6 +130,7 @@ def create_app() -> FastAPI:
     app.include_router(execution_router, prefix=prefix)
     app.include_router(crop_rescue_router, prefix=prefix)
     app.include_router(iot_router, prefix=prefix)
+    app.include_router(protection_router, prefix=prefix)
 
     return app
 

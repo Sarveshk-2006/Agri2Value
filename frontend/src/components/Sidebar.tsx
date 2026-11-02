@@ -18,7 +18,8 @@ import {
   X,
   ArrowUpRight,
   UserCheck,
-  Globe
+  Globe,
+  ShieldCheck
 } from 'lucide-react';
 import type { TabKey } from '../types';
 
@@ -139,6 +140,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: Flame,
           badge: urgentRescueCount > 0 ? 'ALERT' : null,
           badgeColor: 'rose',
+        },
+        {
+          key: 'protection',
+          label: 'Farmer Protection',
+          icon: ShieldCheck,
+          badge: 'TRUST',
+          badgeColor: 'emerald',
         },
         {
           key: 'specs',

@@ -14,7 +14,8 @@ import {
   RefreshCw,
   Coins,
   X,
-  UserCheck
+  UserCheck,
+  ShieldCheck
 } from 'lucide-react';
 import type { ExecutionRequest, CropLot } from '../types';
 import { api } from '../api';
@@ -23,6 +24,7 @@ interface ExecutionRequestsViewProps {
   cropLots?: CropLot[];
   onNavigateToBuyers?: () => void;
   onNavigateToInfra?: () => void;
+  onNavigateToProtection?: (requestId?: string) => void;
 }
 
 const STATUS_STEPS = [
@@ -36,6 +38,7 @@ const STATUS_STEPS = [
 export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
   onNavigateToBuyers,
   onNavigateToInfra,
+  onNavigateToProtection,
 }) => {
   const [requests, setRequests] = useState<ExecutionRequest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -514,6 +517,16 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
                           >
                             <Coins className="w-3.5 h-3.5" />
                             <span>Complete & Settle Financials</span>
+                          </button>
+                        )}
+                        {onNavigateToProtection && ['CONFIRMED', 'IN_EXECUTION', 'COMPLETED'].includes(req.status) && (
+                          <button
+                            onClick={() => onNavigateToProtection(req.id)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-800 text-xs font-bold hover:bg-emerald-100 transition-colors cursor-pointer"
+                            title="Inspect deal agreement, delivery verification and payment ledger"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>Farmer Protection & Trust</span>
                           </button>
                         )}
                       </div>

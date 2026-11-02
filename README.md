@@ -140,7 +140,7 @@ Run all unit and integration tests with pytest:
 cd d:\Agri2Value\backend
 .\.venv\Scripts\pytest -v
 ```
-All 80 tests execute with 100% pass rate across authentication, profit decision engine, mandi & weather live integration, smart execution network, crop rescue mode, and IoT telematics.
+All 96 tests execute with 100% pass rate across authentication, profit decision engine, mandi & weather live integration, smart execution network, crop rescue mode, virtual IoT telematics, and farmer protection & financial trust.
 
 ---
 
@@ -170,4 +170,21 @@ Agri2Value features a complete, secure virtual device simulator that connects to
    - `DEVICE_OFFLINE`: Missed heartbeat simulation.
 5. Click **Inject Once** to post a single telemetry batch or click **Stream** to transmit continuous readings every 3–10 seconds.
 6. The dashboard gauges, alert list, and persisted database history log update in real-time.
+
+---
+
+## 8. Phase 5 — Farmer Protection, Deal Transparency & Financial Trust
+
+Agri2Value provides an end-to-end commercial transparency foundation protecting farmers throughout deal acceptance, delivery verification, payment tracking, and dispute management:
+
+### Key Capabilities:
+- **Digital Deal Agreements:** Converts confirmed execution requests into structured deal agreements with itemized deductions (transport, handling, platform fees), gross cargo value, and net farmer proceeds calculated using strict `Decimal` precision.
+- **Immutable Acceptance Snapshots:** Accepted terms cannot be mutated silently. Any proposed adjustment creates an auditable versioned amendment (`AgreementAmendment`) and generates explainable risk alerts.
+- **Delivery Verification Records:** Tracks weighbridge receipt, accepted vs. rejected weights, vehicle registrations, and driver contacts. Transparently recalculates remaining unfulfilled quantities for partial shipments.
+- **Payment Tracking Ledger:** Reconciles milestone payments against agreed commercial totals. Evaluates payment due dates to flag overdue balances without arbitrary client-side manipulation.
+- **Transparent Dispute Management:** Allows farmers to lodge commercial grievances across 8 standard categories (`PAYMENT_OVERDUE`, `PAYMENT_AMOUNT_MISMATCH`, `UNEXPECTED_DEDUCTION`, `QUANTITY_MISMATCH`, etc.) with multi-role audit timelines.
+- **Explainable Risk Indicators:** Server-evaluated risk alerts with explicit triggering evidence, severity rankings, and actionable recommended farmer steps.
+- **Dedicated Protection Dashboard:** Responsive interface with 6 tabs (Overview, Agreements, Deliveries, Payments, Disputes, Alerts), printable digital deal certificates, and complete chronological audit trails.
+- **Complete Report:** Documented in [`docs/PHASE_5_FARMER_PROTECTION_COMPLETION_REPORT.md`](docs/PHASE_5_FARMER_PROTECTION_COMPLETION_REPORT.md).
+
 

@@ -28,6 +28,7 @@ import { InfrastructureView } from './components/InfrastructureView';
 import { ExecutionRequestsView } from './components/ExecutionRequestsView';
 import { CropRescueView } from './components/CropRescueView';
 import { IoTMonitoringView } from './components/IoTMonitoringView';
+import { ProtectionView } from './components/ProtectionView';
 import { SpecsView } from './components/SpecsView';
 import { ProfileView } from './pages/app/ProfileView';
 import { NotFoundView } from './pages/NotFoundView';
@@ -89,6 +90,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     if (path.includes('/app/infra')) return 'infrastructure';
     if (path.includes('/app/execution')) return 'execution';
     if (path.includes('/app/rescue')) return 'rescue';
+    if (path.includes('/app/protection')) return 'protection';
     if (path.includes('/app/iot')) return 'iot-monitoring';
     if (path.includes('/app/profile')) return 'profile';
     if (path.includes('/app/specs')) return 'specs';
@@ -125,6 +127,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         break;
       case 'rescue':
         navigate('/app/rescue');
+        break;
+      case 'protection':
+        navigate('/app/protection');
         break;
       case 'iot-monitoring':
         navigate('/app/iot');
@@ -387,7 +392,15 @@ export const App: React.FC = () => {
 
           <Route
             path="execution"
-            element={<ExecutionRequestsView cropLots={cropLots} />}
+            element={
+              <ExecutionRequestsView
+                cropLots={cropLots}
+                onNavigateToProtection={() => {
+                  window.history.pushState({}, '', '/app/protection');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+              />
+            }
           />
 
           <Route
@@ -397,6 +410,19 @@ export const App: React.FC = () => {
                 cropLots={cropLots}
                 selectedLotId={selectedLotIdForDecision}
                 onLotSelect={setSelectedLotIdForDecision}
+              />
+            }
+          />
+
+          <Route
+            path="protection"
+            element={
+              <ProtectionView
+                cropLots={cropLots}
+                onNavigateToExecution={() => {
+                  window.history.pushState({}, '', '/app/execution');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
               />
             }
           />

@@ -1032,3 +1032,547 @@ class IoTAlert(Base):
         return f"<IoTAlert type={self.alert_type} severity={self.severity} resolved={self.is_resolved}>"
 
 
+# ---- Phase 5: Farmer Protection, Deal Transparency & Financial Trust ----
+
+class DealAgreement(Base):
+    """
+    Structured, binding digital agreement record linked to an execution request
+    or created directly between a farmer and a commercial partner.
+    Maintains immutable accepted terms, itemized deductions, and version history.
+    """
+    __tablename__ = "deal_agreements"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    agreement_number: Mapped[str] = mapped_column(
+        String(50), nullable=False, unique=True, index=True
+    )
+    execution_request_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("execution_requests.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    farmer_user_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("users.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    farm_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("farms.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    crop_lot_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("crop_lots.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+
+    # Partner details
+    partner_type: Mapped[str] = mapped_column(String(30), nullable=False, default="BUYER")
+    # BUYER | PROCESSOR | COLD_STORAGE | LOGISTICS
+    partner_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    partner_name: Mapped[str] = mapped_column(String(200), nullable=False)
+    partner_contact: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+
+    # Commodity & Quantity particulars
+    commodity: Mapped[str] = mapped_column(String(100), nullable=False)
+    variety: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    quality_grade: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    agreed_quantity_kg: Mapped[Decimal] = mapped_column(Numeric(14, 4), nullable=False)
+    quantity_unit: Mapped[str] = mapped_column(String(20), nullable=False, default="kg")
+
+    # Commercial terms & itemized deductions
+    agreed_unit_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    pricing_unit: Mapped[str] = mapped_column(String(20), nullable=False, default="INR/kg")
+    gross_amount: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
+    logistics_deduction: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+    processing_deduction: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+    quality_deduction: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+    other_deductions: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+    total_deductions: Mapped[Decimal] = mapped_column(
+        Numeric(14, 2), nullable=False, default=Decimal("0.00")
+    )
+    estimated_net_payout: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
+
+    # Delivery & Logistics
+    quality_requirements: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    pickup_location: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    delivery_location: Mapped[str] = mapped_column(String(300), nullable=False)
+    expected_delivery_date: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    # Payment Terms
+    payment_terms_days: Mapped[int] = mapped_column(Integer, nullable=False, default=3)
+    expected_payment_date: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    # Lifecycle & Versioning
+    status: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="PENDING_ACCEPTANCE", index=True
+    )
+    # DRAFT | PENDING_ACCEPTANCE | ACCEPTED | IN_PROGRESS | COMPLETED | CANCELLED | DISPUTED
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    is_latest: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+    farmer_accepted_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    partner_accepted_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    farmer_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    terms_acknowledged: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    data_mode: Mapped[str] = mapped_column(String(20), nullable=False, default="demo")
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, index=True
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    # Relationships
+    farmer: Mapped["User"] = relationship("User", foreign_keys=[farmer_user_id])
+    farm: Mapped["Farm"] = relationship("Farm", foreign_keys=[farm_id])
+    crop_lot: Mapped["CropLot"] = relationship("CropLot", foreign_keys=[crop_lot_id])
+    execution_request: Mapped[Optional["ExecutionRequest"]] = relationship(
+        "ExecutionRequest", foreign_keys=[execution_request_id]
+    )
+    amendments: Mapped[List["AgreementAmendment"]] = relationship(
+        "AgreementAmendment", back_populates="agreement", cascade="all, delete-orphan", order_by="AgreementAmendment.version.desc()"
+    )
+    deliveries: Mapped[List["DeliveryRecord"]] = relationship(
+        "DeliveryRecord", back_populates="agreement", cascade="all, delete-orphan", order_by="DeliveryRecord.created_at.desc()"
+    )
+    payments: Mapped[List["PaymentRecord"]] = relationship(
+        "PaymentRecord", back_populates="agreement", cascade="all, delete-orphan", order_by="PaymentRecord.created_at.desc()"
+    )
+    disputes: Mapped[List["FarmerDispute"]] = relationship(
+        "FarmerDispute", back_populates="agreement", cascade="all, delete-orphan", order_by="FarmerDispute.created_at.desc()"
+    )
+    risk_alerts: Mapped[List["FarmerRiskAlert"]] = relationship(
+        "FarmerRiskAlert", back_populates="agreement", cascade="all, delete-orphan", order_by="FarmerRiskAlert.created_at.desc()"
+    )
+    audit_events: Mapped[List["TransactionAuditEvent"]] = relationship(
+        "TransactionAuditEvent", back_populates="agreement", cascade="all, delete-orphan", order_by="TransactionAuditEvent.created_at.desc()"
+    )
+
+    __table_args__ = (
+        Index("ix_deal_agreements_farmer_status", "farmer_user_id", "status"),
+        Index("ix_deal_agreements_crop_lot", "crop_lot_id"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<DealAgreement {self.agreement_number} status={self.status} v{self.version}>"
+
+
+class AgreementAmendment(Base):
+    """
+    Immutable historical audit snapshot created whenever deal terms are amended.
+    Ensures changed commercial terms are never silently overwritten.
+    """
+    __tablename__ = "agreement_amendments"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    agreement_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("deal_agreements.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    version: Mapped[int] = mapped_column(Integer, nullable=False)
+    changed_by_role: Mapped[str] = mapped_column(String(30), nullable=False)
+    changed_by_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    terms_snapshot_json: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+
+    agreement: Mapped["DealAgreement"] = relationship(
+        "DealAgreement", back_populates="amendments"
+    )
+
+    def __repr__(self) -> str:
+        return f"<AgreementAmendment agr={self.agreement_id} v={self.version}>"
+
+
+class DeliveryRecord(Base):
+    """
+    Delivery verification record capturing delivered quantity, quality checks,
+    partial shipments, and bilateral confirmations.
+    """
+    __tablename__ = "delivery_records"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    delivery_number: Mapped[str] = mapped_column(
+        String(50), nullable=False, unique=True, index=True
+    )
+    agreement_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("deal_agreements.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    execution_request_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("execution_requests.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    expected_quantity_kg: Mapped[Decimal] = mapped_column(Numeric(14, 4), nullable=False)
+    delivered_quantity_kg: Mapped[Decimal] = mapped_column(Numeric(14, 4), nullable=False)
+    accepted_quantity_kg: Mapped[Decimal] = mapped_column(Numeric(14, 4), nullable=False)
+    rejected_quantity_kg: Mapped[Decimal] = mapped_column(
+        Numeric(14, 4), nullable=False, default=Decimal("0.00")
+    )
+    quantity_unit: Mapped[str] = mapped_column(String(20), nullable=False, default="kg")
+
+    delivery_timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    delivery_location: Mapped[str] = mapped_column(String(300), nullable=False)
+
+    farmer_confirmed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    farmer_confirmed_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    partner_confirmed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    partner_confirmed_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    quality_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    vehicle_number: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    driver_contact: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+
+    evidence_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    evidence_data_mode: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="SIMULATED_DEMO_PROOF"
+    )
+
+    status: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="PENDING", index=True
+    )
+    # PENDING | CONFIRMED | PARTIALLY_DELIVERED | DISPUTED
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    agreement: Mapped["DealAgreement"] = relationship(
+        "DealAgreement", back_populates="deliveries"
+    )
+
+    def __repr__(self) -> str:
+        return f"<DeliveryRecord {self.delivery_number} status={self.status} del={self.delivered_quantity_kg}>"
+
+
+class PaymentRecord(Base):
+    """
+    Payment tracking ledger record. Distinguishes expected dues from actual payments,
+    tracks partial receipts, outstanding balances, and overdue status.
+    """
+    __tablename__ = "payment_records"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    payment_reference: Mapped[str] = mapped_column(
+        String(100), nullable=False, unique=True, index=True
+    )
+    agreement_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("deal_agreements.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    execution_request_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("execution_requests.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    amount_due: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
+    amount_paid: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
+    payment_date: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    due_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, index=True
+    )
+    payment_method: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="BANK_TRANSFER"
+    )
+    # BANK_TRANSFER | UPI | NEFT | RTGS | CASH_RECEIPT | CHEQUE
+
+    payment_status: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="PENDING", index=True
+    )
+    # NOT_DUE | PENDING | PARTIALLY_PAID | PAID | OVERDUE | DISPUTED
+
+    payer_name: Mapped[str] = mapped_column(String(150), nullable=False)
+    payee_name: Mapped[str] = mapped_column(String(150), nullable=False)
+    transaction_reference_id: Mapped[Optional[str]] = mapped_column(
+        String(100), nullable=True
+    )
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    data_mode: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="SIMULATED"
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    agreement: Mapped["DealAgreement"] = relationship(
+        "DealAgreement", back_populates="payments"
+    )
+
+    def __repr__(self) -> str:
+        return f"<PaymentRecord {self.payment_reference} status={self.payment_status} paid={self.amount_paid}/{self.amount_due}>"
+
+
+class FarmerDispute(Base):
+    """
+    Formal dispute record raised by a farmer linked to a deal, delivery or payment.
+    Provides an internal mediation workflow with complete audit trail.
+    """
+    __tablename__ = "farmer_disputes"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    dispute_reference: Mapped[str] = mapped_column(
+        String(50), nullable=False, unique=True, index=True
+    )
+    agreement_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("deal_agreements.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    farmer_user_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("users.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    delivery_record_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("delivery_records.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    payment_record_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("payment_records.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+
+    category: Mapped[str] = mapped_column(String(50), nullable=False)
+    # PAYMENT_OVERDUE | PAYMENT_AMOUNT_MISMATCH | UNEXPECTED_DEDUCTION | QUANTITY_MISMATCH
+    # QUALITY_DISAGREEMENT | CHANGED_DEAL_TERMS | DELIVERY_DISAGREEMENT | OTHER
+
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    disputed_amount: Mapped[Optional[Decimal]] = mapped_column(
+        Numeric(14, 2), nullable=True
+    )
+    evidence_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    evidence_data_mode: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="DEMO_EVIDENCE"
+    )
+
+    status: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="OPEN", index=True
+    )
+    # OPEN | UNDER_REVIEW | AWAITING_INFORMATION | RESOLVED | REJECTED | CLOSED
+
+    resolution_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    resolved_by: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    disclaimer: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+        default="Internal platform record and workflow. Not a court, arbitration service, or legal authority.",
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, index=True
+    )
+    resolved_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, onupdate=_now
+    )
+
+    agreement: Mapped["DealAgreement"] = relationship(
+        "DealAgreement", back_populates="disputes"
+    )
+    events: Mapped[List["DisputeEvent"]] = relationship(
+        "DisputeEvent", back_populates="dispute", cascade="all, delete-orphan", order_by="DisputeEvent.created_at.asc()"
+    )
+
+    __table_args__ = (
+        Index("ix_farmer_disputes_farmer_status", "farmer_user_id", "status"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<FarmerDispute {self.dispute_reference} cat={self.category} status={self.status}>"
+
+
+class DisputeEvent(Base):
+    """
+    Timeline audit event on a dispute tracking status transitions and notes.
+    """
+    __tablename__ = "dispute_events"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    dispute_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("farmer_disputes.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    actor_role: Mapped[str] = mapped_column(String(30), nullable=False)
+    # FARMER | PARTNER | PLATFORM_ADMIN
+    actor_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    action: Mapped[str] = mapped_column(String(50), nullable=False)
+    previous_status: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    new_status: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    notes: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now
+    )
+
+    dispute: Mapped["FarmerDispute"] = relationship(
+        "FarmerDispute", back_populates="events"
+    )
+
+    def __repr__(self) -> str:
+        return f"<DisputeEvent disp={self.dispute_id} action={self.action}>"
+
+
+class FarmerRiskAlert(Base):
+    """
+    Explainable risk indicator providing early warnings on price deviations,
+    unexpected deductions, overdue payments, and delivery mismatches.
+    """
+    __tablename__ = "farmer_risk_alerts"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    farmer_user_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    agreement_id: Mapped[Optional[str]] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("deal_agreements.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+
+    risk_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    # PRICE_CHANGED_AFTER_ACCEPTANCE | UNEXPECTED_DEDUCTION | PAYMENT_OVERDUE | DELIVERY_MISMATCH
+    # UNACKNOWLEDGED_DELIVERY | MISSING_TERMS | PAYMENT_UNRECONCILED
+
+    severity: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="WARNING"
+    )
+    # INFO | WARNING | CRITICAL
+
+    trigger_evidence: Mapped[str] = mapped_column(Text, nullable=False)
+    explanation: Mapped[str] = mapped_column(Text, nullable=False)
+    recommended_action: Mapped[str] = mapped_column(Text, nullable=False)
+
+    is_resolved: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    resolution_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    resolved_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, index=True
+    )
+
+    agreement: Mapped[Optional["DealAgreement"]] = relationship(
+        "DealAgreement", back_populates="risk_alerts"
+    )
+
+    __table_args__ = (
+        Index("ix_farmer_risk_alerts_farmer_resolved", "farmer_user_id", "is_resolved"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<FarmerRiskAlert type={self.risk_type} severity={self.severity} resolved={self.is_resolved}>"
+
+
+class TransactionAuditEvent(Base):
+    """
+    Immutable transaction event stream recording commercial milestones:
+    agreement creation, acceptance, amendments, deliveries, payments, and disputes.
+    """
+    __tablename__ = "transaction_audit_events"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=_uuid
+    )
+    agreement_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False),
+        ForeignKey("deal_agreements.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    event_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    # AGREEMENT_CREATED | AGREEMENT_ACCEPTED | TERMS_AMENDED | DELIVERY_LOGGED | DELIVERY_CONFIRMED
+    # PAYMENT_RECORDED | PAYMENT_RECONCILED | DISPUTE_RAISED | DISPUTE_STATUS_CHANGED | RISK_ALERT_TRIGGERED
+
+    actor_role: Mapped[str] = mapped_column(String(30), nullable=False)
+    # FARMER | BUYER | PROCESSOR | TRANSPORTER | SYSTEM
+    actor_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    summary: Mapped[str] = mapped_column(String(255), nullable=False)
+    details_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_now, index=True
+    )
+
+    agreement: Mapped["DealAgreement"] = relationship(
+        "DealAgreement", back_populates="audit_events"
+    )
+
+    def __repr__(self) -> str:
+        return f"<TransactionAuditEvent agr={self.agreement_id} type={self.event_type}>"
+
+
+

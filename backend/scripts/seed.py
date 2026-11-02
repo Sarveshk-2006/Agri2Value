@@ -36,6 +36,16 @@ from app.database.models import (
     IoTDevice,
     IoTTelemetryReading,
     IoTAlert,
+    ExecutionRequest,
+    ExecutionRequestEvent,
+    DealAgreement,
+    AgreementAmendment,
+    DeliveryRecord,
+    PaymentRecord,
+    FarmerDispute,
+    DisputeEvent,
+    FarmerRiskAlert,
+    TransactionAuditEvent,
 )
 from app.crop_lots.schemas import normalize_to_kg
 
@@ -481,6 +491,216 @@ async def seed_data():
             session.add_all([r1, r2, r3])
             await session.commit()
             print("  [+] Created Virtual IoT Node: ESP32-NIPHAD-NODE-01 with baseline readings.")
+
+        # 7. Seed Phase 5: Farmer Protection & Deal Records
+        res_agr = await session.execute(
+            select(DealAgreement).where(DealAgreement.agreement_number == "AGR-2026-0001")
+        )
+        existing_agr = res_agr.scalar_one_or_none()
+        if not existing_agr:
+            now_utc = datetime.now(timezone.utc)
+            # Find buyer & offer
+            b_res = await session.execute(select(Buyer).where(Buyer.company_name == "Sahyadri Agro-Retail Hub"))
+            buyer = b_res.scalar_one_or_none()
+            buyer_id = buyer.id if buyer else None
+
+            bo_res = await session.execute(select(BuyerOffer).where(BuyerOffer.buyer_id == buyer_id))
+            buyer_offer = bo_res.scalars().first()
+            buyer_offer_id = buyer_offer.id if buyer_offer else None
+
+            # Seed or find execution request
+            ex_res = await session.execute(
+                select(ExecutionRequest).where(
+                    ExecutionRequest.farmer_user_id == farmer.id,
+                    ExecutionRequest.crop_lot_id == lot.id,
+                )
+            )
+            exec_req = ex_res.scalars().first()
+            if not exec_req:
+                exec_req = ExecutionRequest(
+                    crop_lot_id=lot.id,
+                    farmer_user_id=farmer.id,
+                    route_type="DIRECT_BUYER",
+                    status="CONFIRMED",
+                    buyer_id=buyer_id,
+                    buyer_offer_id=buyer_offer_id,
+                    requested_quantity_kg=Decimal("4000.0000"),
+                    indicative_unit_price=Decimal("16.50"),
+                    indicative_total_value=Decimal("66000.00"),
+                    indicative_logistics_cost=Decimal("3500.00"),
+                    indicative_storage_cost=Decimal("0.00"),
+                    indicative_processing_cost=Decimal("0.00"),
+                    indicative_net_payout=Decimal("62500.00"),
+                    pickup_location="Patil Krishi Farm, Gate No. 42, Niphad, Nashik",
+                    delivery_location="Sahyadri Agro Hub, MIDC Ambad, Nashik 422010",
+                    scheduled_date=now_utc,
+                    notes="Canonical Phase 5 demo execution order linked to commercial agreement.",
+                    data_mode="demo",
+                )
+                session.add(exec_req)
+                await session.flush()
+
+                ev = ExecutionRequestEvent(
+                    request_id=exec_req.id,
+                    from_status="SUBMITTED",
+                    to_status="CONFIRMED",
+                    actor_role="BUYER",
+                    actor_user_id=None,
+                    message="Buyer accepted terms and confirmed procurement order.",
+                )
+                session.add(ev)
+                await session.flush()
+
+            # Create Deal Agreement
+            agr = DealAgreement(
+                agreement_number="AGR-2026-0001",
+                execution_request_id=exec_req.id,
+                farmer_user_id=farmer.id,
+                farm_id=farm.id,
+                crop_lot_id=lot.id,
+                partner_type="BUYER",
+                partner_id=buyer_id,
+                partner_name="Sahyadri Agro-Retail Hub",
+                partner_contact="Vikram Shinde (+91 98220 11223)",
+                commodity="Tomato",
+                variety="Abhinav (Hybrid Red)",
+                quality_grade="Grade A",
+                agreed_quantity_kg=Decimal("4000.0000"),
+                quantity_unit="kg",
+                agreed_unit_price=Decimal("16.50"),
+                pricing_unit="INR/kg",
+                gross_amount=Decimal("66000.00"),
+                logistics_deduction=Decimal("3500.00"),
+                processing_deduction=Decimal("0.00"),
+                quality_deduction=Decimal("0.00"),
+                other_deductions=Decimal("500.00"),
+                total_deductions=Decimal("4000.00"),
+                estimated_net_payout=Decimal("62000.00"),
+                quality_requirements="Grade A firm red tomatoes, max 2% transit surface blemishes, minimum Brix 4.5.",
+                pickup_location="Patil Krishi Farm, Gate No. 42, Niphad, Nashik",
+                delivery_location="Sahyadri Agro Hub, MIDC Ambad, Nashik 422010",
+                expected_delivery_date=now_utc,
+                payment_terms_days=3,
+                expected_payment_date=now_utc,
+                status="IN_PROGRESS",
+                version=1,
+                is_latest=True,
+                farmer_accepted_at=now_utc,
+                partner_accepted_at=now_utc,
+                farmer_notes="Confirmed for pickup with 50% advance upon partial delivery.",
+                terms_acknowledged=True,
+                data_mode="demo",
+                created_at=now_utc,
+                updated_at=now_utc,
+            )
+            session.add(agr)
+            await session.flush()
+
+            # Create initial partial delivery record
+            del_rec = DeliveryRecord(
+                delivery_number="DEL-2026-0001",
+                agreement_id=agr.id,
+                execution_request_id=exec_req.id,
+                expected_quantity_kg=Decimal("4000.0000"),
+                delivered_quantity_kg=Decimal("2000.0000"),
+                accepted_quantity_kg=Decimal("2000.0000"),
+                rejected_quantity_kg=Decimal("0.0000"),
+                quantity_unit="kg",
+                delivery_timestamp=now_utc,
+                delivery_location="Sahyadri Agro Hub, MIDC Ambad, Nashik 422010",
+                farmer_confirmed=True,
+                farmer_confirmed_at=now_utc,
+                partner_confirmed=True,
+                partner_confirmed_at=now_utc,
+                quality_notes="Batch 1: 2,000 kg received in plastic crates. Visual and Brix inspection passed Grade A.",
+                vehicle_number="MH-15-EG-4412",
+                driver_contact="Eknath Shinde (+91 97654 32100)",
+                evidence_notes="Demo weighbridge slip #WB-NIPHAD-8821 (simulated delivery evidence record).",
+                evidence_data_mode="SIMULATED_DEMO_PROOF",
+                status="CONFIRMED",
+                created_at=now_utc,
+                updated_at=now_utc,
+            )
+            session.add(del_rec)
+            await session.flush()
+
+            # Create partial payment record
+            pay_rec = PaymentRecord(
+                payment_reference="PAY-2026-0001",
+                agreement_id=agr.id,
+                execution_request_id=exec_req.id,
+                amount_due=Decimal("62000.00"),
+                amount_paid=Decimal("31000.00"),
+                payment_date=now_utc,
+                due_date=now_utc,
+                payment_method="BANK_TRANSFER",
+                payment_status="PARTIALLY_PAID",
+                payer_name="Sahyadri Agro-Retail Hub",
+                payee_name="Ramesh Patil",
+                transaction_reference_id="SIM-UTR-9912048821",
+                notes="Advance tranche (50%) credited against Delivery Batch 1.",
+                data_mode="SIMULATED",
+                created_at=now_utc,
+                updated_at=now_utc,
+            )
+            session.add(pay_rec)
+            await session.flush()
+
+            # Create sample FarmerRiskAlert
+            alert = FarmerRiskAlert(
+                farmer_user_id=farmer.id,
+                agreement_id=agr.id,
+                risk_type="PAYMENT_OVERDUE",
+                severity="WARNING",
+                trigger_evidence="Remaining balance of INR 31,000.00 pending past agreed 3-day payment window for agreement AGR-2026-0001.",
+                explanation="Expected second installment date elapsed for accepted delivery batch. Payment status currently shows Partially Paid.",
+                recommended_action="Send a payment status inquiry to Vikram Shinde (Sahyadri Agro-Retail Hub) or file a formal payment dispute record.",
+                is_resolved=False,
+                created_at=now_utc,
+            )
+            session.add(alert)
+
+            # Audit events
+            ae1 = TransactionAuditEvent(
+                agreement_id=agr.id,
+                event_type="AGREEMENT_CREATED",
+                actor_role="FARMER",
+                actor_name="Ramesh Patil",
+                summary="Digital agreement AGR-2026-0001 created from confirmed execution request.",
+                details_json=None,
+                created_at=now_utc,
+            )
+            ae2 = TransactionAuditEvent(
+                agreement_id=agr.id,
+                event_type="AGREEMENT_ACCEPTED",
+                actor_role="BUYER",
+                actor_name="Sahyadri Agro-Retail Hub",
+                summary="Agreement accepted with net payout INR 62,000.00 and 3-day payment terms.",
+                details_json=None,
+                created_at=now_utc,
+            )
+            ae3 = TransactionAuditEvent(
+                agreement_id=agr.id,
+                event_type="DELIVERY_LOGGED",
+                actor_role="TRANSPORTER",
+                actor_name="Eknath Shinde (MH-15-EG-4412)",
+                summary="Delivery DEL-2026-0001 recorded: 2,000 kg accepted.",
+                details_json=None,
+                created_at=now_utc,
+            )
+            ae4 = TransactionAuditEvent(
+                agreement_id=agr.id,
+                event_type="PAYMENT_RECORDED",
+                actor_role="BUYER",
+                actor_name="Sahyadri Agro-Retail Hub",
+                summary="Partial payment of INR 31,000.00 recorded via Bank Transfer (Ref: SIM-UTR-9912048821).",
+                details_json=None,
+                created_at=now_utc,
+            )
+            session.add_all([ae1, ae2, ae3, ae4])
+
+            await session.commit()
+            print("  [+] Created Deal Agreement AGR-2026-0001 with delivery, payment, risk alert, and audit trail.")
 
         await session.commit()
         print("[SUCCESS] Seeding completed successfully!\n")

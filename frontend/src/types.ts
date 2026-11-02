@@ -450,6 +450,7 @@ export type TabKey =
   | 'execution'
   | 'market-weather'
   | 'iot-monitoring'
+  | 'protection'
   | 'profile'
   | 'specs';
 
@@ -536,5 +537,200 @@ export interface SimulatorPresetResponse {
   };
   disclaimer: string;
 }
+
+// ---- Phase 5: Farmer Protection, Deal Transparency & Financial Trust ----
+
+export interface AgreementAmendment {
+  id: string;
+  agreement_id: string;
+  version: number;
+  changed_by_role: string;
+  changed_by_name: string;
+  reason: string;
+  terms_snapshot_json: string;
+  created_at: string;
+}
+
+export interface DealAgreement {
+  id: string;
+  agreement_number: string;
+  execution_request_id?: string;
+  farmer_user_id: string;
+  farm_id: string;
+  crop_lot_id: string;
+  partner_type: 'BUYER' | 'PROCESSOR' | 'COLD_STORAGE' | 'LOGISTICS';
+  partner_id?: string;
+  partner_name: string;
+  partner_contact?: string;
+  commodity: string;
+  variety?: string;
+  quality_grade?: string;
+  agreed_quantity_kg: number;
+  quantity_unit: string;
+  agreed_unit_price: number;
+  pricing_unit: string;
+  gross_amount: number;
+  logistics_deduction: number;
+  processing_deduction: number;
+  quality_deduction: number;
+  other_deductions: number;
+  total_deductions: number;
+  estimated_net_payout: number;
+  quality_requirements?: string;
+  pickup_location?: string;
+  delivery_location: string;
+  expected_delivery_date?: string;
+  payment_terms_days: number;
+  expected_payment_date?: string;
+  status: 'DRAFT' | 'PENDING_ACCEPTANCE' | 'ACCEPTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'DISPUTED';
+  version: number;
+  is_latest: boolean;
+  farmer_accepted_at?: string;
+  partner_accepted_at?: string;
+  farmer_notes?: string;
+  terms_acknowledged: boolean;
+  data_mode: string;
+  created_at: string;
+  updated_at: string;
+  amendments: AgreementAmendment[];
+}
+
+export interface DeliveryRecord {
+  id: string;
+  delivery_number: string;
+  agreement_id: string;
+  execution_request_id?: string;
+  expected_quantity_kg: number;
+  delivered_quantity_kg: number;
+  accepted_quantity_kg: number;
+  rejected_quantity_kg: number;
+  quantity_unit: string;
+  delivery_timestamp: string;
+  delivery_location: string;
+  farmer_confirmed: boolean;
+  farmer_confirmed_at?: string;
+  partner_confirmed: boolean;
+  partner_confirmed_at?: string;
+  quality_notes?: string;
+  vehicle_number?: string;
+  driver_contact?: string;
+  evidence_notes?: string;
+  evidence_data_mode: string;
+  status: 'PENDING' | 'CONFIRMED' | 'PARTIALLY_DELIVERED' | 'DISPUTED';
+  created_at: string;
+  updated_at: string;
+  remaining_quantity_kg?: number;
+}
+
+export interface PaymentRecord {
+  id: string;
+  payment_reference: string;
+  agreement_id: string;
+  execution_request_id?: string;
+  amount_due: number;
+  amount_paid: number;
+  payment_date?: string;
+  due_date: string;
+  payment_method: string;
+  payment_status: 'NOT_DUE' | 'PENDING' | 'PARTIALLY_PAID' | 'PAID' | 'OVERDUE' | 'DISPUTED';
+  payer_name: string;
+  payee_name: string;
+  transaction_reference_id?: string;
+  notes?: string;
+  data_mode: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PaymentReconciliationSummary {
+  agreement_id: string;
+  agreement_number: string;
+  gross_agreed_amount: number;
+  total_deductions: number;
+  net_agreed_payout: number;
+  total_paid: number;
+  outstanding_balance: number;
+  is_fully_paid: boolean;
+  is_overdue: boolean;
+  overdue_amount: number;
+  payments_count: number;
+  data_mode_label: string;
+}
+
+export interface DisputeEvent {
+  id: string;
+  dispute_id: string;
+  actor_role: string;
+  actor_name: string;
+  action: string;
+  previous_status?: string;
+  new_status?: string;
+  notes: string;
+  created_at: string;
+}
+
+export interface FarmerDispute {
+  id: string;
+  dispute_reference: string;
+  agreement_id: string;
+  farmer_user_id: string;
+  delivery_record_id?: string;
+  payment_record_id?: string;
+  category: 'PAYMENT_OVERDUE' | 'PAYMENT_AMOUNT_MISMATCH' | 'UNEXPECTED_DEDUCTION' | 'QUANTITY_MISMATCH' | 'QUALITY_DISAGREEMENT' | 'CHANGED_DEAL_TERMS' | 'DELIVERY_DISAGREEMENT' | 'OTHER';
+  title: string;
+  description: string;
+  disputed_amount?: number;
+  evidence_notes?: string;
+  evidence_data_mode: string;
+  status: 'OPEN' | 'UNDER_REVIEW' | 'AWAITING_INFORMATION' | 'RESOLVED' | 'REJECTED' | 'CLOSED';
+  resolution_notes?: string;
+  resolved_by?: string;
+  disclaimer: string;
+  created_at: string;
+  resolved_at?: string;
+  updated_at: string;
+  events: DisputeEvent[];
+}
+
+export interface FarmerRiskAlert {
+  id: string;
+  farmer_user_id: string;
+  agreement_id?: string;
+  risk_type: string;
+  severity: 'CRITICAL' | 'WARNING' | 'INFO';
+  trigger_evidence: string;
+  explanation: string;
+  recommended_action: string;
+  is_resolved: boolean;
+  resolution_notes?: string;
+  resolved_at?: string;
+  created_at: string;
+}
+
+export interface TransactionAuditEvent {
+  id: string;
+  agreement_id: string;
+  event_type: string;
+  actor_role: string;
+  actor_name: string;
+  summary: string;
+  details_json?: string;
+  created_at: string;
+}
+
+export interface ProtectionDashboardMetrics {
+  active_agreements_count: number;
+  deals_awaiting_acceptance_count: number;
+  deliveries_awaiting_confirmation_count: number;
+  expected_payments_total: number;
+  payments_received_total: number;
+  outstanding_balance_total: number;
+  overdue_payments_total: number;
+  open_disputes_count: number;
+  active_risk_alerts_count: number;
+  recent_events: TransactionAuditEvent[];
+  disclaimer: string;
+}
+
 
 

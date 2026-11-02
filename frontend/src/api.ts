@@ -18,6 +18,14 @@ import type {
   IoTTelemetryReading,
   IoTAlert,
   SimulatorPresetResponse,
+  DealAgreement,
+  DeliveryRecord,
+  PaymentRecord,
+  PaymentReconciliationSummary,
+  FarmerDispute,
+  FarmerRiskAlert,
+  TransactionAuditEvent,
+  ProtectionDashboardMetrics,
 } from './types';
 
 const API_BASE = '/api/v1';
@@ -743,6 +751,243 @@ class ApiService {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.detail || err.message || 'Simulator execution failed');
+    }
+    return await res.json();
+  }
+
+  // ---- Phase 5: Farmer Protection & Financial Trust API ----
+
+  async getProtectionDashboard(): Promise<ProtectionDashboardMetrics> {
+    const res = await fetch(`${API_BASE}/protection/dashboard`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to load protection dashboard metrics');
+    }
+    return await res.json();
+  }
+
+  async getAgreements(status?: string): Promise<DealAgreement[]> {
+    const q = status ? `?status=${encodeURIComponent(status)}` : '';
+    const res = await fetch(`${API_BASE}/protection/agreements${q}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to load deal agreements');
+    }
+    return await res.json();
+  }
+
+  async getAgreement(id: string): Promise<DealAgreement> {
+    const res = await fetch(`${API_BASE}/protection/agreements/${id}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to load deal agreement');
+    }
+    return await res.json();
+  }
+
+  async createAgreement(payload: any): Promise<DealAgreement> {
+    const res = await fetch(`${API_BASE}/protection/agreements`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.detail || 'Failed to create agreement');
+    }
+    return await res.json();
+  }
+
+  async createAgreementFromExecution(executionRequestId: string): Promise<DealAgreement> {
+    const res = await fetch(`${API_BASE}/protection/agreements/from-execution/${executionRequestId}`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.detail || 'Failed to create agreement from execution request');
+    }
+    return await res.json();
+  }
+
+  async acceptAgreement(id: string, notes?: string): Promise<DealAgreement> {
+    const res = await fetch(`${API_BASE}/protection/agreements/${id}/accept`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ terms_acknowledged: true, notes }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.detail || 'Failed to accept agreement');
+    }
+    return await res.json();
+  }
+
+  async amendAgreement(id: string, payload: any): Promise<DealAgreement> {
+    const res = await fetch(`${API_BASE}/protection/agreements/${id}/amend`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.detail || 'Failed to amend agreement terms');
+    }
+    return await res.json();
+  }
+
+  async getPaymentReconciliation(agreementId: string): Promise<PaymentReconciliationSummary> {
+    const res = await fetch(`${API_BASE}/protection/agreements/${agreementId}/reconciliation`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to load payment reconciliation summary');
+    }
+    return await res.json();
+  }
+
+  async getDeliveries(agreementId?: string): Promise<DeliveryRecord[]> {
+    const q = agreementId ? `?agreement_id=${encodeURIComponent(agreementId)}` : '';
+    const res = await fetch(`${API_BASE}/protection/deliveries${q}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to load deliveries');
+    }
+    return await res.json();
+  }
+
+  async recordDelivery(payload: any): Promise<DeliveryRecord> {
+    const res = await fetch(`${API_BASE}/protection/deliveries`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.detail || 'Failed to record delivery');
+    }
+    return await res.json();
+  }
+
+  async confirmDelivery(id: string, notes?: string): Promise<DeliveryRecord> {
+    const res = await fetch(`${API_BASE}/protection/deliveries/${id}/confirm`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ confirmed: true, notes }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.detail || 'Failed to confirm delivery');
+    }
+    return await res.json();
+  }
+
+  async getPayments(agreementId?: string): Promise<PaymentRecord[]> {
+    const q = agreementId ? `?agreement_id=${encodeURIComponent(agreementId)}` : '';
+    const res = await fetch(`${API_BASE}/protection/payments${q}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to load payments');
+    }
+    return await res.json();
+  }
+
+  async recordPayment(payload: any): Promise<PaymentRecord> {
+    const res = await fetch(`${API_BASE}/protection/payments`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.detail || 'Failed to record payment');
+    }
+    return await res.json();
+  }
+
+  async getDisputes(status?: string): Promise<FarmerDispute[]> {
+    const q = status ? `?status=${encodeURIComponent(status)}` : '';
+    const res = await fetch(`${API_BASE}/protection/disputes${q}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to load disputes');
+    }
+    return await res.json();
+  }
+
+  async getDispute(id: string): Promise<FarmerDispute> {
+    const res = await fetch(`${API_BASE}/protection/disputes/${id}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to load dispute details');
+    }
+    return await res.json();
+  }
+
+  async createDispute(payload: any): Promise<FarmerDispute> {
+    const res = await fetch(`${API_BASE}/protection/disputes`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.detail || 'Failed to create dispute');
+    }
+    return await res.json();
+  }
+
+  async updateDisputeStatus(id: string, payload: { status: string; notes: string; resolution_notes?: string }): Promise<FarmerDispute> {
+    const res = await fetch(`${API_BASE}/protection/disputes/${id}/status`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.detail || 'Failed to update dispute status');
+    }
+    return await res.json();
+  }
+
+  async getRiskAlerts(resolved?: boolean): Promise<FarmerRiskAlert[]> {
+    const q = resolved !== undefined ? `?resolved=${resolved}` : '';
+    const res = await fetch(`${API_BASE}/protection/risk-alerts${q}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      return [];
+    }
+    return await res.json();
+  }
+
+  async resolveRiskAlert(alertId: string, resolution_notes: string): Promise<FarmerRiskAlert> {
+    const res = await fetch(`${API_BASE}/protection/risk-alerts/${alertId}/resolve`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ resolution_notes }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || err.detail || 'Failed to resolve risk alert');
+    }
+    return await res.json();
+  }
+
+  async getTransactionAuditEvents(agreementId?: string): Promise<TransactionAuditEvent[]> {
+    const q = agreementId ? `?agreement_id=${encodeURIComponent(agreementId)}` : '';
+    const res = await fetch(`${API_BASE}/protection/audit-events${q}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      return [];
     }
     return await res.json();
   }
