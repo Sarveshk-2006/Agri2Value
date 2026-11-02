@@ -26,6 +26,7 @@ from app.execution.schemas import (
     ExecutionStatusTransitionRequest,
     ExecutionRequestCompleteRequest,
     CropRescueAssessment,
+    CropRescueAssessRequest,
 )
 from app.execution.service import execution_service
 from app.execution.crop_rescue_service import crop_rescue_service
@@ -258,4 +259,23 @@ async def assess_crop_rescue(
         crop_lot_id=crop_lot_id,
         farmer_user_id=current_user.id,
         db=db,
+    )
+
+
+@crop_rescue_router.post(
+    "/lot/{crop_lot_id}",
+    response_model=CropRescueAssessment,
+    summary="Evaluate Crop Lot Emergency Risks with Custom Configured Assumptions",
+)
+async def assess_crop_rescue_with_custom_assumptions(
+    crop_lot_id: str,
+    payload: Optional[CropRescueAssessRequest] = None,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return await crop_rescue_service.assess_lot_for_rescue(
+        crop_lot_id=crop_lot_id,
+        farmer_user_id=current_user.id,
+        db=db,
+        custom_assumptions=payload.custom_assumptions if payload else None,
     )

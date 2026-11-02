@@ -134,6 +134,32 @@ def calculate_group_selling_option(
         f"and FPO handling, net profit is ₹{net_profit:,.2f} (₹{net_profit_per_kg:.2f}/kg)."
     )
 
+    from app.decision_engine.models import AssumptionItem, AssumptionProvenance
+
+    assumptions = [
+        AssumptionItem(
+            name="Shared Freight Full-Truck Tariff",
+            value=float(total_truck_freight_inr),
+            unit="INR/truck",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Vashi Wholesale Terminal round-trip 10-tonne truck freight",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="Pooling Aggregation Threshold",
+            value=8000,
+            unit="kg",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Minimum collective volume required for freight economy",
+            is_configurable=False,
+        ),
+    ]
+
+    constraints = [
+        "Farmer must register lot into verified Niphad cluster pooling pool.",
+        "Dispatch schedule synchronized; individual lot delay delays entire collective consignment.",
+    ]
+
     return CalculatedOption(
         route_type=RouteType.GROUP_SELLING,
         route_name=f"Shared Logistics & Group Sale ({group_name})",
@@ -157,4 +183,6 @@ def calculate_group_selling_option(
         data_source=data_source,
         data_timestamp=data_timestamp,
         is_demo_data=True,
+        itemized_assumptions=assumptions,
+        operational_constraints=constraints,
     )

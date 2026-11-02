@@ -164,7 +164,100 @@ class DecisionEngine:
 
         overall_status = "COMPLETED"
         if not feasible:
-            overall_status = "NEEDS_MORE_DATA" if data_warnings else "FAILED"
+            overall_status = "NEEDS_MORE_DATA" if data_warnings else "NO_FEASIBLE_PATHWAY"
+
+        # Collect disclosed assumptions
+        all_assumptions: List[Any] = []
+        seen_names = set()
+        for opt in options:
+            for assump in opt.itemized_assumptions:
+                if assump.name not in seen_names:
+                    all_assumptions.append(assump)
+                    seen_names.add(assump.name)
+
+        # Build sensitivity preview for primary option (recommended or baseline)
+        primary_opt = recommended or baseline or (feasible[0] if feasible else None)
+        sensitivity_preview: Optional[Any] = None
+        if primary_opt and primary_opt.net_profit > Decimal("0.00"):
+            from app.decision_engine.models import (
+                ScenarioVariation,
+                SensitivityAnalysisResult,
+                round_curr,
+            )
+
+            exp_rev = primary_opt.gross_revenue
+            exp_cost = primary_opt.costs.total_costs
+            exp_profit = primary_opt.net_profit
+            q_in = lot.quantity_kg
+
+            # Conservative scenario: -15% gross revenue, +15% operational costs
+            con_rev = round_curr(exp_rev * Decimal("0.85"))
+            con_cost = round_curr(exp_cost * Decimal("1.15"))
+            con_profit = round_curr(con_rev - con_cost)
+            con_profit_per_kg = round_curr(con_profit / q_in)
+
+            # Optimistic scenario: +15% gross revenue, -10% logistics/handling costs
+            opt_rev = round_curr(exp_rev * Decimal("1.15"))
+            opt_cost = round_curr(exp_cost * Decimal("0.90"))
+            opt_profit = round_curr(opt_rev - opt_cost)
+            opt_profit_per_kg = round_curr(opt_profit / q_in)
+
+            variations = [
+                ScenarioVariation(
+                    scenario_type="CONSERVATIVE",
+                    description="15% market price softening & 15% freight/handling spike",
+                    assumptions_applied={"price_shift_pct": -15, "cost_shift_pct": 15},
+                    projected_gross_revenue=con_rev,
+                    projected_total_costs=con_cost,
+                    projected_net_profit=con_profit,
+                    projected_net_profit_per_kg=con_profit_per_kg,
+                    variance_from_expected=round_curr(con_profit - exp_profit),
+                ),
+                ScenarioVariation(
+                    scenario_type="EXPECTED",
+                    description="Baseline market parameters & contracted quotations",
+                    assumptions_applied={"price_shift_pct": 0, "cost_shift_pct": 0},
+                    projected_gross_revenue=exp_rev,
+                    projected_total_costs=exp_cost,
+                    projected_net_profit=exp_profit,
+                    projected_net_profit_per_kg=primary_opt.net_profit_per_kg,
+                    variance_from_expected=Decimal("0.00"),
+                ),
+                ScenarioVariation(
+                    scenario_type="OPTIMISTIC",
+                    description="15% premium realization & 10% streamlined dispatch savings",
+                    assumptions_applied={"price_shift_pct": 15, "cost_shift_pct": -10},
+                    projected_gross_revenue=opt_rev,
+                    projected_total_costs=opt_cost,
+                    projected_net_profit=opt_profit,
+                    projected_net_profit_per_kg=opt_profit_per_kg,
+                    variance_from_expected=round_curr(opt_profit - exp_profit),
+                ),
+            ]
+
+            stability = "ROBUST" if con_profit > Decimal("0.00") else "SENSITIVE_TO_PRICE"
+            vulnerabilities = []
+            if con_profit <= Decimal("0.00"):
+                vulnerabilities.append("Downward price drop of 15% eliminates positive farmer net margin.")
+            if exp_cost > (exp_rev * Decimal("0.40")):
+                vulnerabilities.append("High cost structure (deductions >40% of gross); highly sensitive to fuel or labour tariffs.")
+
+            sensitivity_preview = SensitivityAnalysisResult(
+                crop_lot_id=lot.lot_id,
+                crop_name=lot.crop_name,
+                quantity_kg=lot.quantity_kg,
+                route_type=primary_opt.route_type,
+                route_name=primary_opt.route_name,
+                expected_net_profit=exp_profit,
+                expected_net_profit_per_kg=primary_opt.net_profit_per_kg,
+                scenarios=variations,
+                key_vulnerabilities=vulnerabilities or ["Resilient across reasonable price movements."],
+                recommendation_stability=stability,
+                sensitivity_summary=(
+                    f"Net profit spans from ₹{con_profit:,.2f} (conservative) to ₹{opt_profit:,.2f} (optimistic). "
+                    f"Recommendation stability: {stability}."
+                ),
+            )
 
         return DecisionResult(
             algorithm_version="v2.0-deterministic",
@@ -177,6 +270,8 @@ class DecisionEngine:
             baseline_mandi_option=baseline,
             summary_explanation=summary,
             missing_data_warnings=data_warnings,
+            assumptions_disclosed=all_assumptions,
+            sensitivity_preview=sensitivity_preview,
             disclaimer=(
                 "⚠️ DEMO MODE / ILLUSTRATIVE SAMPLE VALUES: All market prices, buyer quotes, processing conversion yields, "
                 "and storage rates are sample illustrative values for simulation and verification. Not live market guarantees."

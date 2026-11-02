@@ -126,6 +126,48 @@ def calculate_raw_mandi_option(
         f"(₹{net_profit_per_kg:.2f}/kg). Payment is immediate (1 day), but returns remain exposed to daily auction price swings."
     )
 
+    from app.decision_engine.models import AssumptionItem, AssumptionProvenance
+
+    assumptions = [
+        AssumptionItem(
+            name="APMC Statutory Cess",
+            value=float(apmc_cess_pct * 100),
+            unit="%",
+            provenance=AssumptionProvenance.VERIFIED,
+            source_description="Maharashtra APMC Statutory Market Regulation",
+            is_configurable=False,
+        ),
+        AssumptionItem(
+            name="Commission Agent Fee",
+            value=float(commission_pct * 100),
+            unit="%",
+            provenance=AssumptionProvenance.VERIFIED,
+            source_description="APMC Pimpalgaon Baswant Schedule",
+            is_configurable=False,
+        ),
+        AssumptionItem(
+            name="Transit Handling & Sorting Loss",
+            value=float(sorting_loss_pct * 100),
+            unit="%",
+            provenance=AssumptionProvenance.ILLUSTRATIVE_BENCHMARK,
+            source_description="Empirical post-harvest yard sorting discard guideline",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="Local Rural Transport Tariff",
+            value=float(transport_rate_per_kg_km),
+            unit="INR/kg/km",
+            provenance=AssumptionProvenance.ILLUSTRATIVE_BENCHMARK,
+            source_description="Nashik-Niphad agricultural tempo freight standard",
+            is_configurable=True,
+        ),
+    ]
+
+    constraints = [
+        "Produce must arrive at APMC yard before 08:30 AM for open auction trading.",
+        f"Transit distance is {distance_km} km; unprotected transit during rain risks waterlogging damage.",
+    ]
+
     return CalculatedOption(
         route_type=RouteType.RAW_MANDI,
         route_name=mandi_name,
@@ -151,4 +193,6 @@ def calculate_raw_mandi_option(
         data_source=data_source,
         data_timestamp=data_timestamp,
         is_demo_data=not is_live,
+        itemized_assumptions=assumptions,
+        operational_constraints=constraints,
     )

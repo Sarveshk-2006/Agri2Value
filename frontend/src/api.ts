@@ -26,6 +26,10 @@ import type {
   FarmerRiskAlert,
   TransactionAuditEvent,
   ProtectionDashboardMetrics,
+  AssumptionItem,
+  SensitivityAnalysisResult,
+  OutcomeComparison,
+  CropRescueCustomAssumptions,
 } from './types';
 
 const API_BASE = '/api/v1';
@@ -374,6 +378,46 @@ class ApiService {
     return await res.json();
   }
 
+  async getBenchmarkAssumptions(): Promise<AssumptionItem[]> {
+    const res = await fetch(`${API_BASE}/decision-engine/assumptions-config`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  }
+
+  async runSensitivityAnalysis(
+    lotId: string,
+    params?: {
+      price_variance_pct?: number;
+      transport_variance_pct?: number;
+      wastage_variance_pct?: number;
+      holding_days_shift?: number;
+    }
+  ): Promise<SensitivityAnalysisResult> {
+    const res = await fetch(`${API_BASE}/decision-engine/sensitivity/${lotId}`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(params || {}),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to evaluate sensitivity analysis');
+    }
+    return await res.json();
+  }
+
+  async getDecisionOutcomeComparison(decisionId: string): Promise<OutcomeComparison> {
+    const res = await fetch(`${API_BASE}/decision-engine/outcome-comparison/${decisionId}`, {
+      headers: this.getHeaders(),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to retrieve outcome comparison');
+    }
+    return await res.json();
+  }
+
   // ---- Weather API (Phase 2.6) ----
 
   async getWeather(lat = 20.0760, lon = 74.0534): Promise<WeatherResponse> {
@@ -586,6 +630,26 @@ class ApiService {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || 'Failed to evaluate crop rescue assessment');
+    }
+    return await res.json();
+  }
+
+  async assessCropRescueCustom(
+    cropLotId: string,
+    customAssumptions?: CropRescueCustomAssumptions,
+    supplementaryTelemetry?: Record<string, any>
+  ): Promise<CropRescueAssessment> {
+    const res = await fetch(`${API_BASE}/crop-rescue/lot/${cropLotId}`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({
+        custom_assumptions: customAssumptions,
+        supplementary_telemetry: supplementaryTelemetry,
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to evaluate custom crop rescue assessment');
     }
     return await res.json();
   }

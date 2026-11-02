@@ -25,11 +25,17 @@ from app.decision_engine.models import (
     HarvestLotSnapshot,
     DecisionResult,
     CalculatedOption,
+    AssumptionItem,
+    AssumptionProvenance,
+    ScenarioVariation,
+    SensitivityAnalysisResult,
+    OutcomeComparison,
 )
 from app.decision_engine.engine import DecisionEngine
 from app.decision_engine.schemas import (
     DecisionOptionResponse,
     DecisionRunResponse,
+    SensitivityRequest,
 )
 
 
@@ -45,6 +51,11 @@ def _serialize_for_db(obj: Any) -> str:
 
 def _format_option_response(opt_model: DecisionOption) -> DecisionOptionResponse:
     """Helper to parse a DecisionOption ORM model into DecisionOptionResponse."""
+    risks_data = json.loads(opt_model.risks_and_confidence) if opt_model.risks_and_confidence else {}
+    raw_assumptions = risks_data.get("itemized_assumptions", [])
+    itemized_assumptions = [AssumptionItem(**a) for a in raw_assumptions] if raw_assumptions else []
+    operational_constraints = risks_data.get("operational_constraints", [])
+
     return DecisionOptionResponse(
         id=opt_model.id,
         decision_run_id=opt_model.decision_run_id,
@@ -64,15 +75,24 @@ def _format_option_response(opt_model: DecisionOption) -> DecisionOptionResponse
         time_to_payment_days=opt_model.time_to_payment_days,
         cost_breakdown=json.loads(opt_model.cost_breakdown),
         feasibility_reasons=json.loads(opt_model.feasibility_reasons),
-        risks_and_confidence=json.loads(opt_model.risks_and_confidence),
+        risks_and_confidence=risks_data,
         explanation=opt_model.explanation,
         data_source=opt_model.data_source,
         data_timestamp=opt_model.data_timestamp,
+        itemized_assumptions=itemized_assumptions,
+        operational_constraints=operational_constraints,
     )
 
 
 def _format_run_response(run_model: DecisionRun) -> DecisionRunResponse:
     """Helper to parse a DecisionRun ORM model with its options into DecisionRunResponse."""
+    snapshot = json.loads(run_model.input_snapshot) if run_model.input_snapshot else {}
+    raw_assumptions = snapshot.get("assumptions_disclosed", [])
+    assumptions_disclosed = [AssumptionItem(**a) for a in raw_assumptions] if raw_assumptions else []
+
+    raw_sensitivity = snapshot.get("sensitivity_preview")
+    sensitivity_preview = SensitivityAnalysisResult(**raw_sensitivity) if raw_sensitivity else None
+
     options_responses = [_format_option_response(opt) for opt in run_model.options]
     return DecisionRunResponse(
         id=run_model.id,
@@ -85,10 +105,12 @@ def _format_run_response(run_model: DecisionRun) -> DecisionRunResponse:
         recommended_net_profit=run_model.recommended_net_profit,
         baseline_net_profit=run_model.baseline_net_profit,
         additional_profit_vs_baseline=run_model.additional_profit_vs_baseline,
-        input_snapshot=json.loads(run_model.input_snapshot),
+        input_snapshot=snapshot,
         disclaimer=run_model.disclaimer,
         created_at=run_model.created_at,
         options=options_responses,
+        assumptions_disclosed=assumptions_disclosed,
+        sensitivity_preview=sensitivity_preview,
     )
 
 
@@ -238,7 +260,9 @@ async def evaluate_crop_lot_decision(
             "Local tempo transport tariff: ₹0.045/kg/km",
             "APMC statutory cess: 1.05%, agent commission: 4.0%",
             "Handling loss: 2.0% during transit and yard handling"
-        ]
+        ],
+        "assumptions_disclosed": [a.model_dump(mode="json") for a in decision_result.assumptions_disclosed],
+        "sensitivity_preview": decision_result.sensitivity_preview.model_dump(mode="json") if decision_result.sensitivity_preview else None,
     })
 
     db_run = DecisionRun(
@@ -258,6 +282,10 @@ async def evaluate_crop_lot_decision(
     db.add(db_run)
 
     for opt in all_evaluated_options:
+        opt_risks = dict(opt.risks_and_confidence)
+        opt_risks["itemized_assumptions"] = [a.model_dump(mode="json") for a in opt.itemized_assumptions]
+        opt_risks["operational_constraints"] = opt.operational_constraints
+
         db_opt = DecisionOption(
             id=str(uuid.uuid4()),
             decision_run_id=run_id,
@@ -277,7 +305,7 @@ async def evaluate_crop_lot_decision(
             time_to_payment_days=opt.time_to_payment_days,
             cost_breakdown=_serialize_for_db(opt.costs.model_dump(mode="json")),
             feasibility_reasons=_serialize_for_db(opt.feasibility.model_dump(mode="json")),
-            risks_and_confidence=_serialize_for_db(opt.risks_and_confidence),
+            risks_and_confidence=_serialize_for_db(opt_risks),
             explanation=opt.explanation,
             data_source=opt.data_source,
         )
@@ -358,3 +386,373 @@ async def get_lot_decisions(
     runs = result.scalars().all()
 
     return [_format_run_response(r) for r in runs]
+
+
+async def get_decision_actual_outcome_comparison(
+    decision_id: str,
+    current_user_id: str,
+    db: AsyncSession,
+) -> OutcomeComparison:
+    """
+    Compare decision expectations against actual execution, delivery, and payment records.
+    Never invents records. Reconciles data transparently when completed records exist.
+    """
+    # 1. Fetch DecisionRun with options
+    stmt = (
+        select(DecisionRun)
+        .options(selectinload(DecisionRun.options))
+        .where(DecisionRun.id == decision_id)
+    )
+    res = await db.execute(stmt)
+    run = res.scalar_one_or_none()
+    if not run:
+        raise NotFoundError("Decision run", decision_id)
+    if run.owner_user_id != current_user_id:
+        raise AuthorizationError("You do not have permission to view this decision run.")
+
+    # 2. Extract expectations from recommended option or rank 1 option
+    rec_opt = next((o for o in run.options if o.is_recommended), None)
+    if not rec_opt and run.options:
+        rec_opt = min(run.options, key=lambda o: o.rank if o.rank is not None else 999)
+
+    expected_qty = rec_opt.saleable_quantity if rec_opt else Decimal("0.00")
+    expected_price = rec_opt.effective_realization_per_kg if rec_opt else Decimal("0.00")
+    estimated_deductions = rec_opt.total_costs if rec_opt else Decimal("0.00")
+    estimated_net = rec_opt.net_profit if rec_opt else Decimal("0.00")
+    expected_days = rec_opt.time_to_payment_days or 3
+
+    # 3. Check for linked DealAgreement on the crop lot
+    from app.database.models import DealAgreement
+    stmt_deal = (
+        select(DealAgreement)
+        .options(
+            selectinload(DealAgreement.deliveries),
+            selectinload(DealAgreement.payments),
+        )
+        .where(DealAgreement.crop_lot_id == run.crop_lot_id)
+        .order_by(DealAgreement.created_at.desc())
+    )
+    res_deal = await db.execute(stmt_deal)
+    deals = res_deal.scalars().all()
+
+    if not deals:
+        return OutcomeComparison(
+            has_actual_outcome=False,
+            status="PENDING_EXECUTION",
+            decision_run_id=run.id,
+            crop_lot_id=run.crop_lot_id,
+            recommended_route=rec_opt.route_name if rec_opt else "None",
+            expected_quantity_kg=expected_qty,
+            expected_unit_price=expected_price,
+            estimated_deductions_inr=estimated_deductions,
+            estimated_net_profit_inr=estimated_net,
+            expected_realization_days=expected_days,
+            actual_quantity_kg=None,
+            actual_unit_price=None,
+            actual_deductions_inr=None,
+            actual_net_proceeds_inr=None,
+            actual_realization_days=None,
+            quantity_variance_pct=None,
+            price_variance_pct=None,
+            deductions_variance_inr=None,
+            net_profit_variance_inr=None,
+            net_profit_variance_pct=None,
+            comparison_notes=(
+                "No execution contract or delivery records found for this crop lot yet. "
+                "Recommendation expectations remain baseline benchmark."
+            ),
+        )
+
+    # Use the primary agreement
+    agreement = deals[0]
+    deliveries = agreement.deliveries or []
+    payments = agreement.payments or []
+
+    # Check if delivery or payment occurred
+    total_delivered_kg = sum((d.accepted_quantity_kg for d in deliveries), Decimal("0.00"))
+    total_paid_inr = sum((p.amount_paid for p in payments), Decimal("0.00"))
+
+    has_completed_delivery = any(d.status == "CONFIRMED" for d in deliveries) or agreement.status in ("COMPLETED", "ACCEPTED")
+
+    if not has_completed_delivery and total_paid_inr == 0:
+        return OutcomeComparison(
+            has_actual_outcome=False,
+            status="DEAL_CONTRACTED_AWAITING_DELIVERY",
+            decision_run_id=run.id,
+            crop_lot_id=run.crop_lot_id,
+            recommended_route=rec_opt.route_name if rec_opt else "None",
+            expected_quantity_kg=expected_qty,
+            expected_unit_price=expected_price,
+            estimated_deductions_inr=estimated_deductions,
+            estimated_net_profit_inr=estimated_net,
+            expected_realization_days=expected_days,
+            comparison_notes=(
+                f"Deal {agreement.agreement_number} contracted with {agreement.partner_name} "
+                f"at ₹{agreement.agreed_unit_price}/kg, awaiting weighbridge delivery confirmation."
+            ),
+        )
+
+    # Actual numbers verified from weighbridge delivery and payment records
+    actual_qty = total_delivered_kg if total_delivered_kg > 0 else agreement.agreed_quantity_kg
+    actual_price = agreement.agreed_unit_price
+    actual_deductions = agreement.total_deductions
+    actual_net = total_paid_inr if total_paid_inr > 0 else agreement.estimated_net_payout
+
+    # Days to realization
+    created_ts = agreement.created_at
+    latest_ts = agreement.updated_at or created_ts
+    if payments and payments[0].payment_date:
+        latest_ts = payments[0].payment_date
+    actual_days = max(1, (latest_ts - created_ts).days)
+
+    qty_var_pct = (
+        ((actual_qty - expected_qty) / expected_qty * Decimal("100")).quantize(Decimal("0.01"))
+        if expected_qty > 0 else Decimal("0.00")
+    )
+    price_var_pct = (
+        ((actual_price - expected_price) / expected_price * Decimal("100")).quantize(Decimal("0.01"))
+        if expected_price > 0 else Decimal("0.00")
+    )
+    deductions_var_inr = actual_deductions - estimated_deductions
+    net_profit_var_inr = actual_net - estimated_net
+    net_profit_var_pct = (
+        ((net_profit_var_inr) / abs(estimated_net) * Decimal("100")).quantize(Decimal("0.01"))
+        if estimated_net != 0 else Decimal("0.00")
+    )
+
+    reconcile_status = "RECONCILED" if agreement.status == "COMPLETED" else "PARTIALLY_RECONCILED"
+    sign_str = "+" if net_profit_var_inr >= 0 else ""
+    notes = (
+        f"Verified from Deal {agreement.agreement_number} ({agreement.partner_name}). "
+        f"Delivered {actual_qty:,.1f} kg with ₹{actual_deductions:,.2f} deductions. "
+        f"Net proceeds realized: ₹{actual_net:,.2f} vs expected ₹{estimated_net:,.2f} "
+        f"({sign_str}₹{net_profit_var_inr:,.2f}, {net_profit_var_pct}%)."
+    )
+
+    return OutcomeComparison(
+        has_actual_outcome=True,
+        status=reconcile_status,
+        decision_run_id=run.id,
+        crop_lot_id=run.crop_lot_id,
+        recommended_route=rec_opt.route_name if rec_opt else "None",
+        expected_quantity_kg=expected_qty,
+        expected_unit_price=expected_price,
+        estimated_deductions_inr=estimated_deductions,
+        estimated_net_profit_inr=estimated_net,
+        expected_realization_days=expected_days,
+        actual_quantity_kg=actual_qty,
+        actual_unit_price=actual_price,
+        actual_deductions_inr=actual_deductions,
+        actual_net_proceeds_inr=actual_net,
+        actual_realization_days=actual_days,
+        quantity_variance_pct=qty_var_pct,
+        price_variance_pct=price_var_pct,
+        deductions_variance_inr=deductions_var_inr,
+        net_profit_variance_inr=net_profit_var_inr,
+        net_profit_variance_pct=net_profit_var_pct,
+        comparison_notes=notes,
+    )
+
+
+async def run_sensitivity_analysis(
+    crop_lot_id: str,
+    current_user_id: str,
+    req: SensitivityRequest,
+    db: AsyncSession,
+) -> SensitivityAnalysisResult:
+    """
+    Perform multi-scenario sensitivity exploration for a crop lot.
+    Produces Conservative, Expected, and Optimistic net profit projections.
+    """
+    stmt = (
+        select(CropLot)
+        .options(selectinload(CropLot.farm))
+        .where(CropLot.id == crop_lot_id)
+    )
+    result = await db.execute(stmt)
+    crop_lot = result.scalar_one_or_none()
+    if not crop_lot:
+        raise NotFoundError("Crop lot", crop_lot_id)
+    if crop_lot.owner_user_id != current_user_id:
+        raise AuthorizationError("You do not have permission to evaluate this crop lot.")
+
+    farm = crop_lot.farm
+    lot_snapshot = HarvestLotSnapshot(
+        lot_id=crop_lot.id,
+        crop_name=crop_lot.crop_name,
+        variety=crop_lot.variety,
+        quantity_kg=crop_lot.quantity_kg_normalized,
+        quality_grade=crop_lot.quality_grade,
+        harvest_date=crop_lot.harvest_date.isoformat() if crop_lot.harvest_date else None,
+        farm_state=farm.state if farm else "Maharashtra",
+        farm_district=farm.district if farm else "Nashik",
+        farm_village=farm.village if farm else "Niphad",
+        has_cold_storage_access=False,
+    )
+
+    engine = DecisionEngine()
+    baseline_result = engine.evaluate(lot_snapshot)
+    rec_base = baseline_result.recommended_option
+    base_net = rec_base.net_profit if rec_base else Decimal("0.00")
+    base_rev = rec_base.gross_revenue if rec_base else Decimal("0.00")
+    base_costs = rec_base.costs.total_costs if rec_base else Decimal("0.00")
+
+    price_shift = (req.price_variance_pct or Decimal("15.0")) / Decimal("100")
+    transport_shift = (req.transport_variance_pct or Decimal("20.0")) / Decimal("100")
+    wastage_shift = (req.wastage_variance_pct or Decimal("5.0")) / Decimal("100")
+
+    # 1. Conservative scenario
+    cons_mandi_price = Decimal("19.50") * (Decimal("1.00") - price_shift)
+    cons_buyer_price = Decimal("24.00") * (Decimal("1.00") - price_shift)
+    cons_tempo_rate = Decimal("0.045") * (Decimal("1.00") + transport_shift)
+
+    cons_engine = DecisionEngine(sample_overrides={
+        "mandi": {"rate_per_kg": cons_mandi_price, "transport_tariff_per_kg_km": cons_tempo_rate, "transit_sorting_loss_pct": Decimal("0.02") + wastage_shift},
+        "direct_buyer": {"offer_price_per_kg": cons_buyer_price, "quality_sorting_loss_pct": Decimal("0.04") + wastage_shift},
+        "processing": {"recovery_yield_pct": Decimal("0.24"), "puree_selling_price_per_kg": Decimal("75.00") * (Decimal("1.00") - price_shift)},
+    })
+    cons_result = cons_engine.evaluate(lot_snapshot)
+    cons_rec = cons_result.recommended_option
+    cons_net = cons_rec.net_profit if cons_rec else Decimal("0.00")
+    cons_rev = cons_rec.gross_revenue if cons_rec else Decimal("0.00")
+    cons_cost = cons_rec.costs.total_costs if cons_rec else Decimal("0.00")
+    cons_var_inr = cons_net - base_net
+    cons_var_pct = ((cons_var_inr / base_net) * Decimal("100")).quantize(Decimal("0.01")) if base_net != 0 else Decimal("0.00")
+
+    conservative_scenario = ScenarioVariation(
+        name="Conservative",
+        description=f"Market price -{req.price_variance_pct}%, transport tariff +{req.transport_variance_pct}%, sorting wastage +{req.wastage_variance_pct}%",
+        projected_gross_revenue=cons_rev,
+        projected_total_costs=cons_cost,
+        projected_net_profit=cons_net,
+        recommended_route=cons_rec.route_name if cons_rec else "None",
+        net_profit_variance_inr=cons_var_inr,
+        net_profit_variance_pct=cons_var_pct,
+    )
+
+    expected_scenario = ScenarioVariation(
+        name="Expected",
+        description="Standard pilot benchmarks and current APMC quotes with verified cost tariffs",
+        projected_gross_revenue=base_rev,
+        projected_total_costs=base_costs,
+        projected_net_profit=base_net,
+        recommended_route=rec_base.route_name if rec_base else "None",
+        net_profit_variance_inr=Decimal("0.00"),
+        net_profit_variance_pct=Decimal("0.00"),
+    )
+
+    # 3. Optimistic scenario
+    opt_mandi_price = Decimal("19.50") * (Decimal("1.00") + price_shift)
+    opt_buyer_price = Decimal("24.00") * (Decimal("1.00") + price_shift)
+    opt_tempo_rate = Decimal("0.045") * Decimal("0.90")
+
+    opt_engine = DecisionEngine(sample_overrides={
+        "mandi": {"rate_per_kg": opt_mandi_price, "transport_tariff_per_kg_km": opt_tempo_rate, "transit_sorting_loss_pct": Decimal("0.01")},
+        "direct_buyer": {"offer_price_per_kg": opt_buyer_price, "quality_sorting_loss_pct": Decimal("0.02")},
+        "processing": {"recovery_yield_pct": Decimal("0.30"), "puree_selling_price_per_kg": Decimal("75.00") * (Decimal("1.00") + price_shift)},
+    })
+    opt_result = opt_engine.evaluate(lot_snapshot)
+    opt_rec = opt_result.recommended_option
+    opt_net = opt_rec.net_profit if opt_rec else Decimal("0.00")
+    opt_rev = opt_rec.gross_revenue if opt_rec else Decimal("0.00")
+    opt_cost = opt_rec.costs.total_costs if opt_rec else Decimal("0.00")
+    opt_var_inr = opt_net - base_net
+    opt_var_pct = ((opt_var_inr / base_net) * Decimal("100")).quantize(Decimal("0.01")) if base_net != 0 else Decimal("0.00")
+
+    optimistic_scenario = ScenarioVariation(
+        name="Optimistic",
+        description=f"Market price +{req.price_variance_pct}%, negotiated transport -10%, minimal wastage (1-2%)",
+        projected_gross_revenue=opt_rev,
+        projected_total_costs=opt_cost,
+        projected_net_profit=opt_net,
+        recommended_route=opt_rec.route_name if opt_rec else "None",
+        net_profit_variance_inr=opt_var_inr,
+        net_profit_variance_pct=opt_var_pct,
+    )
+
+    # Check stability
+    stability = "ROBUST"
+    if cons_rec and rec_base and cons_rec.route_name != rec_base.route_name:
+        stability = "SENSITIVE_TO_PRICE"
+    elif cons_net < 0:
+        stability = "DOWNSIDE_RISK"
+
+    vulnerabilities = [
+        "Fuel price escalation or vehicle shortage on rural collection routes (+20% tariff).",
+        "APMC market glut during peak harvest depressing wholesale rates.",
+        "Delayed sorting rejection at buyer collection gates exceeding 5%.",
+    ]
+
+    summary = (
+        f"Net proceeds range between ₹{cons_net:,.2f} (Conservative) and ₹{opt_net:,.2f} (Optimistic). "
+        f"Recommendation stability: {stability}."
+    )
+
+    return SensitivityAnalysisResult(
+        scenarios=[conservative_scenario, expected_scenario, optimistic_scenario],
+        key_vulnerabilities=vulnerabilities,
+        recommendation_stability=stability,
+        sensitivity_summary=summary,
+    )
+
+
+def get_benchmark_assumptions() -> List[AssumptionItem]:
+    """Return default benchmark assumptions with provenance metadata."""
+    return [
+        AssumptionItem(
+            name="APMC Statutory Cess",
+            value="1.05%",
+            unit="pct_gross",
+            provenance=AssumptionProvenance.VERIFIED,
+            source_description="Maharashtra APMC Act, Pimpalgaon Market Committee Schedule",
+            is_configurable=False,
+        ),
+        AssumptionItem(
+            name="Commission Agent Hamali & Arhat",
+            value="4.00%",
+            unit="pct_gross",
+            provenance=AssumptionProvenance.VERIFIED,
+            source_description="APMC Pimpalgaon By-laws Trade Schedule",
+            is_configurable=False,
+        ),
+        AssumptionItem(
+            name="Rural Tempo Freight Tariff",
+            value="₹0.045",
+            unit="INR/kg/km",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Local Niphad-Nashik tempo union standard tariff schedule",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="Tomato Puree 28° Brix Recovery Yield",
+            value="28.0%",
+            unit="pct_raw_weight",
+            provenance=AssumptionProvenance.ILLUSTRATIVE_BENCHMARK,
+            source_description="CFTRI Food Processing Standard for Commercial Table Tomatoes",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="Job-Work Processing Charge",
+            value="₹4.50",
+            unit="INR/kg_raw",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Sayhadri Farmer Producer Co. commercial rate card",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="Cold Storage Tariff",
+            value="₹1.80",
+            unit="INR/kg/month",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Pimpalgaon Agro Cold Chain standard commercial tariff",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="Tomato Ambient Safe Holding Limit",
+            value="4 days",
+            unit="days",
+            provenance=AssumptionProvenance.ILLUSTRATIVE_BENCHMARK,
+            source_description="Post-harvest physiological research guidelines at 28-34°C",
+            is_configurable=True,
+        ),
+    ]

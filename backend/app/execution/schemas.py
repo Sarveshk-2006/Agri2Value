@@ -218,6 +218,14 @@ class ExecutionRequestCompleteRequest(BaseModel):
 
 # ---- Crop Rescue Schemas ----------------------------------------
 
+class CropRescueAssessRequest(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    custom_assumptions: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Optional overrides for shelf-life, recovery yields, or storage tariffs",
+    )
+
+
 class RescuePathwayOption(BaseModel):
     route_type: str
     title: str
@@ -229,6 +237,9 @@ class RescuePathwayOption(BaseModel):
     risk_level: str
     action_button_label: str
     target_entity_id: Optional[str] = None
+    feasibility_status: str = Field(default="FEASIBLE", description="'FEASIBLE' | 'CONDITIONALLY_FEASIBLE' | 'INFEASIBLE'")
+    itemized_deductions: Dict[str, Any] = Field(default_factory=dict)
+    assumptions_disclosed: List[Dict[str, Any]] = Field(default_factory=list)
 
 
 class CropRescueAssessment(BaseModel):
@@ -245,6 +256,8 @@ class CropRescueAssessment(BaseModel):
     salvage_pathways: List[RescuePathwayOption]
     recommended_action: str
     missing_data_warnings: List[str] = Field(default_factory=list)
+    assumptions_disclosed: List[Dict[str, Any]] = Field(default_factory=list)
+    scenario_comparison_notes: Optional[str] = None
     disclaimer: str = (
         "Crop Rescue Mode provides advisory decision pathways based on estimated perishability "
         "and available network capacity. It does not constitute a guaranteed commercial transaction."

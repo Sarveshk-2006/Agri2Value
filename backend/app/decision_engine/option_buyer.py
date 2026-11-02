@@ -127,6 +127,42 @@ def calculate_buyer_option(
         f"of ₹{net_profit:,.2f} (₹{net_profit_per_kg:.2f}/kg). Direct bank settlement within {payment_terms_days} days."
     )
 
+    from app.decision_engine.models import AssumptionItem, AssumptionProvenance
+
+    assumptions = [
+        AssumptionItem(
+            name="Contract Quality Sorting Loss",
+            value=float(quality_sorting_loss_pct * 100),
+            unit="%",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Sahyadri Institutional Buyer Quality Spec",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="FPO / Aggregator Platform Fee",
+            value=float(platform_service_fee_pct * 100),
+            unit="%",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Agri2Value Market Facilitation Fee Schedule",
+            is_configurable=False,
+        ),
+        AssumptionItem(
+            name="Direct Dedicated Freight Tariff",
+            value=float(transport_cost_per_kg),
+            unit="INR/kg",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Direct farmgate-to-hub dedicated transport quote",
+            is_configurable=True,
+        ),
+    ]
+
+    constraints = [
+        f"Minimum order quantity (MOQ) is {min_quantity_kg} kg.",
+        f"Maximum intake ceiling is {max_capacity_kg} kg.",
+        f"Strict Grade {required_grade} inspection; lower grades rejected or downgraded at delivery gate.",
+        f"Direct payment settled within {payment_terms_days} days post weighbridge slip confirmation.",
+    ]
+
     return CalculatedOption(
         route_type=RouteType.DIRECT_BUYER,
         route_name=buyer_name,
@@ -151,4 +187,6 @@ def calculate_buyer_option(
         data_source=data_source,
         data_timestamp=data_timestamp,
         is_demo_data=True,
+        itemized_assumptions=assumptions,
+        operational_constraints=constraints,
     )

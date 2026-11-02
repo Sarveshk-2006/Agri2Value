@@ -80,6 +80,61 @@ export interface AuthTokens {
 
 export type RouteType = 'RAW_MANDI' | 'DIRECT_BUYER' | 'PROCESSING' | 'STORAGE' | 'GROUP_SELLING';
 export type FeasibilityStatus = 'FEASIBLE' | 'CONDITIONALLY_FEASIBLE' | 'INFEASIBLE' | 'NEEDS_MORE_DATA';
+export type AssumptionProvenance = 'VERIFIED' | 'CONFIGURED' | 'ILLUSTRATIVE_BENCHMARK' | 'UNKNOWN';
+
+export interface AssumptionItem {
+  name: string;
+  value: string | number;
+  unit: string;
+  provenance: AssumptionProvenance;
+  source_description: string;
+  is_configurable: boolean;
+}
+
+export interface ScenarioVariation {
+  scenario_type?: string;
+  name: string;
+  description: string;
+  projected_gross_revenue: number;
+  projected_total_costs: number;
+  projected_net_profit: number;
+  projected_net_profit_per_kg?: number;
+  recommended_route?: string;
+  net_profit_variance_inr?: number;
+  net_profit_variance_pct?: number;
+  variance_from_expected?: number;
+}
+
+export interface SensitivityAnalysisResult {
+  scenarios: ScenarioVariation[];
+  key_vulnerabilities: string[];
+  recommendation_stability: string;
+  sensitivity_summary: string;
+}
+
+export interface OutcomeComparison {
+  has_actual_outcome: boolean;
+  status: string;
+  decision_run_id: string;
+  crop_lot_id: string;
+  recommended_route: string;
+  expected_quantity_kg: number;
+  expected_unit_price: number;
+  estimated_deductions_inr: number;
+  estimated_net_profit_inr: number;
+  expected_realization_days: number;
+  actual_quantity_kg?: number;
+  actual_unit_price?: number;
+  actual_deductions_inr?: number;
+  actual_net_proceeds_inr?: number;
+  actual_realization_days?: number;
+  quantity_variance_pct?: number;
+  price_variance_pct?: number;
+  deductions_variance_inr?: number;
+  net_profit_variance_inr?: number;
+  net_profit_variance_pct?: number;
+  comparison_notes: string;
+}
 
 export interface CostItem {
   name: string;
@@ -136,6 +191,8 @@ export interface DecisionOption {
   explanation: string;
   data_source: string;
   data_timestamp: string;
+  itemized_assumptions?: AssumptionItem[];
+  operational_constraints?: string[];
 }
 
 export interface DecisionRun {
@@ -158,10 +215,18 @@ export interface DecisionRun {
     harvest_date?: string;
     farm_district?: string;
     farm_village?: string;
+    data_source_mode?: string;
+    data_mode?: string;
+    mandi_name?: string;
+    source?: string;
+    assumptions_disclosed?: AssumptionItem[];
+    sensitivity_preview?: SensitivityAnalysisResult;
   };
   disclaimer: string;
   created_at: string;
   options: DecisionOption[];
+  assumptions_disclosed?: AssumptionItem[];
+  sensitivity_preview?: SensitivityAnalysisResult;
 }
 
 // ---- Weather Interfaces (Phase 2.6) ----
@@ -420,6 +485,24 @@ export interface RescuePathwayOption {
   risk_level: string;
   action_button_label: string;
   target_entity_id?: string;
+  feasibility_status?: string;
+  itemized_deductions?: Array<{
+    name: string;
+    amount: number;
+    rate: number;
+    unit: string;
+    description: string;
+  }>;
+  assumptions_disclosed?: AssumptionItem[];
+}
+
+export interface CropRescueCustomAssumptions {
+  ambient_shelf_life_days?: number;
+  rainfall_alert_threshold_mm?: number;
+  mandi_price_slump_threshold_pct?: number;
+  cold_storage_monthly_rate_per_kg?: number;
+  processing_recovery_pct?: number;
+  puree_selling_price_per_kg?: number;
 }
 
 export interface CropRescueAssessment {
@@ -437,6 +520,8 @@ export interface CropRescueAssessment {
   recommended_action: string;
   missing_data_warnings?: string[];
   disclaimer: string;
+  assumptions_disclosed?: AssumptionItem[];
+  scenario_comparison_notes?: string[];
 }
 
 export type TabKey =

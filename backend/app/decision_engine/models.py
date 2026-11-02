@@ -138,6 +138,102 @@ class CalculatedOption(BaseModel):
     data_source: str = Field(..., description="Named data source (e.g. APMC Pimpalgaon Sample)")
     data_timestamp: str = Field(..., description="Source timestamp or date")
     is_demo_data: bool = Field(default=True, description="Always true for pilot illustrative values")
+    itemized_assumptions: List['AssumptionItem'] = Field(default_factory=list, description="Explicit assumptions")
+    operational_constraints: List[str] = Field(default_factory=list, description="Operational requirements")
+
+
+class AssumptionProvenance(str, Enum):
+    VERIFIED = "VERIFIED"
+    CONFIGURED = "CONFIGURED"
+    ILLUSTRATIVE_BENCHMARK = "ILLUSTRATIVE_BENCHMARK"
+    UNKNOWN = "UNKNOWN"
+
+
+class AssumptionItem(BaseModel):
+    """Explicitly disclosed assumption behind a calculation or rule."""
+    model_config = ConfigDict(extra="ignore")
+
+    name: str = Field(..., description="Assumption name, e.g. 'Processing Recovery Yield'")
+    value: Any = Field(..., description="Value, e.g. 0.28 or 8")
+    unit: str = Field(..., description="Measurement unit, e.g. '%', 'days', 'INR/kg'")
+    provenance: AssumptionProvenance = Field(
+        default=AssumptionProvenance.ILLUSTRATIVE_BENCHMARK,
+        description="VERIFIED | CONFIGURED | ILLUSTRATIVE_BENCHMARK | UNKNOWN",
+    )
+    source_description: str = Field(..., description="Source reference, research benchmark, or empirical guideline")
+    is_configurable: bool = Field(default=True)
+
+
+class ScenarioVariation(BaseModel):
+    """Specific sensitivity variation (e.g. Conservative, Expected, Optimistic)."""
+    model_config = ConfigDict(extra="ignore")
+
+    scenario_type: str = Field(..., description="'CONSERVATIVE' | 'EXPECTED' | 'OPTIMISTIC'")
+    description: str
+    assumptions_applied: Dict[str, Any]
+    projected_gross_revenue: Decimal
+    projected_total_costs: Decimal
+    projected_net_profit: Decimal
+    projected_net_profit_per_kg: Decimal
+    variance_from_expected: Decimal
+
+
+class SensitivityAnalysisResult(BaseModel):
+    """Sensitivity analysis across price, yield, transport, and spoilage variances."""
+    model_config = ConfigDict(extra="ignore")
+
+    crop_lot_id: str
+    crop_name: str
+    quantity_kg: Decimal
+    route_type: RouteType
+    route_name: str
+    expected_net_profit: Decimal
+    expected_net_profit_per_kg: Decimal
+    scenarios: List[ScenarioVariation]
+    key_vulnerabilities: List[str]
+    recommendation_stability: str = Field(
+        default="ROBUST",
+        description="'ROBUST' | 'SENSITIVE_TO_PRICE' | 'HIGH_LOGISTICS_RISK' | 'VOLATILE'",
+    )
+    sensitivity_summary: str
+
+
+class OutcomeComparison(BaseModel):
+    """Compares historical decision expectations with actual Phase 5 execution realizations."""
+    model_config = ConfigDict(extra="ignore")
+
+    has_actual_outcome: bool
+    status: str = Field(
+        ...,
+        description="'OUTCOME_VERIFIED' | 'PENDING_EXECUTION' | 'CANCELLED_NO_DATA'",
+    )
+    decision_run_id: str
+    crop_lot_id: str
+    execution_request_id: Optional[str] = None
+    agreement_id: Optional[str] = None
+    route_type: str
+    channel_name: str
+
+    expected_quantity_kg: Decimal
+    actual_quantity_kg: Optional[Decimal] = None
+    quantity_variance_pct: Optional[Decimal] = None
+
+    expected_unit_price: Decimal
+    actual_unit_price: Optional[Decimal] = None
+    price_variance_pct: Optional[Decimal] = None
+
+    estimated_deductions_inr: Decimal
+    actual_deductions_inr: Optional[Decimal] = None
+    deductions_variance_inr: Optional[Decimal] = None
+
+    estimated_net_profit_inr: Decimal
+    actual_net_proceeds_inr: Optional[Decimal] = None
+    net_profit_variance_inr: Optional[Decimal] = None
+    net_profit_variance_pct: Optional[Decimal] = None
+
+    expected_realization_days: int
+    actual_realization_days: Optional[int] = None
+    forecast_accuracy_summary: str
 
 
 class DecisionResult(BaseModel):
@@ -145,7 +241,7 @@ class DecisionResult(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     algorithm_version: str = Field(default="v2.0-deterministic")
-    status: str = Field(default="COMPLETED", description="COMPLETED | NEEDS_MORE_DATA | FAILED")
+    status: str = Field(default="COMPLETED", description="COMPLETED | NEEDS_MORE_DATA | FAILED | NO_FEASIBLE_PATHWAY")
     crop_lot_id: str
     input_snapshot: HarvestLotSnapshot
     recommended_option: Optional[CalculatedOption] = None
@@ -154,6 +250,8 @@ class DecisionResult(BaseModel):
     baseline_mandi_option: Optional[CalculatedOption] = None
     summary_explanation: str
     missing_data_warnings: List[str] = Field(default_factory=list)
+    assumptions_disclosed: List[AssumptionItem] = Field(default_factory=list)
+    sensitivity_preview: Optional[SensitivityAnalysisResult] = None
     disclaimer: str = Field(
         default="⚠️ DEMO MODE / ILLUSTRATIVE SAMPLE VALUES: All market prices, buyer quotes, processing conversion yields, and storage rates are sample illustrative values for simulation and verification. Not live market guarantees."
     )

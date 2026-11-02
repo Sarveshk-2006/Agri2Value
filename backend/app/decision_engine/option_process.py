@@ -165,6 +165,41 @@ def calculate_processing_option(
         f"Off-take payment is settled in 10-14 days."
     )
 
+    from app.decision_engine.models import AssumptionItem, AssumptionProvenance
+
+    assumptions = [
+        AssumptionItem(
+            name="Tomato Puree Conversion Yield (28° Brix)",
+            value=float(conversion_yield * 100),
+            unit="%",
+            provenance=AssumptionProvenance.ILLUSTRATIVE_BENCHMARK,
+            source_description="Food Processing Cluster standard for ripe industrial paste/puree",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="Job-work Processing Charge",
+            value=float(processing_charge_per_kg_raw),
+            unit="INR/kg raw",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Nashik Agro Cluster Food Park processing schedule",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="Industrial Aseptic Packaging Cost",
+            value=float(packaging_cost_per_kg_output),
+            unit="INR/kg output",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Food-grade multi-layer pouch and corrugated carton cost",
+            is_configurable=True,
+        ),
+    ]
+
+    constraints = [
+        f"Facility batch capacity: Minimum {min_batch_kg} kg, Maximum {max_batch_kg} kg.",
+        "Facility operational status must be actively verified before raw intake dispatch.",
+        "Wholesale puree off-take buyer agreement must be confirmed prior to batch processing.",
+    ]
+
     return CalculatedOption(
         route_type=RouteType.PROCESSING,
         route_name=f"Tomato Puree Processing ({facility_name})",
@@ -189,4 +224,6 @@ def calculate_processing_option(
         data_source=data_source,
         data_timestamp=data_timestamp,
         is_demo_data=True,
+        itemized_assumptions=assumptions,
+        operational_constraints=constraints,
     )

@@ -122,6 +122,41 @@ def calculate_storage_option(
         f"estimated net profit is ₹{net_profit:,.2f} (₹{net_profit_per_kg:.2f}/kg). Carries price forecast and quality holding risk."
     )
 
+    from app.decision_engine.models import AssumptionItem, AssumptionProvenance
+
+    assumptions = [
+        AssumptionItem(
+            name="Cold Storage Tariff",
+            value=float(cold_storage_rate_per_kg_month),
+            unit="INR/kg/month",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Regional commercial cold chain tariff",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="Cold Storage Spoilage Shrinkage",
+            value=float(spoilage_loss_pct * 100),
+            unit="%",
+            provenance=AssumptionProvenance.ILLUSTRATIVE_BENCHMARK,
+            source_description="Atmospheric holding loss guideline for tomatoes at 0-4°C",
+            is_configurable=True,
+        ),
+        AssumptionItem(
+            name="Holding Duration",
+            value=holding_days,
+            unit="days",
+            provenance=AssumptionProvenance.CONFIGURED,
+            source_description="Targeted delay until mandi glut volume subsides",
+            is_configurable=True,
+        ),
+    ]
+
+    constraints = [
+        "Farmer must possess confirmed reservation at verified cold storage facility.",
+        f"Maximum safe ambient shelf-life is 4 days; tomato must enter cold room within 12 hours of harvest.",
+        f"Rebound price realization is speculative; price must exceed ₹{(total_costs / q_saleable):.2f}/kg to break even.",
+    ]
+
     return CalculatedOption(
         route_type=RouteType.STORAGE,
         route_name=f"Cold Storage ({facility_name}, {holding_days} Days)",
@@ -146,4 +181,6 @@ def calculate_storage_option(
         data_source=data_source,
         data_timestamp=data_timestamp,
         is_demo_data=True,
+        itemized_assumptions=assumptions,
+        operational_constraints=constraints,
     )

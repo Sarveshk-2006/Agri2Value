@@ -187,4 +187,22 @@ Agri2Value provides an end-to-end commercial transparency foundation protecting 
 - **Dedicated Protection Dashboard:** Responsive interface with 6 tabs (Overview, Agreements, Deliveries, Payments, Disputes, Alerts), printable digital deal certificates, and complete chronological audit trails.
 - **Complete Report:** Documented in [`docs/PHASE_5_FARMER_PROTECTION_COMPLETION_REPORT.md`](docs/PHASE_5_FARMER_PROTECTION_COMPLETION_REPORT.md).
 
+---
+
+## 9. Phase 6 — AI Intelligence Validation, Profit Optimization & Decision Quality
+
+Agri2Value provides an explainable, financially consistent, feasibility-aware, data-grounded decision engine to help farmers determine the highest-return pathway for harvested produce:
+
+### Key Capabilities:
+- **Authoritative Profit Decision Engine:** Evaluates 5 candidate pathways (Raw APMC Mandi, Direct Buyer Contract, Processing Puree, Cold Storage Buffer, Group Selling Aggregation). Infeasible options are strictly gated out and can never win the recommendation.
+- **Strict Financial Arithmetic:** Eliminates floating-point rounding errors across all monetary amounts using Python `Decimal` arithmetic. Enforces explicit units (`INR/kg`, `kg`, `pct_gross`) and verified conversion rules (1 Quintal = 100 kg).
+- **Hard Feasibility Gating:** Gating checks enforce buyer intake capacity, logistics radius, storage perishability (4-day ambient safe holding limit for tomatoes), processing facility operational status, and minimum pooling thresholds.
+- **Data Provenance & Freshness Indicators:** All parameters and market observations are tagged with explicit provenance badges (`VERIFIED`, `CONFIGURED`, `ILLUSTRATIVE_BENCHMARK`, `UNKNOWN`), distinguishing live data from curated benchmark archives and flagging stale observations (>7 days).
+- **Validated Crop Rescue Mode:** Transparently displays assumptions (shelf-life, rainfall, mandi glut) with an interactive configuration drawer allowing farmers to test custom parameters.
+- **Multi-Scenario Sensitivity Explorer:** Practical 3-tier scenario analysis (Conservative, Expected, Optimistic) assessing downside price drops (-15%), transport tariff surges (+20%), and sorting rejections (+5%), indicating recommendation stability (`ROBUST` vs `SENSITIVE_TO_PRICE`).
+- **Historical Outcome Reconciliation:** Links immutable decision snapshots to Phase 5 execution contracts and weighbridge deliveries to calculate forecast error and accuracy percentages transparently without inventing actual outcomes.
+- **AI/ML Model Policy & Deferral:** Audited the reference `Plant-Disease-Detection-Keras-main` model. Verified input dimensions ($80 \times 80$), identified training on cherry/peach leaves (unsuitable for tomato diseases), and deferred integration in strict compliance with safety guidelines.
+- **Comprehensive Scenario Test Suite:** 16 automated scenarios covering transport spikes, low recovery yield, unavailable capacity, perishability expiry, rain alerts, stale data, and missing data. Complete test suite achieves **112 passing tests with 0 failures**.
+- **Complete Report:** Documented in [`docs/PHASE_6_AI_INTELLIGENCE_VALIDATION_REPORT.md`](docs/PHASE_6_AI_INTELLIGENCE_VALIDATION_REPORT.md).
+
 

@@ -49,12 +49,14 @@ class CropRescueService:
         crop_lot_id: str,
         farmer_user_id: str,
         db: AsyncSession,
+        custom_assumptions: Optional[dict] = None,
     ) -> CropRescueAssessment:
         # 1. Fetch Crop Lot & Farm
         stmt = (
             select(CropLot)
             .options(selectinload(CropLot.farm))
             .where(CropLot.id == crop_lot_id)
+            .execution_options(populate_existing=True)
         )
         res = await db.execute(stmt)
         crop_lot = res.scalar_one_or_none()
@@ -67,7 +69,10 @@ class CropRescueService:
 
         farm: Optional[Farm] = crop_lot.farm
         crop_lower = crop_lot.crop_name.lower().strip()
-        shelf_life_max = CROP_SHELF_LIFE_DAYS.get(crop_lower, CROP_SHELF_LIFE_DAYS["default"])
+        
+        # Base shelf life (configurable)
+        custom_shelf = custom_assumptions.get("shelf_life_days") if custom_assumptions else None
+        shelf_life_max = int(custom_shelf) if custom_shelf else CROP_SHELF_LIFE_DAYS.get(crop_lower, CROP_SHELF_LIFE_DAYS["default"])
 
         # 2. Compute Age & Shelf-Life Risk
         now_dt = datetime.now(timezone.utc)
@@ -130,7 +135,6 @@ class CropRescueService:
             mandi_signal = "Live Mandi rates unavailable; evaluated using regional pilot benchmarks."
 
         # 4b. Supplementary On-Farm IoT Telematics Alerts (Phase 4A)
-        # Note: Added as supplementary context only. Does NOT mutate Profit Engine or decision snapshots.
         if farm:
             res_alerts = await db.execute(
                 select(IoTAlert).where(
@@ -155,19 +159,21 @@ class CropRescueService:
         else:
             urgency_level = "LOW"
 
-        # 5. Formulate 4 Actionable Rescue Pathways
+        # 5. Formulate 4 Actionable Rescue Pathways with Dynamic Cost Accounting
         quantity = crop_lot.quantity_kg_normalized
 
         # Pathway A: Emergency Puree / Agro-Processing
-        # Processing units offer guaranteed offload even for lower grades or ripe tomatoes
         proc_stmt = select(ProcessingFacility).where(ProcessingFacility.availability_status == "OPERATIONAL")
         proc_res = await db.execute(proc_stmt)
         proc_fac = proc_res.scalars().first()
         proc_name = proc_fac.facility_name if proc_fac else "Sahyadri Tomato Puree & Pulp Works"
-        proc_price = Decimal("14.50")  # processed produce net realization benchmark
+        proc_price = Decimal(str(custom_assumptions.get("processed_product_price", "14.50"))) if custom_assumptions else Decimal("14.50")
         proc_charge = proc_fac.processing_charge_per_kg if proc_fac else Decimal("3.20")
         proc_gross = (quantity * proc_price).quantize(Decimal("0.01"))
-        proc_costs = (quantity * proc_charge + Decimal("1200.00")).quantize(Decimal("0.01"))  # fee + transport
+        proc_freight = max(Decimal("800.00"), (quantity * Decimal("0.85")).quantize(Decimal("0.01")))
+        proc_fee = (quantity * proc_charge).quantize(Decimal("0.01"))
+        proc_handling = (quantity * Decimal("0.25")).quantize(Decimal("0.01"))
+        proc_costs = (proc_fee + proc_freight + proc_handling).quantize(Decimal("0.01"))
         proc_net = max(Decimal("0"), proc_gross - proc_costs)
         proc_salvage = Decimal("88.0")
 
@@ -182,6 +188,16 @@ class CropRescueService:
             risk_level="Lowest Risk (Arrests Spoilage Completely)",
             action_button_label="Dispatch to Processing Unit",
             target_entity_id=proc_fac.id if proc_fac else None,
+            feasibility_status="FEASIBLE" if (proc_fac and proc_fac.availability_status == "OPERATIONAL") else "CONDITIONALLY_FEASIBLE",
+            itemized_deductions={
+                "processing_fee": float(proc_fee),
+                "inbound_freight": float(proc_freight),
+                "handling_labour": float(proc_handling),
+            },
+            assumptions_disclosed=[
+                {"name": "Puree Yield Realization", "value": 14.50, "unit": "INR/kg equivalent", "provenance": "ILLUSTRATIVE_BENCHMARK", "source": "Cluster processing net realization formula"},
+                {"name": "Processing Tariff", "value": float(proc_charge), "unit": "INR/kg raw", "provenance": "CONFIGURED", "source": "Agro processing facility schedule"},
+            ],
         )
 
         # Pathway B: Temperature-Controlled Cold Storage Buffer
@@ -189,9 +205,13 @@ class CropRescueService:
         cold_res = await db.execute(cold_stmt)
         cold_fac = cold_res.scalars().first()
         cold_name = cold_fac.facility_name if cold_fac else "Niphad Multi-Commodity Cold Chain Hub"
-        # Holds produce for 14-21 days until glut clears; expected rebound price ₹18.00/kg
-        rebound_price = Decimal("18.00")
-        cold_storage_cost = (quantity * Decimal("0.70") + Decimal("1500.00")).quantize(Decimal("0.01"))
+        rebound_price = Decimal(str(custom_assumptions.get("rebound_price", "18.00"))) if custom_assumptions else Decimal("18.00")
+        cold_rate = Decimal(str(custom_assumptions.get("cold_storage_rate", "0.70"))) if custom_assumptions else Decimal("0.70")
+        cold_holding_fee = (quantity * cold_rate).quantize(Decimal("0.01"))
+        cold_two_way_freight = max(Decimal("1200.00"), (quantity * Decimal("1.10")).quantize(Decimal("0.01")))
+        cold_handling = (quantity * Decimal("0.30")).quantize(Decimal("0.01"))
+        cold_spoilage_cost = (quantity * Decimal("0.04") * rebound_price).quantize(Decimal("0.01"))
+        cold_storage_cost = (cold_holding_fee + cold_two_way_freight + cold_handling + cold_spoilage_cost).quantize(Decimal("0.01"))
         cold_net = max(Decimal("0"), (quantity * rebound_price) - cold_storage_cost)
         cold_salvage = Decimal("92.0")
 
@@ -206,6 +226,17 @@ class CropRescueService:
             risk_level="Medium (Requires Price Rebound in 2-3 Weeks)",
             action_button_label="Reserve Cold Room Space",
             target_entity_id=cold_fac.id if cold_fac else None,
+            feasibility_status="FEASIBLE" if cold_fac else "CONDITIONALLY_FEASIBLE",
+            itemized_deductions={
+                "cold_room_tariff": float(cold_holding_fee),
+                "two_way_transport": float(cold_two_way_freight),
+                "handling_labour": float(cold_handling),
+                "expected_shrinkage_loss": float(cold_spoilage_cost),
+            },
+            assumptions_disclosed=[
+                {"name": "Rebound Price Forecast", "value": float(rebound_price), "unit": "INR/kg", "provenance": "CONFIGURED", "source": "Post-glut market rebound price projection"},
+                {"name": "Cold Storage Fee", "value": float(cold_rate), "unit": "INR/kg/holding", "provenance": "CONFIGURED", "source": "Cold chain partner tariff"},
+            ],
         )
 
         # Pathway C: Fast Direct Buyer Liquidation
@@ -215,7 +246,9 @@ class CropRescueService:
         buyer_name = buyer_offer.buyer.company_name if buyer_offer else "Sahyadri Agro-Retail Procurement"
         buyer_rate = buyer_offer.offered_price_per_kg if buyer_offer else Decimal("16.00")
         buyer_gross = (quantity * buyer_rate).quantize(Decimal("0.01"))
-        buyer_net = max(Decimal("0"), buyer_gross - Decimal("800.00"))  # minimal logistics
+        buyer_pickup_freight = max(Decimal("600.00"), (quantity * Decimal("0.40")).quantize(Decimal("0.01")))
+        buyer_sorting_loss = (buyer_gross * Decimal("0.04")).quantize(Decimal("0.01"))
+        buyer_net = max(Decimal("0"), buyer_gross - (buyer_pickup_freight + buyer_sorting_loss))
         buyer_salvage = Decimal("95.0")
 
         opt_buyer = RescuePathwayOption(
@@ -229,11 +262,22 @@ class CropRescueService:
             risk_level="Low (Confirmed Standing Contract)",
             action_button_label="Request Immediate Buyer Pickup",
             target_entity_id=buyer_offer.id if buyer_offer else None,
+            feasibility_status="FEASIBLE" if buyer_offer else "CONDITIONALLY_FEASIBLE",
+            itemized_deductions={
+                "farmgate_pickup_freight": float(buyer_pickup_freight),
+                "grade_sorting_discount": float(buyer_sorting_loss),
+            },
+            assumptions_disclosed=[
+                {"name": "Buyer Contract Rate", "value": float(buyer_rate), "unit": "INR/kg", "provenance": "VERIFIED" if buyer_offer else "ILLUSTRATIVE_BENCHMARK", "source": "Standing contract procurement matrix"},
+            ],
         )
 
         # Pathway D: Immediate Local APMC Mandi Auction
         mandi_gross = (quantity * current_mandi_rate).quantize(Decimal("0.01"))
-        mandi_expenses = (mandi_gross * Decimal("0.065") + Decimal("1600.00")).quantize(Decimal("0.01"))
+        mandi_transport = max(Decimal("800.00"), (quantity * Decimal("0.70")).quantize(Decimal("0.01")))
+        mandi_cess_comm = (mandi_gross * Decimal("0.0505")).quantize(Decimal("0.01"))  # 1.05% cess + 4% comm
+        mandi_labour = (quantity * Decimal("0.35")).quantize(Decimal("0.01"))
+        mandi_expenses = (mandi_transport + mandi_cess_comm + mandi_labour).quantize(Decimal("0.01"))
         mandi_net = max(Decimal("0"), mandi_gross - mandi_expenses)
         mandi_salvage = Decimal("74.0")
 
@@ -248,6 +292,16 @@ class CropRescueService:
             risk_level="High (Subject to Intra-Day Price Drop)",
             action_button_label="Book Yard Transport & Gate Entry",
             target_entity_id=None,
+            feasibility_status="FEASIBLE",
+            itemized_deductions={
+                "transport_to_apmc": float(mandi_transport),
+                "apmc_cess_and_commission": float(mandi_cess_comm),
+                "loading_unloading_hamali": float(mandi_labour),
+            },
+            assumptions_disclosed=[
+                {"name": "APMC Statutory Fees", "value": 5.05, "unit": "%", "provenance": "VERIFIED", "source": "APMC Statutory Regulation"},
+                {"name": "Mandi Auction Rate", "value": float(current_mandi_rate), "unit": "INR/kg", "provenance": "VERIFIED" if mandi_signal and "at" in mandi_signal else "ILLUSTRATIVE_BENCHMARK", "source": "Daily APMC yard bulletin"},
+            ],
         )
 
         pathways = [opt_proc, opt_cold, opt_buyer, opt_mandi]
@@ -258,6 +312,18 @@ class CropRescueService:
             f"Given urgency score {urgency_score}/100 ({urgency_level}), {pathways[0].title} via "
             f"'{pathways[0].channel_name}' delivers the highest protected payout of ₹{pathways[0].estimated_net_payout:,.2f} "
             f"with {pathways[0].time_to_safety_hours} hours to safety."
+        )
+
+        global_assumptions = [
+            {"name": "Maximum Safe Ambient Shelf-Life", "value": shelf_life_max, "unit": "days", "provenance": "CONFIGURED" if custom_shelf else "ILLUSTRATIVE_BENCHMARK", "source": "Post-harvest shelf-life guidelines at 25-30°C ambient storage", "is_configurable": True},
+            {"name": "Rainfall Alert Threshold", "value": 1.0, "unit": "mm", "provenance": "CONFIGURED", "source": "Agronomic precipitation threshold triggering accelerated fungal rot", "is_configurable": False},
+            {"name": "Mandi Price Glut Threshold", "value": 13.0, "unit": "INR/kg", "provenance": "CONFIGURED", "source": "Breakeven production & freight recovery baseline", "is_configurable": True},
+        ]
+
+        scenario_notes = (
+            f"Scenario Comparison: Immediate APMC sale yields ₹{opt_mandi.estimated_net_payout:,.2f} with highest price risk. "
+            f"Cold storage holding projects ₹{opt_cold.estimated_net_payout:,.2f} if market rebounds to ₹{rebound_price:.2f}/kg. "
+            f"Industrial processing guarantees ₹{opt_proc.estimated_net_payout:,.2f} net proceeds by eliminating perishability."
         )
 
         return CropRescueAssessment(
@@ -273,6 +339,8 @@ class CropRescueService:
             mandi_price_signal=mandi_signal,
             salvage_pathways=pathways,
             recommended_action=rec_action,
+            assumptions_disclosed=global_assumptions,
+            scenario_comparison_notes=scenario_notes,
         )
 
 
