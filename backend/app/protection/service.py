@@ -21,7 +21,7 @@ from sqlalchemy import select, func, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.errors import AppError, NotFoundError, AuthorizationError
+from app.core.errors import AppError, NotFoundError, AuthorizationError, ValidationError
 from app.database.models import (
     User,
     Farm,
@@ -397,6 +397,12 @@ class ProtectionService:
         agr = await self.get_agreement(db, agreement_id, user)
         now = _now()
 
+        if agr.status in ["COMPLETED", "CANCELLED"]:
+            raise ValidationError(f"Cannot amend agreement {agr.agreement_number} in terminal state '{agr.status}'.")
+
+        if user.role == "FARMER" and agr.farmer_user_id != user.id:
+            raise AuthorizationError("Only parties associated with this agreement can amend terms.")
+
         # Capture immutable snapshot of current terms
         snapshot = {
             "version": agr.version,
@@ -566,6 +572,35 @@ class ProtectionService:
         agr = await self.get_agreement(db, payload.agreement_id, user)
         now = _now()
 
+        # 1. Validate quantity breakdown integrity
+        if (payload.accepted_quantity_kg + payload.rejected_quantity_kg) != payload.delivered_quantity_kg:
+            raise ValidationError(
+                f"Quantity mismatch: accepted ({payload.accepted_quantity_kg} kg) + rejected ({payload.rejected_quantity_kg} kg) "
+                f"does not equal total delivered quantity ({payload.delivered_quantity_kg} kg)."
+            )
+
+        # 2. Prevent over-delivery beyond agreed remaining volume
+        remaining_qty = await self.calculate_remaining_quantity(db, agr)
+        if payload.delivered_quantity_kg > remaining_qty:
+            raise ValidationError(
+                f"Delivered quantity ({payload.delivered_quantity_kg} kg) exceeds remaining unfulfilled quantity "
+                f"({remaining_qty} kg) for agreement {agr.agreement_number}."
+            )
+
+        # 3. Detect duplicate delivery records
+        if payload.vehicle_number and payload.delivery_timestamp:
+            dup_stmt = select(DeliveryRecord).where(
+                DeliveryRecord.agreement_id == agr.id,
+                DeliveryRecord.vehicle_number == payload.vehicle_number,
+                DeliveryRecord.delivery_timestamp == payload.delivery_timestamp,
+            )
+            dup = (await db.execute(dup_stmt)).scalar_one_or_none()
+            if dup:
+                raise ValidationError(
+                    f"Duplicate delivery record detected for vehicle '{payload.vehicle_number}' "
+                    f"at timestamp '{payload.delivery_timestamp}'."
+                )
+
         count_res = await db.execute(select(func.count(DeliveryRecord.id)))
         total_dels = count_res.scalar_one() or 0
         del_num = f"DEL-2026-{total_dels + 1:04d}"
@@ -715,6 +750,26 @@ class ProtectionService:
         """Record a simulated payment installment in the ledger."""
         agr = await self.get_agreement(db, payload.agreement_id, user)
         now = _now()
+
+        # 1. Prevent payments exceeding outstanding balance
+        rec = await self.reconcile_payments(db, agr.id, user)
+        if payload.amount_paid > rec.outstanding_balance:
+            raise ValidationError(
+                f"Payment amount (INR {payload.amount_paid}) exceeds outstanding balance "
+                f"(INR {rec.outstanding_balance}) for agreement {agr.agreement_number}."
+            )
+
+        # 2. Reject duplicate transaction references
+        if payload.transaction_reference_id:
+            dup_pay = await db.execute(
+                select(PaymentRecord).where(
+                    PaymentRecord.transaction_reference_id == payload.transaction_reference_id
+                )
+            )
+            if dup_pay.scalar_one_or_none():
+                raise ValidationError(
+                    f"Duplicate payment transaction reference '{payload.transaction_reference_id}' already exists in ledger."
+                )
 
         count_res = await db.execute(select(func.count(PaymentRecord.id)))
         total_pays = count_res.scalar_one() or 0
@@ -943,6 +998,20 @@ class ProtectionService:
         now = _now()
 
         old_status = disp.status
+        valid_transitions = {
+            "OPEN": ["UNDER_REVIEW", "AWAITING_INFORMATION", "RESOLVED", "REJECTED", "CLOSED"],
+            "UNDER_REVIEW": ["AWAITING_INFORMATION", "RESOLVED", "REJECTED", "CLOSED"],
+            "AWAITING_INFORMATION": ["UNDER_REVIEW", "RESOLVED", "REJECTED", "CLOSED"],
+            "RESOLVED": ["CLOSED"],
+            "REJECTED": ["CLOSED"],
+            "CLOSED": [],
+        }
+        allowed = valid_transitions.get(old_status, [])
+        if payload.status not in allowed:
+            raise ValidationError(
+                f"Invalid dispute status transition from '{old_status}' to '{payload.status}'. "
+                f"Allowed next states: {', '.join(allowed) if allowed else 'None (Terminal state)'}"
+            )
         disp.status = payload.status
         disp.updated_at = now
         if payload.resolution_notes:

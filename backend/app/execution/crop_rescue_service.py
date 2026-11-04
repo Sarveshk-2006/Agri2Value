@@ -102,16 +102,16 @@ class CropRescueService:
         weather_alert: Optional[str] = None
         if farm and farm.latitude and farm.longitude:
             try:
-                w_resp = await weather_service.get_weather_by_coordinates(
-                    float(farm.latitude), float(farm.longitude), location_name=f"{farm.village}, {farm.district}"
+                w_resp = await weather_service.get_weather(
+                    latitude=float(farm.latitude), longitude=float(farm.longitude)
                 )
-                if w_resp.observed.precipitation_mm > 1.0:
+                if w_resp.current and w_resp.current.precipitation_mm > 1.0:
                     urgency_score += 20
-                    weather_alert = f"Precipitation Warning: {w_resp.observed.precipitation_mm}mm rain observed at farm; moisture accelerates fungal rot."
+                    weather_alert = f"Precipitation Warning: {w_resp.current.precipitation_mm}mm rain observed at farm; moisture accelerates fungal rot."
                     risk_reasons.append(weather_alert)
-                elif w_resp.daily_forecast and w_resp.daily_forecast[0].precipitation_sum > 2.0:
+                elif w_resp.daily_forecast and w_resp.daily_forecast[0].precipitation_sum_mm > 2.0:
                     urgency_score += 15
-                    weather_alert = f"Forecast Rain: {w_resp.daily_forecast[0].precipitation_sum}mm expected today; unprotected lots at severe risk."
+                    weather_alert = f"Forecast Rain: {w_resp.daily_forecast[0].precipitation_sum_mm}mm expected today; unprotected lots at severe risk."
                     risk_reasons.append(weather_alert)
             except Exception as e:
                 logger.warning("Could not fetch weather for rescue assessment", error=str(e))

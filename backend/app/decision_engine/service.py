@@ -441,7 +441,8 @@ async def get_decision_actual_outcome_comparison(
             status="PENDING_EXECUTION",
             decision_run_id=run.id,
             crop_lot_id=run.crop_lot_id,
-            recommended_route=rec_opt.route_name if rec_opt else "None",
+            route_type=rec_opt.route_type if rec_opt else "DIRECT_SALE",
+            channel_name=rec_opt.route_name if rec_opt else "Direct Buyer",
             expected_quantity_kg=expected_qty,
             expected_unit_price=expected_price,
             estimated_deductions_inr=estimated_deductions,
@@ -457,7 +458,7 @@ async def get_decision_actual_outcome_comparison(
             deductions_variance_inr=None,
             net_profit_variance_inr=None,
             net_profit_variance_pct=None,
-            comparison_notes=(
+            forecast_accuracy_summary=(
                 "No execution contract or delivery records found for this crop lot yet. "
                 "Recommendation expectations remain baseline benchmark."
             ),
@@ -480,13 +481,14 @@ async def get_decision_actual_outcome_comparison(
             status="DEAL_CONTRACTED_AWAITING_DELIVERY",
             decision_run_id=run.id,
             crop_lot_id=run.crop_lot_id,
-            recommended_route=rec_opt.route_name if rec_opt else "None",
+            route_type=rec_opt.route_type if rec_opt else "DIRECT_SALE",
+            channel_name=rec_opt.route_name if rec_opt else "Direct Buyer",
             expected_quantity_kg=expected_qty,
             expected_unit_price=expected_price,
             estimated_deductions_inr=estimated_deductions,
             estimated_net_profit_inr=estimated_net,
             expected_realization_days=expected_days,
-            comparison_notes=(
+            forecast_accuracy_summary=(
                 f"Deal {agreement.agreement_number} contracted with {agreement.partner_name} "
                 f"at ₹{agreement.agreed_unit_price}/kg, awaiting weighbridge delivery confirmation."
             ),
@@ -534,7 +536,10 @@ async def get_decision_actual_outcome_comparison(
         status=reconcile_status,
         decision_run_id=run.id,
         crop_lot_id=run.crop_lot_id,
-        recommended_route=rec_opt.route_name if rec_opt else "None",
+        execution_request_id=agreement.execution_request_id,
+        agreement_id=agreement.id,
+        route_type=rec_opt.route_type if rec_opt else "DIRECT_SALE",
+        channel_name=rec_opt.route_name if rec_opt else "Direct Buyer",
         expected_quantity_kg=expected_qty,
         expected_unit_price=expected_price,
         estimated_deductions_inr=estimated_deductions,
@@ -550,7 +555,7 @@ async def get_decision_actual_outcome_comparison(
         deductions_variance_inr=deductions_var_inr,
         net_profit_variance_inr=net_profit_var_inr,
         net_profit_variance_pct=net_profit_var_pct,
-        comparison_notes=notes,
+        forecast_accuracy_summary=notes,
     )
 
 

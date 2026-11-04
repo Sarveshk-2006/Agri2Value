@@ -397,6 +397,16 @@ class WeatherService:
             logger.warning("Failed to reach Open-Meteo, falling back to offline reference", error=str(exc))
             return _get_offline_reference_weather(latitude, longitude)
 
+    async def get_weather_by_coordinates(
+        self,
+        latitude: float,
+        longitude: float,
+        location_name: Optional[str] = None,
+        force_refresh: bool = False,
+    ) -> WeatherResponse:
+        """Alias for get_weather for coordinate-based lookups."""
+        return await self.get_weather(latitude=latitude, longitude=longitude, force_refresh=force_refresh)
+
     async def get_farm_weather(
         self,
         db: AsyncSession,

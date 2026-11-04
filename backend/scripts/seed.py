@@ -50,13 +50,52 @@ from app.database.models import (
 from app.crop_lots.schemas import normalize_to_kg
 
 
-async def seed_data():
+async def seed_data(reset: bool = False):
     print("[SEED] Initializing Agri2Value database tables...")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    print("[SEED] Seeding demo persona & scenario...")
+    print(f"[SEED] Seeding demo persona & scenario (reset={reset})...")
     async with AsyncSessionLocal() as session:
+        phone = "9876543210"
+
+        if reset:
+            print("[RESET] Safely purging demo transactions for farmer Ramesh Patil (phone 9876543210)...")
+            from sqlalchemy import delete
+            from app.database.models import DecisionOption, DecisionRun
+
+            result = await session.execute(select(User).where(User.phone == phone))
+            farmer = result.scalar_one_or_none()
+            if farmer:
+                agr_sub = select(DealAgreement.id).where(DealAgreement.farmer_user_id == farmer.id)
+                disp_sub = select(FarmerDispute.id).where(FarmerDispute.farmer_user_id == farmer.id)
+                exec_sub = select(ExecutionRequest.id).where(ExecutionRequest.farmer_user_id == farmer.id)
+                lot_sub = select(CropLot.id).where(CropLot.owner_user_id == farmer.id)
+                farm_sub = select(Farm.id).where(Farm.owner_user_id == farmer.id)
+                drun_sub = select(DecisionRun.id).where(DecisionRun.owner_user_id == farmer.id)
+
+                await session.execute(delete(TransactionAuditEvent).where(TransactionAuditEvent.agreement_id.in_(agr_sub)))
+                await session.execute(delete(DisputeEvent).where(DisputeEvent.dispute_id.in_(disp_sub)))
+                await session.execute(delete(FarmerDispute).where(FarmerDispute.farmer_user_id == farmer.id))
+                await session.execute(delete(FarmerRiskAlert).where(FarmerRiskAlert.farmer_user_id == farmer.id))
+                await session.execute(delete(PaymentRecord).where(PaymentRecord.agreement_id.in_(agr_sub)))
+                await session.execute(delete(DeliveryRecord).where(DeliveryRecord.agreement_id.in_(agr_sub)))
+                await session.execute(delete(AgreementAmendment).where(AgreementAmendment.agreement_id.in_(agr_sub)))
+                await session.execute(delete(DealAgreement).where(DealAgreement.farmer_user_id == farmer.id))
+                await session.execute(delete(ExecutionRequestEvent).where(ExecutionRequestEvent.request_id.in_(exec_sub)))
+                await session.execute(delete(ExecutionRequest).where(ExecutionRequest.farmer_user_id == farmer.id))
+                await session.execute(delete(DecisionOption).where(DecisionOption.decision_run_id.in_(drun_sub)))
+                await session.execute(delete(DecisionRun).where(DecisionRun.owner_user_id == farmer.id))
+                await session.execute(delete(IoTAlert).where(IoTAlert.farm_id.in_(farm_sub)))
+                await session.execute(delete(IoTTelemetryReading).where(IoTTelemetryReading.farm_id.in_(farm_sub)))
+                await session.execute(delete(IoTDevice).where(IoTDevice.farmer_user_id == farmer.id))
+                await session.execute(delete(CropLotEvent).where(CropLotEvent.crop_lot_id.in_(lot_sub)))
+                await session.execute(delete(CropLot).where(CropLot.owner_user_id == farmer.id))
+                await session.execute(delete(FarmResource).where(FarmResource.farm_id.in_(farm_sub)))
+                await session.execute(delete(Farm).where(Farm.owner_user_id == farmer.id))
+                await session.commit()
+                print("  [OK] Demo records purged cleanly.")
+
         # 1. Seed or find Farmer
         phone = "9876543210"
         result = await session.execute(select(User).where(User.phone == phone))
@@ -707,4 +746,5 @@ async def seed_data():
 
 
 if __name__ == "__main__":
-    asyncio.run(seed_data())
+    reset_flag = "--reset" in sys.argv
+    asyncio.run(seed_data(reset=reset_flag))
