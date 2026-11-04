@@ -89,7 +89,7 @@ export const CropDamageScannerModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-fade-up">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-scale-in">
         
         {/* Header */}
         <div className="bg-gradient-to-r from-green-800 via-emerald-800 to-teal-800 text-white p-6 flex items-center justify-between">

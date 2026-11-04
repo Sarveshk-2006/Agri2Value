@@ -173,14 +173,14 @@ export const FarmerChatbot: React.FC = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-full shadow-2xl shadow-green-900/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+          className="group relative flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-full shadow-green-lg hover:-translate-y-1.5 animate-float transition-all duration-300 cursor-pointer"
           aria-label="Open Agri AI Advisor"
         >
           <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
             <Bot className="w-5 h-5 text-white animate-bounce" />
           </div>
           <div className="text-left hidden sm:block">
-            <div className="text-xs font-black tracking-tight flex items-center gap-1.5">
+            <div className="text-xs font-black tracking-tight flex items-center gap-1.5 font-display">
               <span>Agri2Value AI</span>
               <span className="w-2 h-2 rounded-full bg-emerald-300 animate-ping" />
             </div>
@@ -191,7 +191,7 @@ export const FarmerChatbot: React.FC = () => {
 
       {/* ─── Chat Window Modal ─── */}
       {isOpen && (
-        <div className="w-[92vw] sm:w-[400px] h-[550px] max-h-[82vh] bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-fade-up">
+        <div className="w-[92vw] sm:w-[400px] h-[550px] max-h-[82vh] bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-scale-in">
           
           {/* Header */}
           <div className="bg-gradient-to-r from-green-700 via-emerald-700 to-teal-800 text-white p-4 flex items-center justify-between">

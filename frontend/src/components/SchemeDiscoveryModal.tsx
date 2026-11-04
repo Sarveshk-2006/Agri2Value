@@ -107,8 +107,8 @@ export const SchemeDiscoveryModal: React.FC<{ isOpen: boolean; onClose: () => vo
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-fade-up">
-        
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-scale-in">
+
         {/* Header */}
         <div className="bg-gradient-to-r from-emerald-800 via-green-700 to-teal-800 text-white p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -138,7 +138,7 @@ export const SchemeDiscoveryModal: React.FC<{ isOpen: boolean; onClose: () => vo
 
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          
+
           {/* Quick Calculator Strip */}
           <div className="p-5 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50/50 border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -189,11 +189,10 @@ export const SchemeDiscoveryModal: React.FC<{ isOpen: boolean; onClose: () => vo
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    selectedCategory === cat
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${selectedCategory === cat
                       ? 'bg-green-600 text-white shadow-sm'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
+                    }`}
                 >
                   {cat}
                 </button>

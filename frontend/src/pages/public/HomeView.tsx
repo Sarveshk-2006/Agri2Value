@@ -66,7 +66,7 @@ export const HomeView: React.FC = () => {
         <img
           src={tractorsImg}
           alt="Modern Agricultural Farm and Tractors"
-          className="absolute inset-0 w-full h-full object-cover object-center scale-105 animate-softPulse"
+          className="absolute inset-0 w-full h-full object-cover object-center scale-105 animate-soft-pulse"
         />
 
         {/* Strong dark overlays for maximum typography legibility */}
@@ -80,7 +80,7 @@ export const HomeView: React.FC = () => {
         <div className="relative z-10 w-full max-w-5xl mx-auto px-6 sm:px-10 text-center py-28 space-y-7">
 
           {/* Glowing Animated Top Badge */}
-          <div className="inline-flex items-center gap-2 bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 px-5 py-2 rounded-full text-xs sm:text-sm font-bold shadow-green backdrop-blur-md animate-fadeUp">
+          <div className="inline-flex items-center gap-2 bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 px-5 py-2 rounded-full text-xs sm:text-sm font-bold shadow-green backdrop-blur-md animate-fade-up">
             <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse" />
             <span>India&apos;s Unified Agri-Service Platform 🌾</span>
             <span className="hidden sm:inline text-emerald-400/60">•</span>
@@ -88,7 +88,7 @@ export const HomeView: React.FC = () => {
           </div>
 
           {/* Main Display Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[1.08] font-display drop-shadow-2xl tracking-tight">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[1.08] font-display drop-shadow-2xl tracking-tight animate-fade-up delay-100">
             The Centralized Service{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-300 to-teal-200">
               Platform for Farmers
@@ -96,12 +96,12 @@ export const HomeView: React.FC = () => {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-xl md:text-2xl text-slate-200 leading-relaxed max-w-3xl mx-auto drop-shadow font-normal">
+          <p className="text-base sm:text-xl md:text-2xl text-slate-200 leading-relaxed max-w-3xl mx-auto drop-shadow font-normal animate-fade-up delay-200">
             Beyond rentals. Your all-in-one ecosystem for AI profit optimization, cold chain logistics, mandi intelligence, digital agreements, and sovereign crop rescue.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2 animate-fade-up delay-300">
             <Link
               to="/app/dashboard"
               className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-black text-lg rounded-2xl shadow-green-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3 group"
@@ -119,7 +119,7 @@ export const HomeView: React.FC = () => {
           </div>
 
           {/* Trust Stats Pills */}
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-3 animate-fade-up delay-400">
             {[
               { emoji: '🌾', text: '18,000+ Farmers Benefited' },
               { emoji: '🚜', text: '2,400+ Logistics & Facilities' },
@@ -129,7 +129,7 @@ export const HomeView: React.FC = () => {
             ].map((item, i) => (
               <div
                 key={i}
-                className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/15 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-full shadow-xs"
+                className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/15 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-full shadow-xs hover:bg-white/20 hover:border-white/30 transition-all duration-200"
               >
                 <span>{item.emoji}</span>
                 <span>{item.text}</span>
@@ -151,26 +151,38 @@ export const HomeView: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           
-          <div className="bg-white rounded-2xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-1 transition-all duration-200">
-            <div className="text-3xl sm:text-4xl font-black text-slate-900 font-mono">4</div>
+          <div className="bg-white rounded-3xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-200 transition-all duration-300 group">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div className="text-3xl sm:text-4xl font-black text-slate-900 font-display">4</div>
             <div className="text-xs font-extrabold text-emerald-700 uppercase tracking-wider mt-1">Selling Pathways</div>
             <div className="text-[11px] text-slate-500 mt-1">Corporate, Mandi, Cold, Processing</div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-1 transition-all duration-200">
-            <div className="text-3xl sm:text-4xl font-black text-emerald-600 font-mono">+35%</div>
+          <div className="bg-white rounded-3xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-200 transition-all duration-300 group">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div className="text-3xl sm:text-4xl font-black text-emerald-600 font-display">+35%</div>
             <div className="text-xs font-extrabold text-emerald-700 uppercase tracking-wider mt-1">Realization Uplift</div>
             <div className="text-[11px] text-slate-500 mt-1">Direct corporate buyer routing</div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-1 transition-all duration-200">
-            <div className="text-3xl sm:text-4xl font-black text-blue-600 font-mono">5-Stage</div>
+          <div className="bg-white rounded-3xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-blue-200 transition-all duration-300 group">
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Layers className="w-5 h-5" />
+            </div>
+            <div className="text-3xl sm:text-4xl font-black text-blue-600 font-display">5-Stage</div>
             <div className="text-xs font-extrabold text-blue-700 uppercase tracking-wider mt-1">Operating Model</div>
             <div className="text-[11px] text-slate-500 mt-1">Understand to Settlement</div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-1 transition-all duration-200">
-            <div className="text-3xl sm:text-4xl font-black text-rose-600 font-mono">24h</div>
+          <div className="bg-white rounded-3xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-rose-200 transition-all duration-300 group">
+            <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Flame className="w-5 h-5" />
+            </div>
+            <div className="text-3xl sm:text-4xl font-black text-rose-600 font-display">24h</div>
             <div className="text-xs font-extrabold text-rose-700 uppercase tracking-wider mt-1">Crop Rescue Action</div>
             <div className="text-[11px] text-slate-500 mt-1">Emergency salvage risk triggers</div>
           </div>
@@ -179,7 +191,7 @@ export const HomeView: React.FC = () => {
       </section>
 
       {/* ─── 3. BROWSE BY CATEGORY & AGRI-SERVICE (MATCHING JSPM WINNERS) ─── */}
-      <section className="py-10 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="text-center space-y-2">
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 font-display">
@@ -195,15 +207,15 @@ export const HomeView: React.FC = () => {
               <Link
                 key={i}
                 to={cat.path}
-                className="group flex flex-col items-center text-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl hover:border-emerald-500 hover:bg-emerald-50/50 hover:-translate-y-1 transition-all duration-200 shadow-2xs"
+                className="group flex flex-col items-center text-center p-5 bg-white border-2 border-slate-100 rounded-3xl hover:border-emerald-500 hover:bg-emerald-50/30 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 shadow-xs cursor-pointer"
               >
-                <span className="text-4xl mb-2 group-hover:scale-110 transition-transform">
+                <span className="text-4xl mb-2 group-hover:scale-115 transition-transform duration-300">
                   {cat.emoji}
                 </span>
                 <span className="text-xs font-black text-slate-800 group-hover:text-emerald-700 leading-tight">
                   {cat.label}
                 </span>
-                <span className="text-[10px] text-slate-400 mt-1 group-hover:text-emerald-600">
+                <span className="text-[10px] text-slate-400 mt-1 group-hover:text-emerald-600 font-medium">
                   {cat.desc}
                 </span>
               </Link>
@@ -213,7 +225,7 @@ export const HomeView: React.FC = () => {
       </section>
 
       {/* ─── 4. VIBRANT GRADIENT FEATURE CARDS (WHY FARMERS LOVE AGRI2VALUE) ─── */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50/80">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50/80">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
@@ -231,12 +243,12 @@ export const HomeView: React.FC = () => {
             {FEATURES.map((feat, i) => (
               <div
                 key={i}
-                className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 space-y-4"
+                className="bg-white rounded-3xl p-7 border border-slate-100 shadow-md hover:shadow-2xl hover:-translate-y-2.5 transition-all duration-300 space-y-4 group"
               >
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center text-white shadow-lg`}>
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                   {feat.icon}
                 </div>
-                <h3 className="font-extrabold text-slate-900 text-lg leading-snug">
+                <h3 className="font-extrabold text-slate-900 text-lg leading-snug font-display">
                   {feat.title}
                 </h3>
                 <p className="text-slate-500 text-xs leading-relaxed">
