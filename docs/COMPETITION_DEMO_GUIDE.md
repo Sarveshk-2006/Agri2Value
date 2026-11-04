@@ -209,3 +209,4 @@ To maintain absolute academic and industrial integrity, we clearly disclose what
 > *"1. **Physical Hardware:** Currently, edge sensors are simulated via our Virtual Telematics Engine. Next phase involves pilot field deployments of physical ESP32 boards equipped with RS485 Modbus soil sensors.
 > 2. **Banking API Integration:** Currently, payment records use simulated bank UTR references. The production roadmap integrates with NPCI BBPS and UPI AutoPay APIs for real escrow hold and instant bank settlement.
 > 3. **Formal Legal Enforceability:** While our agreements capture structured consent and audit events, full commercial rollout will incorporate digital Aadhaar e-Sign (e-Mudhra/CDAC) for formal legal contracts."*
+

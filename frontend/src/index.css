@@ -250,3 +250,46 @@
 .soft-pulse {
   animation: softPulse 2.5s ease-in-out infinite;
 }
+
+/* Keyframe animations inspired by JSPM winners */
+@keyframes floatAnim {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmerAnim {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes fadeUpAnim {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-float {
+  animation: floatAnim 3s ease-in-out infinite;
+}
+
+.animate-fade-up {
+  animation: fadeUpAnim 0.6s ease-out forwards;
+}
+
+.shadow-green {
+  box-shadow: 0 4px 25px rgba(22, 163, 74, 0.22);
+}
+
+.shadow-green-lg {
+  box-shadow: 0 8px 40px rgba(22, 163, 74, 0.35);
+}
+
+.shadow-glass {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.glass-panel-dark {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}

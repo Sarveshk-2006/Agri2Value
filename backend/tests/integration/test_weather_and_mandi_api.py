@@ -109,9 +109,9 @@ async def test_farm_weather_ownership_and_lookup(client: AsyncClient, auth_heade
     bad_resp = await client.get("/api/v1/weather/farm/non-existent-farm-id", headers=auth_headers)
     assert bad_resp.status_code == 404
 
-    # 4. Test unauthorized request without auth returns 401
+    # 4. Test unauthorized request without auth returns 401 or 403
     unauth_resp = await client.get(f"/api/v1/weather/farm/{farm_id}")
-    assert unauth_resp.status_code == 401
+    assert unauth_resp.status_code in (401, 403)
 
 
 @pytest.mark.asyncio

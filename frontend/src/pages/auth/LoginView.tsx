@@ -63,6 +63,13 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
       {/* ─── LEFT SHOWCASE COLUMN (JSPM Inspired) ─── */}
       <div className="hidden md:flex md:w-1/2 lg:w-5/12 bg-gradient-to-tr from-emerald-950 via-slate-900 to-slate-950 p-10 lg:p-14 text-white flex-col justify-between relative overflow-hidden">
         
+        {/* Auth Hero Background Image (JSPM Narhe Winners) */}
+        <img
+          src="/auth_hero.png"
+          alt="Agriculture Auth Background"
+          className="absolute inset-0 w-full h-full object-cover opacity-25 mix-blend-overlay pointer-events-none scale-105"
+        />
+
         {/* Decorative blur & pattern */}
         <div className="absolute top-1/4 right-0 w-80 h-80 bg-emerald-500/20 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:20px_20px] opacity-10 pointer-events-none" />

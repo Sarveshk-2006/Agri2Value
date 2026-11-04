@@ -69,7 +69,11 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ user, onLogout }) =>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-1 bg-slate-100/60 p-1 rounded-2xl border border-slate-200/60 backdrop-blur-xs">
+          <div className={`hidden md:flex items-center gap-1 p-1 rounded-2xl border backdrop-blur-md transition-all ${
+            isNavSolid
+              ? 'bg-slate-100/80 border-slate-200/80 text-slate-700'
+              : 'bg-white/10 border-white/20 text-white'
+          }`}>
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
@@ -78,8 +82,8 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ user, onLogout }) =>
                   to={link.path}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                     isActive
-                      ? 'bg-white text-emerald-700 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                      ? isNavSolid ? 'bg-white text-emerald-700 shadow-xs' : 'bg-white text-emerald-800 shadow-md'
+                      : isNavSolid ? 'text-slate-600 hover:text-slate-900 hover:bg-white/50' : 'text-slate-200 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   {link.label}

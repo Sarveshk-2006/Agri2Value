@@ -197,3 +197,4 @@ async def test_endpoint_latency_benchmarks(client: AsyncClient):
 
     # Clean up benchmark temporary file
     assert all(r["status"] == "PASS" for r in results)
+

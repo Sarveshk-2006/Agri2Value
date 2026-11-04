@@ -36,6 +36,8 @@ import { NotFoundView } from './pages/NotFoundView';
 import { api, DEFAULT_DEMO_USER } from './api';
 import type { CropLot, Farm, User, TabKey } from './types';
 import { RotateCcw, CheckCircle2 } from 'lucide-react';
+import { FarmerChatbot } from './components/FarmerChatbot';
+import { MobileNav } from './components/MobileNav';
 
 /* ──────────────────────────────────────────────────────────
    1. PUBLIC WEBSITE WRAPPER COMPONENT
@@ -196,6 +198,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           </div>
         </div>
       </footer>
+
+      {/* Mobile Bottom Navigation Bar (JSPM Narhe Winners Inspired) */}
+      <MobileNav activeTab={activeTab} onSelectTab={handleSelectTab} />
 
     </div>
   );
@@ -451,6 +456,9 @@ export const App: React.FC = () => {
         <Route path="*" element={<NotFoundView />} />
 
       </Routes>
+
+      {/* Floating AI Farmer Advisor Chatbot (JSPM Narhe Winners Inspired) */}
+      <FarmerChatbot />
     </BrowserRouter>
   );
 };

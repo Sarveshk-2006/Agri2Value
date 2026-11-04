@@ -1,5 +1,5 @@
 // frontend/src/components/DashboardView.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Wheat, 
   MapPin, 
@@ -12,11 +12,15 @@ import {
   ArrowRight,
   Database,
   Flame,
-  Activity
+  Activity,
+  Landmark,
+  ScanLine
 } from 'lucide-react';
 import type { CropLot, Farm, User } from '../types';
 import type { TabKey } from './Navigation';
 import { WeatherSprayWidget } from './WeatherSprayWidget';
+import { SchemeDiscoveryModal } from './SchemeDiscoveryModal';
+import { CropDamageScannerModal } from './CropDamageScannerModal';
 
 interface DashboardViewProps {
   user: User | null;
@@ -40,6 +44,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   const totalKg = cropLots.reduce((sum, l) => sum + (Number(l.quantity_kg_normalized) || 0), 0);
   const totalAcres = farms.reduce((sum, f) => sum + (Number(f.land_area) || 0), 0);
+
+  const [isSchemeModalOpen, setIsSchemeModalOpen] = useState(false);
+  const [isScannerModalOpen, setIsScannerModalOpen] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -220,6 +227,63 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* ─── Specialized Farmer Intelligence & Subsidy Tools (JSPM Winners Inspired) ─── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Tool 1: Government Scheme & Subsidy Explorer */}
+        <div className="card p-6 bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/50 border-emerald-200/80 shadow-md hover:shadow-lg transition-all space-y-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-md">
+              <Landmark className="w-6 h-6" />
+            </div>
+            <span className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">
+              UP TO ₹2 CR SUBSIDY
+            </span>
+          </div>
+          <div>
+            <h3 className="text-base font-extrabold text-slate-900">
+              Government Schemes & Subsidy Explorer 🏛️
+            </h3>
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+              Explore AIF (3% interest subvention), PMFBY, MIDH (50% cold storage grants), and PoCRA climate incentives. Calculate eligible benefits instantly.
+            </p>
+          </div>
+          <button
+            onClick={() => setIsSchemeModalOpen(true)}
+            className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+          >
+            <span>Explore Schemes & Calculate Subsidy</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Tool 2: AI Crop Damage & Spoilage Diagnostic Scanner */}
+        <div className="card p-6 bg-gradient-to-br from-blue-50/70 via-white to-indigo-50/50 border-blue-200/80 shadow-md hover:shadow-lg transition-all space-y-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-md">
+              <ScanLine className="w-6 h-6" />
+            </div>
+            <span className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200">
+              AI COMPUTER VISION
+            </span>
+          </div>
+          <div>
+            <h3 className="text-base font-extrabold text-slate-900">
+              AI Crop Damage & Quality Diagnostic 📷
+            </h3>
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+              Scan tomato or crop photos to detect early fungal blight, transit bruising, or sunscald. Directly links damage severity to Crop Rescue salvage routes.
+            </p>
+          </div>
+          <button
+            onClick={() => setIsScannerModalOpen(true)}
+            className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+          >
+            <span>Launch Vision Scanner & Diagnostic</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
@@ -421,6 +485,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           )}
         </div>
       </div>
+
+      {/* ─── Modals (JSPM Narhe Winners Inspired) ─── */}
+      <SchemeDiscoveryModal
+        isOpen={isSchemeModalOpen}
+        onClose={() => setIsSchemeModalOpen(false)}
+      />
+
+      <CropDamageScannerModal
+        isOpen={isScannerModalOpen}
+        onClose={() => setIsScannerModalOpen(false)}
+        onNavigateToRescue={() => onSelectTab('rescue')}
+      />
 
     </div>
   );
