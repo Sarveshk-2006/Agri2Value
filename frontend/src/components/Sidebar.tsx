@@ -1,5 +1,6 @@
 // frontend/src/components/Sidebar.tsx
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   LayoutDashboard,
   Home,
@@ -369,13 +370,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 >
                   Engine Rules <ArrowUpRight className="w-3 h-3" />
                 </button>
-                <a
-                  href="/"
+                <Link
+                  to="/"
                   className="text-[10px] font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 cursor-pointer"
                 >
                   <Globe className="w-3 h-3" />
                   <span>Public Site</span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

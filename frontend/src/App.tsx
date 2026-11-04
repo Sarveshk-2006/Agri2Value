@@ -82,6 +82,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
 
+  // If user is logged out, immediately protect the /app route and redirect to home
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
   // Map route pathname to active TabKey
   const getTabKeyFromPath = (path: string): TabKey => {
     if (path.includes('/app/farms')) return 'farms';
@@ -102,49 +107,29 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   const activeTab = getTabKeyFromPath(location.pathname);
 
   const handleSelectTab = (tab: TabKey) => {
-    switch (tab) {
-      case 'dashboard':
-        navigate('/app/dashboard');
-        break;
-      case 'farms':
-        navigate('/app/farms');
-        break;
-      case 'lots':
-        navigate('/app/lots');
-        break;
-      case 'decision-preview':
-        navigate('/app/decision');
-        break;
-      case 'market-weather':
-        navigate('/app/market');
-        break;
-      case 'buyers':
-        navigate('/app/buyers');
-        break;
-      case 'infrastructure':
-        navigate('/app/infra');
-        break;
-      case 'execution':
-        navigate('/app/execution');
-        break;
-      case 'rescue':
-        navigate('/app/rescue');
-        break;
-      case 'protection':
-        navigate('/app/protection');
-        break;
-      case 'iot-monitoring':
-        navigate('/app/iot');
-        break;
-      case 'profile':
-        navigate('/app/profile');
-        break;
-      case 'specs':
-        navigate('/app/specs');
-        break;
-      default:
-        navigate('/app/dashboard');
+    const routeMap: Record<TabKey, string> = {
+      'dashboard': '/app/dashboard',
+      'farms': '/app/farms',
+      'lots': '/app/lots',
+      'decision-preview': '/app/decision',
+      'market-weather': '/app/market',
+      'buyers': '/app/buyers',
+      'infrastructure': '/app/infra',
+      'execution': '/app/execution',
+      'rescue': '/app/rescue',
+      'protection': '/app/protection',
+      'iot-monitoring': '/app/iot',
+      'profile': '/app/profile',
+      'specs': '/app/specs',
+    };
+    if (routeMap[tab]) {
+      navigate(routeMap[tab]);
     }
+  };
+
+  const handleLogoutAndRedirect = () => {
+    onLogout();
+    navigate('/', { replace: true });
   };
 
   return (
@@ -154,7 +139,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       <Header
         user={user}
         backendOnline={backendOnline}
-        onLogout={onLogout}
+        onLogout={handleLogoutAndRedirect}
         onOpenInfo={() => navigate('/app/specs')}
         onOpenProfile={() => navigate('/app/profile')}
       />
@@ -207,9 +192,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 };
 
 /* ──────────────────────────────────────────────────────────
-   3. ROOT APPLICATION CONTAINER
+   3. INTERNAL APP ROUTING & STATE CONTAINER
    ────────────────────────────────────────────────────────── */
-export const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(DEFAULT_DEMO_USER);
   const [farms, setFarms] = useState<Farm[]>([]);
   const [cropLots, setCropLots] = useState<CropLot[]>([]);
@@ -252,12 +238,14 @@ export const App: React.FC = () => {
     api.setToken(null);
     setUser(null);
     showToast('Signed out of session');
+    navigate('/', { replace: true });
   };
 
   const handleLoginSuccess = (loggedInUser: User) => {
     setUser(loggedInUser);
     showToast(`Signed in as ${loggedInUser.full_name}`);
     loadData();
+    navigate('/app/dashboard');
   };
 
   const handleCreateFarm = async (farmData: Partial<Farm>) => {
@@ -280,8 +268,29 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleSelectTab = (tab: TabKey) => {
+    const routeMap: Record<TabKey, string> = {
+      'dashboard': '/app/dashboard',
+      'farms': '/app/farms',
+      'lots': '/app/lots',
+      'decision-preview': '/app/decision',
+      'market-weather': '/app/market',
+      'buyers': '/app/buyers',
+      'infrastructure': '/app/infra',
+      'execution': '/app/execution',
+      'rescue': '/app/rescue',
+      'protection': '/app/protection',
+      'iot-monitoring': '/app/iot',
+      'profile': '/app/profile',
+      'specs': '/app/specs',
+    };
+    if (routeMap[tab]) {
+      navigate(routeMap[tab]);
+    }
+  };
+
   return (
-    <BrowserRouter>
+    <>
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-emerald-600/30 animate-in fade-in slide-in-from-bottom-3">
@@ -328,7 +337,7 @@ export const App: React.FC = () => {
                 user={user}
                 farms={farms}
                 cropLots={cropLots}
-                onSelectTab={() => {}}
+                onSelectTab={handleSelectTab}
                 onOpenCreateLot={() => setIsCreateLotOpen(true)}
                 onOpenCreateFarm={() => setIsCreateFarmOpen(true)}
               />
@@ -360,9 +369,11 @@ export const App: React.FC = () => {
                 onOpenCreateModal={() => setIsCreateLotOpen(true)}
                 onNavigateToDecision={(lotId) => {
                   if (lotId) setSelectedLotIdForDecision(lotId);
+                  navigate('/app/decision');
                 }}
                 onNavigateToRescue={(lotId) => {
                   if (lotId) setSelectedLotIdForDecision(lotId);
+                  navigate('/app/rescue');
                 }}
               />
             }
@@ -375,7 +386,7 @@ export const App: React.FC = () => {
                 lots={cropLots}
                 selectedLotId={selectedLotIdForDecision}
                 onLotSelect={setSelectedLotIdForDecision}
-                onNavigateToExecution={() => {}}
+                onNavigateToExecution={() => navigate('/app/execution')}
               />
             }
           />
@@ -400,10 +411,7 @@ export const App: React.FC = () => {
             element={
               <ExecutionRequestsView
                 cropLots={cropLots}
-                onNavigateToProtection={() => {
-                  window.history.pushState({}, '', '/app/protection');
-                  window.dispatchEvent(new PopStateEvent('popstate'));
-                }}
+                onNavigateToProtection={() => navigate('/app/protection')}
               />
             }
           />
@@ -424,10 +432,7 @@ export const App: React.FC = () => {
             element={
               <ProtectionView
                 cropLots={cropLots}
-                onNavigateToExecution={() => {
-                  window.history.pushState({}, '', '/app/execution');
-                  window.dispatchEvent(new PopStateEvent('popstate'));
-                }}
+                onNavigateToExecution={() => navigate('/app/execution')}
               />
             }
           />
@@ -459,6 +464,17 @@ export const App: React.FC = () => {
 
       {/* Floating AI Farmer Advisor Chatbot (JSPM Narhe Winners Inspired) */}
       <FarmerChatbot />
+    </>
+  );
+};
+
+/* ──────────────────────────────────────────────────────────
+   4. ROOT APPLICATION ENTRY POINT
+   ────────────────────────────────────────────────────────── */
+export const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 };

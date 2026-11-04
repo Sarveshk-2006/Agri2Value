@@ -1,5 +1,6 @@
 // frontend/src/components/Header.tsx
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Sprout, Wifi, WifiOff, LogOut, ShieldAlert, Bell, HelpCircle, Globe } from 'lucide-react';
 import type { User } from '../types';
 
@@ -22,9 +23,13 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         
-        {/* Brand & Tagline */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-700 flex items-center justify-center shadow-md shadow-emerald-600/20 text-white transition-transform hover:scale-105">
+        {/* Brand & Tagline - Clickable redirect to Dashboard / Home */}
+        <Link
+          to={user ? "/app/dashboard" : "/"}
+          className="flex items-center gap-3 group cursor-pointer"
+          title="Agri2Value Dashboard"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-700 flex items-center justify-center shadow-md shadow-emerald-600/20 text-white transition-transform group-hover:scale-105">
             <Sprout className="w-6 h-6" />
           </div>
           <div>
@@ -40,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
               कृषि-मूल्य • Farm-to-Profit Decision & Execution Network
             </p>
           </div>
-        </div>
+        </Link>
 
         {/* Center Indicators */}
         <div className="hidden md:flex items-center gap-2.5">
@@ -75,14 +80,14 @@ export const Header: React.FC<HeaderProps> = ({
         {/* User Profile & Right Actions (JSPM Winners Inspired) */}
         <div className="flex items-center gap-3">
           {/* Public Website Link */}
-          <a
-            href="/"
+          <Link
+            to="/"
             className="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-700 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"
             title="Return to Public Website"
           >
             <Globe className="w-3.5 h-3.5 text-slate-400" />
             <span>Public Site</span>
-          </a>
+          </Link>
 
           {/* Architecture / Specs Button */}
           <button
@@ -125,19 +130,19 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Logout Button */}
               <button
                 onClick={onLogout}
-                title="Sign Out"
+                title="Sign Out to Home Page"
                 className="flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-all cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
               </button>
             </div>
           ) : (
-            <button
-              onClick={onOpenInfo}
-              className="btn-primary text-xs py-2 px-4"
+            <Link
+              to="/login"
+              className="btn-primary text-xs py-2 px-4 shadow-sm"
             >
               Sign In
-            </button>
+            </Link>
           )}
         </div>
 

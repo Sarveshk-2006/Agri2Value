@@ -1,5 +1,6 @@
 // frontend/src/components/DashboardView.tsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Wheat, 
   MapPin, 
@@ -45,6 +46,30 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const totalKg = cropLots.reduce((sum, l) => sum + (Number(l.quantity_kg_normalized) || 0), 0);
   const totalAcres = farms.reduce((sum, f) => sum + (Number(f.land_area) || 0), 0);
 
+  const navigate = useNavigate();
+
+  const handleSelectTab = (tab: TabKey) => {
+    if (onSelectTab) onSelectTab(tab);
+    const routeMap: Record<string, string> = {
+      'dashboard': '/app/dashboard',
+      'farms': '/app/farms',
+      'lots': '/app/lots',
+      'decision-preview': '/app/decision',
+      'market-weather': '/app/market',
+      'buyers': '/app/buyers',
+      'infrastructure': '/app/infra',
+      'execution': '/app/execution',
+      'rescue': '/app/rescue',
+      'protection': '/app/protection',
+      'iot-monitoring': '/app/iot',
+      'profile': '/app/profile',
+      'specs': '/app/specs',
+    };
+    if (routeMap[tab]) {
+      navigate(routeMap[tab]);
+    }
+  };
+
   const [isSchemeModalOpen, setIsSchemeModalOpen] = useState(false);
   const [isScannerModalOpen, setIsScannerModalOpen] = useState(false);
 
@@ -73,7 +98,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              onClick={() => onSelectTab('decision-preview')}
+              onClick={() => handleSelectTab('decision-preview')}
               className="px-5 py-2.5 rounded-xl bg-white text-emerald-800 hover:bg-emerald-50 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm hover:shadow-md transition-all cursor-pointer active:scale-98"
             >
               <Sparkles className="w-4 h-4 text-emerald-600" />
@@ -113,7 +138,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         <button
-          onClick={() => onSelectTab('rescue')}
+          onClick={() => handleSelectTab('rescue')}
           className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2 shrink-0 cursor-pointer active:scale-98"
         >
           <span>Launch Crop Rescue</span>
@@ -220,7 +245,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
             <span className="text-[11px] text-slate-400 font-mono">Agmarknet Provenance</span>
             <button
-              onClick={() => onSelectTab('market-weather')}
+              onClick={() => handleSelectTab('market-weather')}
               className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
             >
               <span>Explore Mandi Hub</span>
@@ -305,7 +330,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </p>
             </div>
             <button
-              onClick={() => onSelectTab('lots')}
+              onClick={() => handleSelectTab('lots')}
               className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
             >
               <span>View all ({cropLots.length})</span>
@@ -462,7 +487,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               {/* Quick shortcut to IoT Monitoring */}
               <div className="pt-2 border-t border-slate-100">
                 <button
-                  onClick={() => onSelectTab('iot-monitoring')}
+                  onClick={() => handleSelectTab('iot-monitoring')}
                   className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 hover:border-blue-200 transition-all text-xs font-bold text-blue-900 cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
@@ -495,7 +520,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       <CropDamageScannerModal
         isOpen={isScannerModalOpen}
         onClose={() => setIsScannerModalOpen(false)}
-        onNavigateToRescue={() => onSelectTab('rescue')}
+        onNavigateToRescue={() => handleSelectTab('rescue')}
       />
 
     </div>
