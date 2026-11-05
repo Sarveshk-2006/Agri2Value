@@ -143,3 +143,4 @@ python -m pytest backend/tests
   - `docs/FARMER_PROFILE_REDESIGN_REPORT.md`
 - **Live Deployment:**
   - Vercel Production: `https://agri2value.vercel.app/app/profile`
+
