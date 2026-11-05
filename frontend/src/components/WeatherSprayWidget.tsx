@@ -119,7 +119,7 @@ export const WeatherSprayWidget: React.FC<WeatherSprayWidgetProps> = ({
   const BadgeIcon = badgeConfig.icon;
 
   return (
-    <div className="card p-6 space-y-4">
+    <div className="card p-6 space-y-4 h-full flex flex-col justify-between">
       {/* Top Header */}
       <div className="flex items-start justify-between gap-3">
         <div>
