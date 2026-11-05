@@ -88,7 +88,7 @@ export const HomeView: React.FC = () => {
           </div>
 
           {/* Main Display Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[1.08] font-display drop-shadow-2xl tracking-tight animate-fade-up delay-100">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.12] font-display drop-shadow-2xl tracking-tight animate-fade-up delay-100">
             The Centralized Service{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-300 to-teal-200">
               Platform for Farmers
@@ -149,42 +149,42 @@ export const HomeView: React.FC = () => {
 
       {/* ─── 2. FLOATING STATS CARDS (OVERLAPPING HERO -MT-14) ─── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           
-          <div className="bg-white rounded-3xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-200 transition-all duration-300 group">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-200 transition-all duration-300 group">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
               <TrendingUp className="w-5 h-5" />
             </div>
-            <div className="text-3xl sm:text-4xl font-black text-slate-900 font-display">4</div>
-            <div className="text-xs font-extrabold text-emerald-700 uppercase tracking-wider mt-1">Selling Pathways</div>
-            <div className="text-[11px] text-slate-500 mt-1">Corporate, Mandi, Cold, Processing</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 font-display">4</div>
+            <div className="text-[11px] sm:text-xs font-extrabold text-emerald-700 uppercase tracking-wider mt-1">Selling Pathways</div>
+            <div className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">Corporate, Mandi, Cold, Processing</div>
           </div>
 
-          <div className="bg-white rounded-3xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-200 transition-all duration-300 group">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-200 transition-all duration-300 group">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Sparkles className="w-5 h-5" />
             </div>
-            <div className="text-3xl sm:text-4xl font-black text-emerald-600 font-display">+35%</div>
-            <div className="text-xs font-extrabold text-emerald-700 uppercase tracking-wider mt-1">Realization Uplift</div>
-            <div className="text-[11px] text-slate-500 mt-1">Direct corporate buyer routing</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-black text-emerald-600 font-display">+35%</div>
+            <div className="text-[11px] sm:text-xs font-extrabold text-emerald-700 uppercase tracking-wider mt-1">Realization Uplift</div>
+            <div className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">Direct corporate buyer routing</div>
           </div>
 
-          <div className="bg-white rounded-3xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-blue-200 transition-all duration-300 group">
-            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-blue-200 transition-all duration-300 group">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-blue-50 text-blue-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Layers className="w-5 h-5" />
             </div>
-            <div className="text-3xl sm:text-4xl font-black text-blue-600 font-display">5-Stage</div>
-            <div className="text-xs font-extrabold text-blue-700 uppercase tracking-wider mt-1">Operating Model</div>
-            <div className="text-[11px] text-slate-500 mt-1">Understand to Settlement</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-black text-blue-600 font-display">5-Stage</div>
+            <div className="text-[11px] sm:text-xs font-extrabold text-blue-700 uppercase tracking-wider mt-1">Operating Model</div>
+            <div className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">Understand to Settlement</div>
           </div>
 
-          <div className="bg-white rounded-3xl p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-rose-200 transition-all duration-300 group">
-            <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-rose-200 transition-all duration-300 group">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-rose-50 text-rose-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Flame className="w-5 h-5" />
             </div>
-            <div className="text-3xl sm:text-4xl font-black text-rose-600 font-display">24h</div>
-            <div className="text-xs font-extrabold text-rose-700 uppercase tracking-wider mt-1">Crop Rescue Action</div>
-            <div className="text-[11px] text-slate-500 mt-1">Emergency salvage risk triggers</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-black text-rose-600 font-display">24h</div>
+            <div className="text-[11px] sm:text-xs font-extrabold text-rose-700 uppercase tracking-wider mt-1">Crop Rescue Action</div>
+            <div className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">Emergency salvage risk triggers</div>
           </div>
 
         </div>

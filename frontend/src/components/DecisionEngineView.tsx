@@ -321,10 +321,10 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
         </div>
 
         {/* Phase 6 Feature Tabs Navigation */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+        <div className="flex items-center gap-2 pt-2 border-t border-slate-100 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('RECOMMENDATIONS')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
               activeTab === 'RECOMMENDATIONS'
                 ? 'bg-emerald-600 text-white shadow-xs'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -339,7 +339,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
               setActiveTab('SENSITIVITY');
               if (activeLotId) loadSensitivity(activeLotId);
             }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
               activeTab === 'SENSITIVITY'
                 ? 'bg-emerald-600 text-white shadow-xs'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -354,7 +354,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
               setActiveTab('OUTCOMES');
               if (decisionRun) loadOutcomeComparison(decisionRun.id);
             }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
               activeTab === 'OUTCOMES'
                 ? 'bg-emerald-600 text-white shadow-xs'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -366,7 +366,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
 
           <button
             onClick={() => setActiveTab('ASSUMPTIONS')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
               activeTab === 'ASSUMPTIONS'
                 ? 'bg-emerald-600 text-white shadow-xs'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'

@@ -563,7 +563,7 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
                       )}
                     </div>
 
-                    <div className="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+                    <div className="pt-4 mt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                       <div className="text-xs text-slate-500">
                         Risk level: <strong className="text-slate-800">{pathway.risk_level}</strong>
                       </div>
@@ -571,7 +571,7 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
                       <button
                         onClick={() => handleTriggerRescue(pathway)}
                         disabled={isExecuting}
-                        className={`text-xs py-2 px-3.5 rounded-xl font-bold flex items-center gap-1.5 transition-all shadow-xs ${
+                        className={`text-xs py-2 px-3.5 rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all shadow-xs w-full sm:w-auto cursor-pointer ${
                           isRecommended
                             ? 'bg-emerald-600 text-white hover:bg-emerald-700'
                             : 'bg-slate-900 text-white hover:bg-slate-800'

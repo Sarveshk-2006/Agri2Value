@@ -348,7 +348,7 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
                           <span>This request was {req.status.toLowerCase()}. Capacity reservations have been released.</span>
                         </div>
                       ) : (
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 relative">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 relative">
                           {STATUS_STEPS.map((step, idx) => {
                             const isDone = currentStepIdx >= idx;
                             const isCurrent = currentStepIdx === idx;
@@ -551,22 +551,22 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
 
       {/* Complete & Settle Financials Modal */}
       {completingRequest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-5 sm:p-7 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="text-base font-extrabold text-slate-900">
                 Complete & Settle Execution Request
               </h3>
               <button
                 onClick={() => setCompletingRequest(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="label">Actual Delivered Quantity (kg):</label>
                   <input
@@ -588,7 +588,7 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="label">Transport Cost (₹):</label>
                   <input

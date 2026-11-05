@@ -197,11 +197,11 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
               )}
 
               {/* Action Buttons */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+              <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2">
                 {onNavigateToRescue && (
                   <button
                     onClick={() => onNavigateToRescue(lot.id)}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold transition-all cursor-pointer active:scale-98"
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold transition-all cursor-pointer active:scale-98"
                   >
                     <Flame className="w-3.5 h-3.5 text-rose-600" />
                     <span>Crop Rescue</span>
@@ -209,7 +209,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                 )}
                 <button
                   onClick={() => onNavigateToDecision && onNavigateToDecision(lot.id)}
-                  className="btn-primary text-xs py-2 px-3.5 shadow-xs"
+                  className="btn-primary text-xs py-2 px-3.5 shadow-xs justify-center"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Analyze Profit Options</span>
@@ -223,11 +223,11 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
 
       {/* Create Harvest Lot Modal */}
       {isOpenCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-5 sm:p-7 border border-slate-200 shadow-2xl relative max-h-[88vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100">
-              <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 font-display">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <h2 className="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 font-display">
                 <Wheat className="w-5 h-5 text-amber-600" />
                 <span>Register Harvest Lot</span>
               </h2>
@@ -239,7 +239,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3.5">
               <div>
                 <label className="label">Associated Farm *</label>
                 <select
@@ -256,7 +256,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
                   <label className="label">Crop Name *</label>
                   <input
@@ -280,7 +280,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
                   <label className="label">Quantity *</label>
                   <input
@@ -316,7 +316,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
                   <label className="label">Quality Grade</label>
                   <select

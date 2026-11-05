@@ -184,11 +184,11 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
 
       {/* Create Farm Modal */}
       {isOpenCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-5 sm:p-7 border border-slate-200 shadow-2xl relative max-h-[88vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100">
-              <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2 font-display">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <h2 className="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 font-display">
                 <Home className="w-5 h-5 text-emerald-600" />
                 <span>Register Farm Profile</span>
               </h2>
@@ -200,7 +200,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3.5">
               <div>
                 <label className="label">
                   Farm Name *
@@ -215,7 +215,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <div>
                   <label className="label">State *</label>
                   <input
@@ -248,7 +248,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
                   <label className="label">Land Area</label>
                   <input
@@ -273,7 +273,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
                   <label className="label">Latitude</label>
                   <input

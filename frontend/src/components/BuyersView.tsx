@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import {
   ShoppingBag,
   Search,
-  Filter,
   CheckCircle2,
   MapPin,
   Sparkles,
@@ -139,7 +138,7 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
       </div>
 
       {/* Filter Bar */}
-      <div className="card p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="card p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         <div className="relative w-full md:w-72">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -151,35 +150,33 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
           />
         </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span>Crop:</span>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
+          <div className="flex items-center gap-2 flex-1 sm:w-auto">
+            <span className="text-xs text-slate-500 font-semibold shrink-0">Crop:</span>
+            <select
+              value={commodityFilter}
+              onChange={(e) => setCommodityFilter(e.target.value)}
+              className="input-field py-2 text-xs w-full sm:w-36 font-semibold"
+            >
+              <option value="All">All Crops</option>
+              <option value="Tomato">Tomato</option>
+              <option value="Onion">Onion</option>
+            </select>
           </div>
-          <select
-            value={commodityFilter}
-            onChange={(e) => setCommodityFilter(e.target.value)}
-            className="input-field py-1.5 text-xs w-36 font-semibold"
-          >
-            <option value="All">All Crops</option>
-            <option value="Tomato">Tomato</option>
-            <option value="Onion">Onion</option>
-          </select>
 
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold ml-2">
-            <MapPin className="w-3.5 h-3.5 text-slate-400" />
-            <span>District:</span>
+          <div className="flex items-center gap-2 flex-1 sm:w-auto">
+            <span className="text-xs text-slate-500 font-semibold shrink-0">District:</span>
+            <select
+              value={districtFilter}
+              onChange={(e) => setDistrictFilter(e.target.value)}
+              className="input-field py-2 text-xs w-full sm:w-36 font-semibold"
+            >
+              <option value="All">All Districts</option>
+              <option value="Nashik">Nashik</option>
+              <option value="Pune">Pune</option>
+              <option value="Mumbai">Mumbai</option>
+            </select>
           </div>
-          <select
-            value={districtFilter}
-            onChange={(e) => setDistrictFilter(e.target.value)}
-            className="input-field py-1.5 text-xs w-36 font-semibold"
-          >
-            <option value="All">All Districts</option>
-            <option value="Nashik">Nashik</option>
-            <option value="Pune">Pune</option>
-            <option value="Mumbai">Mumbai</option>
-          </select>
         </div>
       </div>
 
@@ -290,11 +287,11 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
 
       {/* Sell Harvest / Initiate Request Modal */}
       {selectedOffer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-5 sm:p-7 border border-slate-200 shadow-2xl relative max-h-[88vh] overflow-y-auto space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="text-base font-extrabold text-slate-900">
+                <h3 className="text-base font-extrabold text-slate-900 font-display">
                   Initiate Commercial Sale
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -315,7 +312,7 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
                 <span>{submitSuccess}</span>
               </div>
             ) : (
-              <form onSubmit={handleConfirmSubmit} className="space-y-4 text-xs">
+              <form onSubmit={handleConfirmSubmit} className="space-y-3.5 text-xs">
                 <div>
                   <label className="label">Select Produce Lot to Allocate:</label>
                   <select
@@ -332,7 +329,7 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <div>
                     <label className="label">Requested Quantity (kg):</label>
                     <input
@@ -347,7 +344,7 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
                   </div>
                   <div>
                     <label className="label">Agreed Rate:</label>
-                    <div className="input-field bg-slate-50 font-mono font-bold text-emerald-700">
+                    <div className="input-field bg-slate-50 font-mono font-bold text-emerald-700 flex items-center">
                       ₹{selectedOffer.offer.offered_price_per_kg} / kg
                     </div>
                   </div>

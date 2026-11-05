@@ -158,10 +158,10 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
       </div>
 
       {/* Sub-tab Navigation */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 border border-slate-200 w-fit">
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 border border-slate-200 w-full sm:w-fit overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveSubTab('logistics')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap flex-shrink-0 transition-all cursor-pointer ${
             activeSubTab === 'logistics'
               ? 'bg-white text-emerald-800 shadow-xs border border-slate-200'
               : 'text-slate-600 hover:text-slate-900'
@@ -173,7 +173,7 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
 
         <button
           onClick={() => setActiveSubTab('cold-storage')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap flex-shrink-0 transition-all cursor-pointer ${
             activeSubTab === 'cold-storage'
               ? 'bg-white text-emerald-800 shadow-xs border border-slate-200'
               : 'text-slate-600 hover:text-slate-900'
@@ -185,7 +185,7 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
 
         <button
           onClick={() => setActiveSubTab('processing')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap flex-shrink-0 transition-all cursor-pointer ${
             activeSubTab === 'processing'
               ? 'bg-white text-emerald-800 shadow-xs border border-slate-200'
               : 'text-slate-600 hover:text-slate-900'
@@ -377,8 +377,8 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
 
       {/* Booking Modal */}
       {bookingEntity && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 sm:p-8 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-5 sm:p-7 border border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
                 <h3 className="text-base font-extrabold text-slate-900">
@@ -390,7 +390,7 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
               </div>
               <button
                 onClick={() => setBookingEntity(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -419,7 +419,7 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="label">Requested Quantity (kg):</label>
                     <input

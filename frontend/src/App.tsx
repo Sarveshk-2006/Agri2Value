@@ -81,6 +81,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Close mobile drawer on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   // If user is logged out, immediately protect the /app route and redirect to home
   if (!user) {
@@ -107,6 +113,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   const activeTab = getTabKeyFromPath(location.pathname);
 
   const handleSelectTab = (tab: TabKey) => {
+    setIsMobileMenuOpen(false);
     const routeMap: Record<TabKey, string> = {
       'dashboard': '/app/dashboard',
       'farms': '/app/farms',
@@ -142,6 +149,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         onLogout={handleLogoutAndRedirect}
         onOpenInfo={() => navigate('/app/specs')}
         onOpenProfile={() => navigate('/app/profile')}
+        onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        isMobileMenuOpen={isMobileMenuOpen}
       />
 
       {/* Main Layout with Sidebar */}
@@ -152,10 +161,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           farmCount={farms.length}
           lotCount={cropLots.length}
           urgentRescueCount={1}
+          isMobileOpen={isMobileMenuOpen}
+          onCloseMobile={() => setIsMobileMenuOpen(false)}
         />
 
         {/* Content Area */}
-        <main className="flex-1 min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-20 md:pb-8">
+        <main className="flex-1 min-w-0 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 md:pb-8">
           <Outlet />
         </main>
       </div>

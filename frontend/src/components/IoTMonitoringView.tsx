@@ -337,7 +337,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
           <select
             value={selectedFarmId}
             onChange={(e) => setSelectedFarmId(e.target.value)}
-            className="input text-xs bg-white font-medium"
+            className="input-field text-xs bg-white font-medium"
           >
             {farms.map((farm) => (
               <option key={farm.id} value={farm.id}>
@@ -352,7 +352,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
           <select
             value={selectedDeviceId}
             onChange={(e) => setSelectedDeviceId(e.target.value)}
-            className="input text-xs bg-white font-mono font-bold"
+            className="input-field text-xs bg-white font-mono font-bold"
             disabled={devices.length === 0}
           >
             {devices.map((dev) => (
@@ -466,7 +466,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
             <select
               value={selectedScenario}
               onChange={(e) => setSelectedScenario(e.target.value)}
-              className="input text-xs bg-white font-medium"
+              className="input-field text-xs bg-white font-medium"
               disabled={isSimulatingContinuous}
             >
               <option value="NORMAL_OPTIMAL">Optimal Microclimate (Moisture 55%, Temp 27.5°C, Rain 0mm)</option>
@@ -483,7 +483,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
             <select
               value={simIntervalSeconds}
               onChange={(e) => setSimIntervalSeconds(Number(e.target.value))}
-              className="input text-xs bg-white font-mono"
+              className="input-field text-xs bg-white font-mono"
               disabled={isSimulatingContinuous}
             >
               <option value={3}>Every 3 seconds</option>
@@ -910,7 +910,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
                       type="text"
                       readOnly
                       value={createdDeviceKey}
-                      className="input text-xs font-mono font-bold bg-slate-100 text-slate-900 select-all"
+                      className="input-field text-xs font-mono font-bold bg-slate-100 text-slate-900 select-all"
                     />
                     <button
                       onClick={handleCopyKey}
@@ -942,7 +942,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
                     value={newDeviceCode}
                     onChange={(e) => setNewDeviceCode(e.target.value)}
                     placeholder="e.g. ESP32-POLYHOUSE-02"
-                    className="input text-xs font-mono"
+                    className="input-field text-xs font-mono"
                   />
                 </div>
 
@@ -954,7 +954,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
                     value={newDeviceName}
                     onChange={(e) => setNewDeviceName(e.target.value)}
                     placeholder="e.g. Tomato Plot North Sensor"
-                    className="input text-xs"
+                    className="input-field text-xs"
                   />
                 </div>
 
@@ -963,7 +963,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
                   <select
                     value={selectedFarmId}
                     onChange={(e) => setSelectedFarmId(e.target.value)}
-                    className="input text-xs"
+                    className="input-field text-xs"
                   >
                     {farms.map((farm) => (
                       <option key={farm.id} value={farm.id}>

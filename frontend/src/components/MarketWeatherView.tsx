@@ -209,13 +209,13 @@ export const MarketWeatherView: React.FC<MarketWeatherViewProps> = ({
 
         {/* 7-Day Forecast Strip */}
         {weather && weather.daily_forecast && weather.daily_forecast.length > 0 && (
-          <div className="card p-5 overflow-x-auto">
+          <div className="card p-5">
             <div className="label text-[10px] mb-3">
-              7-Day Horticultural Forecast (Open-Meteo High-Resolution Model)
+              7-Day Horticultural Microclimate Forecast (Open-Meteo High-Resolution Model)
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3 min-w-[650px]">
+            <div className="flex overflow-x-auto gap-3 pb-2 md:grid md:grid-cols-7 no-scrollbar">
               {weather.daily_forecast.map((day, idx) => (
-                <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-1 hover:bg-emerald-50/50 transition-colors">
+                <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-center space-y-1 hover:bg-emerald-50/50 transition-colors shrink-0 w-32 md:w-auto">
                   <div className="text-xs font-bold text-slate-700">
                     {new Date(day.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
                   </div>
@@ -250,22 +250,22 @@ export const MarketWeatherView: React.FC<MarketWeatherViewProps> = ({
           </div>
 
           {/* Search & Commodity Filters */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-60">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search mandi, crop, district..."
-                className="input-field pl-9 py-1.5 text-xs w-56"
+                className="input-field pl-9 py-2 text-xs w-full"
               />
             </div>
 
             <select
               value={selectedCommodity}
               onChange={(e) => setSelectedCommodity(e.target.value)}
-              className="input-field py-1.5 text-xs w-36 font-semibold"
+              className="input-field py-2 text-xs w-full sm:w-40 font-semibold"
             >
               {uniqueCommodities.map((c, i) => (
                 <option key={i} value={c}>{c}</option>
@@ -274,8 +274,60 @@ export const MarketWeatherView: React.FC<MarketWeatherViewProps> = ({
           </div>
         </div>
 
-        {/* Mandi Records Table */}
-        <div className="card overflow-hidden">
+        {/* ─── Mobile Card View (< 768px) ─── */}
+        <div className="md:hidden space-y-3">
+          {filteredRecords.length > 0 ? (
+            filteredRecords.map((r, idx) => (
+              <div key={idx} className="card p-4 space-y-3 hover:border-emerald-300">
+                <div className="flex items-start justify-between gap-2 pb-2 border-b border-slate-100">
+                  <div>
+                    <h3 className="font-extrabold text-base text-slate-900">{r.commodity}</h3>
+                    <p className="text-xs text-slate-500">{r.variety || 'Standard Grade'}</p>
+                  </div>
+                  <span className={r.is_live ? 'badge-green text-[10px]' : 'badge-yellow text-[10px]'}>
+                    {r.is_live ? 'LIVE AGMARKNET' : 'CANONICAL DEMO'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span className="label text-[9px] mb-0.5">APMC Mandi</span>
+                    <div className="font-bold text-slate-900">{r.market}</div>
+                    <div className="text-[10px] text-slate-500">{r.district}, {r.state}</div>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-100">
+                    <span className="label text-[9px] mb-0.5 text-emerald-900">Modal Rate</span>
+                    <div className="text-base font-black font-mono text-emerald-800">
+                      ₹{r.normalized_modal_price_per_kg ? r.normalized_modal_price_per_kg.toFixed(2) : (r.modal_price / 100).toFixed(2)} / kg
+                    </div>
+                    <div className="text-[10px] text-emerald-700">₹{r.modal_price.toLocaleString()} / Qtl</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-slate-500 pt-1 border-t border-slate-100">
+                  <span>Recorded: {r.observation_date}</span>
+                  {onNavigateToDecision && (
+                    <button
+                      onClick={onNavigateToDecision}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:text-emerald-800 cursor-pointer"
+                    >
+                      <span>Run Profit Engine</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="card p-8 text-center text-slate-400 text-xs">
+              No mandi records match your filter criteria.
+            </div>
+          )}
+        </div>
+
+        {/* ─── Desktop Mandi Records Table (>= 768px) ─── */}
+        <div className="hidden md:block card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
