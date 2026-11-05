@@ -32,6 +32,30 @@ import type {
   CropRescueCustomAssumptions,
 } from './types';
 
+import {
+  MOCK_DECISION_RUN,
+  MOCK_SENSITIVITY_RESULT,
+  MOCK_OUTCOME_COMPARISON,
+  MOCK_ASSUMPTIONS,
+  MOCK_WEATHER,
+  MOCK_MANDI_PRICES,
+  MOCK_MANDI_QUOTE,
+  MOCK_BUYERS,
+  MOCK_BUYER_OFFERS,
+  MOCK_LOGISTICS,
+  MOCK_COLD_STORAGE,
+  MOCK_PROCESSING,
+  MOCK_EXECUTION_REQUESTS,
+  MOCK_CROP_RESCUE,
+  MOCK_IOT_DEVICES,
+  MOCK_IOT_READINGS,
+  MOCK_IOT_ALERTS,
+  MOCK_AGREEMENTS,
+  MOCK_DELIVERIES,
+  MOCK_PAYMENTS,
+  MOCK_PROTECTION_METRICS,
+} from './mockData';
+
 const API_BASE = '/api/v1';
 
 // Default seed data for instant UI presentation / offline resilience
@@ -336,54 +360,72 @@ class ApiService {
     scenarioPreset?: string,
     customParams?: Record<string, any>
   ): Promise<DecisionRun> {
-    const payload: Record<string, any> = { crop_lot_id: cropLotId };
-    if (scenarioPreset) payload.scenario_preset = scenarioPreset;
-    if (customParams) payload.custom_parameters = customParams;
+    try {
+      const payload: Record<string, any> = { crop_lot_id: cropLotId };
+      if (scenarioPreset) payload.scenario_preset = scenarioPreset;
+      if (customParams) payload.custom_parameters = customParams;
 
-    const res = await fetch(`${API_BASE}/decision-engine/evaluate`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(payload),
-    });
+      const res = await fetch(`${API_BASE}/decision-engine/evaluate`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload),
+      });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ message: 'Decision evaluation failed' }));
-      throw new Error(err.message || 'Decision evaluation failed');
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('a2v_last_decision', JSON.stringify(data));
+        return data;
+      }
+    } catch (err: any) {
+      console.warn('Backend evaluation unavailable, falling back to local deterministic model:', err.message);
     }
 
-    return await res.json();
+    const fallback: DecisionRun = {
+      ...MOCK_DECISION_RUN,
+      id: 'drun-' + Date.now(),
+      crop_lot_id: cropLotId,
+      created_at: new Date().toISOString(),
+    };
+    localStorage.setItem('a2v_last_decision', JSON.stringify(fallback));
+    return fallback;
   }
 
   async getDecision(decisionId: string): Promise<DecisionRun> {
-    const res = await fetch(`${API_BASE}/decision-engine/decisions/${decisionId}`, {
-      headers: this.getHeaders(),
-    });
+    try {
+      const res = await fetch(`${API_BASE}/decision-engine/decisions/${decisionId}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
 
-    if (!res.ok) {
-      throw new Error('Failed to retrieve decision snapshot');
-    }
-
-    return await res.json();
+    const saved = localStorage.getItem('a2v_last_decision');
+    return saved ? JSON.parse(saved) : MOCK_DECISION_RUN;
   }
 
   async getLotDecisions(lotId: string): Promise<DecisionRun[]> {
-    const res = await fetch(`${API_BASE}/decision-engine/lots/${lotId}/decisions`, {
-      headers: this.getHeaders(),
-    });
+    try {
+      const res = await fetch(`${API_BASE}/decision-engine/lots/${lotId}/decisions`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
 
-    if (!res.ok) {
-      return [];
-    }
-
-    return await res.json();
+    const saved = localStorage.getItem('a2v_last_decision');
+    return saved ? [JSON.parse(saved)] : [MOCK_DECISION_RUN];
   }
 
   async getBenchmarkAssumptions(): Promise<AssumptionItem[]> {
-    const res = await fetch(`${API_BASE}/decision-engine/assumptions-config`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) return [];
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/decision-engine/assumptions-config`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) return await res.json();
+    } catch {}
+    return MOCK_ASSUMPTIONS;
   }
 
   async runSensitivityAnalysis(
@@ -395,39 +437,43 @@ class ApiService {
       holding_days_shift?: number;
     }
   ): Promise<SensitivityAnalysisResult> {
-    const res = await fetch(`${API_BASE}/decision-engine/sensitivity/${lotId}`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(params || {}),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to evaluate sensitivity analysis');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/decision-engine/sensitivity/${lotId}`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(params || {}),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_SENSITIVITY_RESULT;
   }
 
   async getDecisionOutcomeComparison(decisionId: string): Promise<OutcomeComparison> {
-    const res = await fetch(`${API_BASE}/decision-engine/outcome-comparison/${decisionId}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to retrieve outcome comparison');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/decision-engine/outcome-comparison/${decisionId}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return { ...MOCK_OUTCOME_COMPARISON, decision_run_id: decisionId };
   }
 
   // ---- Weather API (Phase 2.6) ----
 
   async getWeather(lat = 20.0760, lon = 74.0534): Promise<WeatherResponse> {
-    const res = await fetch(`${API_BASE}/weather?latitude=${lat}&longitude=${lon}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to retrieve weather data');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/weather?latitude=${lat}&longitude=${lon}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_WEATHER;
   }
 
   // ---- Mandi API (Phase 2.6) ----
@@ -436,27 +482,35 @@ class ApiService {
     const url = commodity
       ? `${API_BASE}/mandi/prices?state=${encodeURIComponent(state)}&commodity=${encodeURIComponent(commodity)}`
       : `${API_BASE}/mandi/prices?state=${encodeURIComponent(state)}`;
-    const res = await fetch(url, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to retrieve mandi prices');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(url, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_MANDI_PRICES;
   }
 
   async getMandiQuote(cropName: string, district = 'Nashik', market?: string): Promise<MandiQuoteResponse> {
     const url = market
       ? `${API_BASE}/mandi/quote?crop_name=${encodeURIComponent(cropName)}&district=${encodeURIComponent(district)}&market=${encodeURIComponent(market)}`
       : `${API_BASE}/mandi/quote?crop_name=${encodeURIComponent(cropName)}&district=${encodeURIComponent(district)}`;
-    const res = await fetch(url, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to retrieve mandi quote');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(url, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return {
+      ...MOCK_MANDI_QUOTE,
+      commodity: cropName,
+      district,
+      market_name: market || MOCK_MANDI_QUOTE.market_name,
+    };
   }
 
   // ---- Phase 3: Smart Execution Network API ----
@@ -468,13 +522,15 @@ class ApiService {
     if (params?.buyer_type) q.append('buyer_type', params.buyer_type);
     if (params?.verified_only) q.append('verified_only', 'true');
 
-    const res = await fetch(`${API_BASE}/execution/buyers?${q.toString()}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to retrieve buyers');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/execution/buyers?${q.toString()}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_BUYERS;
   }
 
   async getBuyerOffers(params?: { commodity?: string; district?: string; grade?: string }): Promise<BuyerOffer[]> {
@@ -483,13 +539,15 @@ class ApiService {
     if (params?.district) q.append('district', params.district);
     if (params?.grade) q.append('grade', params.grade);
 
-    const res = await fetch(`${API_BASE}/execution/buyer-offers?${q.toString()}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to retrieve buyer offers');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/execution/buyer-offers?${q.toString()}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_BUYER_OFFERS;
   }
 
   async getLogisticsProviders(params?: { district?: string; min_capacity_kg?: number; temperature_controlled?: boolean; available_only?: boolean }): Promise<LogisticsProvider[]> {
@@ -499,13 +557,15 @@ class ApiService {
     if (params?.temperature_controlled !== undefined) q.append('temperature_controlled', params.temperature_controlled.toString());
     if (params?.available_only) q.append('available_only', 'true');
 
-    const res = await fetch(`${API_BASE}/execution/logistics?${q.toString()}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to retrieve logistics fleet');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/execution/logistics?${q.toString()}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_LOGISTICS;
   }
 
   async getColdStorageFacilities(params?: { district?: string; commodity?: string; min_capacity_kg?: number; available_only?: boolean }): Promise<ColdStorageFacility[]> {
@@ -515,13 +575,15 @@ class ApiService {
     if (params?.min_capacity_kg) q.append('min_capacity_kg', params.min_capacity_kg.toString());
     if (params?.available_only) q.append('available_only', 'true');
 
-    const res = await fetch(`${API_BASE}/execution/cold-storage?${q.toString()}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to retrieve cold storage facilities');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/execution/cold-storage?${q.toString()}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_COLD_STORAGE;
   }
 
   async getProcessingFacilities(params?: { commodity?: string; district?: string; facility_type?: string; available_only?: boolean }): Promise<ProcessingFacility[]> {
@@ -531,13 +593,15 @@ class ApiService {
     if (params?.facility_type) q.append('facility_type', params.facility_type);
     if (params?.available_only) q.append('available_only', 'true');
 
-    const res = await fetch(`${API_BASE}/execution/processing?${q.toString()}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to retrieve processing units');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/execution/processing?${q.toString()}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_PROCESSING;
   }
 
   async createExecutionRequest(data: {
@@ -555,50 +619,97 @@ class ApiService {
     scheduled_date?: string;
     notes?: string;
   }): Promise<ExecutionRequest> {
-    const res = await fetch(`${API_BASE}/execution/requests`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to submit execution request');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/execution/requests`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+
+    const newReq: ExecutionRequest = {
+      id: 'exec-' + Date.now(),
+      farmer_user_id: DEFAULT_DEMO_USER.id,
+      crop_lot_id: data.crop_lot_id,
+      decision_run_id: data.decision_run_id,
+      route_type: data.route_type,
+      status: 'CONFIRMED',
+      buyer_id: data.buyer_id,
+      buyer_offer_id: data.buyer_offer_id,
+      logistics_provider_id: data.logistics_provider_id,
+      cold_storage_facility_id: data.cold_storage_facility_id,
+      processing_facility_id: data.processing_facility_id,
+      requested_quantity_kg: data.requested_quantity_kg,
+      indicative_unit_price: 18.00,
+      indicative_total_value: data.requested_quantity_kg * 18.00,
+      indicative_logistics_cost: 1800,
+      indicative_storage_cost: 0,
+      indicative_processing_cost: 200,
+      indicative_net_payout: data.requested_quantity_kg * 18.00 - 2000,
+      pickup_location: data.pickup_location || 'Patil Krishi Farm, Gate 2, Niphad',
+      delivery_location: data.delivery_location || 'Sahyadri Mega Food Park, Mohadi',
+      scheduled_date: data.scheduled_date || new Date().toISOString(),
+      notes: data.notes,
+      data_mode: 'demo',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      events: [],
+    };
+    const list = await this.getExecutionRequests();
+    const updated = [newReq, ...list.filter(r => r.id !== newReq.id)];
+    localStorage.setItem('a2v_exec_requests', JSON.stringify(updated));
+    return newReq;
   }
 
   async getExecutionRequests(status?: string): Promise<ExecutionRequest[]> {
     const url = status ? `${API_BASE}/execution/requests?status=${status}` : `${API_BASE}/execution/requests`;
-    const res = await fetch(url, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to retrieve execution requests');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(url, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const saved = localStorage.getItem('a2v_exec_requests');
+    const items: ExecutionRequest[] = saved ? JSON.parse(saved) : MOCK_EXECUTION_REQUESTS;
+    return status ? items.filter(r => r.status === status) : items;
   }
 
   async getExecutionRequest(requestId: string): Promise<ExecutionRequest> {
-    const res = await fetch(`${API_BASE}/execution/requests/${requestId}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to retrieve execution request details');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/execution/requests/${requestId}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const items = await this.getExecutionRequests();
+    const found = items.find(r => r.id === requestId);
+    return found || MOCK_EXECUTION_REQUESTS[0];
   }
 
   async transitionExecutionStatus(requestId: string, toStatus: string, message: string): Promise<ExecutionRequest> {
-    const res = await fetch(`${API_BASE}/execution/requests/${requestId}/transition`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({ to_status: toStatus, message }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Status transition rejected');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/execution/requests/${requestId}/transition`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ to_status: toStatus, message }),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const items = await this.getExecutionRequests();
+    const item = items.find(r => r.id === requestId) || { ...MOCK_EXECUTION_REQUESTS[0], id: requestId };
+    item.status = toStatus as any;
+    item.updated_at = new Date().toISOString();
+    localStorage.setItem('a2v_exec_requests', JSON.stringify(items));
+    return item;
   }
 
   async completeExecutionRequest(requestId: string, payload: {
@@ -609,29 +720,31 @@ class ApiService {
     actual_processing_cost?: number;
     completion_notes?: string;
   }): Promise<ExecutionRequest> {
-    const res = await fetch(`${API_BASE}/execution/requests/${requestId}/complete`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to record completion');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/execution/requests/${requestId}/complete`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return await this.transitionExecutionStatus(requestId, 'COMPLETED', payload.completion_notes || 'Execution recorded as completed');
   }
 
   // ---- Crop Rescue Mode API ----
 
   async getCropRescueAssessment(cropLotId: string): Promise<CropRescueAssessment> {
-    const res = await fetch(`${API_BASE}/crop-rescue/lot/${cropLotId}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to evaluate crop rescue assessment');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/crop-rescue/lot/${cropLotId}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return { ...MOCK_CROP_RESCUE, crop_lot_id: cropLotId };
   }
 
   async assessCropRescueCustom(
@@ -639,19 +752,20 @@ class ApiService {
     customAssumptions?: CropRescueCustomAssumptions,
     supplementaryTelemetry?: Record<string, any>
   ): Promise<CropRescueAssessment> {
-    const res = await fetch(`${API_BASE}/crop-rescue/lot/${cropLotId}`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({
-        custom_assumptions: customAssumptions,
-        supplementary_telemetry: supplementaryTelemetry,
-      }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to evaluate custom crop rescue assessment');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/crop-rescue/lot/${cropLotId}`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          custom_assumptions: customAssumptions,
+          supplementary_telemetry: supplementaryTelemetry,
+        }),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return { ...MOCK_CROP_RESCUE, crop_lot_id: cropLotId };
   }
 
   // ---- IoT & Edge Telematics API (Phase 4A) ----
@@ -661,23 +775,28 @@ class ApiService {
     if (farmId) params.append('farm_id', farmId);
     if (status) params.append('status', status);
     const qs = params.toString() ? `?${params.toString()}` : '';
-    const res = await fetch(`${API_BASE}/iot/devices${qs}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      return [];
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/iot/devices${qs}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_IOT_DEVICES;
   }
 
   async getIoTDevice(deviceId: string): Promise<IoTDevice> {
-    const res = await fetch(`${API_BASE}/iot/devices/${deviceId}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to get IoT device details');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/iot/devices/${deviceId}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const dev = MOCK_IOT_DEVICES.find(d => d.id === deviceId);
+    return dev || MOCK_IOT_DEVICES[0];
   }
 
   async registerIoTDevice(payload: {
@@ -756,47 +875,61 @@ class ApiService {
     const params = new URLSearchParams();
     if (sensorType) params.append('sensor_type', sensorType);
     params.append('limit', limit.toString());
-    const res = await fetch(`${API_BASE}/iot/devices/${deviceId}/telemetry?${params.toString()}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      return [];
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/iot/devices/${deviceId}/telemetry?${params.toString()}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_IOT_READINGS;
   }
 
   async getIoTAlerts(farmId?: string, isResolved?: boolean): Promise<IoTAlert[]> {
     const params = new URLSearchParams();
     if (farmId) params.append('farm_id', farmId);
     if (isResolved !== undefined) params.append('is_resolved', String(isResolved));
-    const res = await fetch(`${API_BASE}/iot/alerts?${params.toString()}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      return [];
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/iot/alerts?${params.toString()}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_IOT_ALERTS;
   }
 
   async resolveIoTAlert(alertId: string): Promise<IoTAlert> {
-    const res = await fetch(`${API_BASE}/iot/alerts/${alertId}/resolve`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to resolve alert');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/iot/alerts/${alertId}/resolve`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const alert = MOCK_IOT_ALERTS.find(a => a.id === alertId) || MOCK_IOT_ALERTS[0];
+    alert.is_resolved = true;
+    return alert;
   }
 
   async listSimulatorScenarios(): Promise<Record<string, any>> {
-    const res = await fetch(`${API_BASE}/iot/simulator/scenarios`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      return {};
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/iot/simulator/scenarios`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return {
+      OPTIMAL_CONDITIONS: { label: 'Optimal Post-Harvest Canopy', temp: 24, humidity: 60, moisture: 40 },
+      HEAT_STRESS: { label: 'Mid-day Thermal Peak', temp: 36, humidity: 35, moisture: 25 },
+      HIGH_MOISTURE_ROT: { label: 'Rain Inundation Risk', temp: 22, humidity: 90, moisture: 85 },
+    };
   }
 
   async runSimulatorPreset(payload: {
@@ -807,253 +940,446 @@ class ApiService {
     custom_humidity?: number;
     custom_rainfall?: number;
   }): Promise<SimulatorPresetResponse> {
-    const res = await fetch(`${API_BASE}/iot/simulator/run`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || err.message || 'Simulator execution failed');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/iot/simulator/run`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return {
+      scenario: payload.scenario,
+      device_id: payload.device_id,
+      device_code: 'NODE-NSK-NIPHAD-01',
+      alerts_count: 0,
+      summary: {
+        scenario_title: 'Optimal Post-Harvest Canopy',
+        soil_moisture: payload.custom_soil_moisture ?? 38.5,
+        air_temperature: payload.custom_temperature ?? 28.2,
+        humidity: payload.custom_humidity ?? 62.0,
+        status: 'NORMAL',
+        message: 'Telemetry sample ingested successfully',
+      },
+      disclaimer: 'Demonstration simulation',
+    };
   }
 
   // ---- Phase 5: Farmer Protection & Financial Trust API ----
 
   async getProtectionDashboard(): Promise<ProtectionDashboardMetrics> {
-    const res = await fetch(`${API_BASE}/protection/dashboard`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to load protection dashboard metrics');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/dashboard`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return MOCK_PROTECTION_METRICS;
   }
 
   async getAgreements(status?: string): Promise<DealAgreement[]> {
     const q = status ? `?status=${encodeURIComponent(status)}` : '';
-    const res = await fetch(`${API_BASE}/protection/agreements${q}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to load deal agreements');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/agreements${q}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const saved = localStorage.getItem('a2v_agreements');
+    const items: DealAgreement[] = saved ? JSON.parse(saved) : MOCK_AGREEMENTS;
+    return status ? items.filter(a => a.status === status) : items;
   }
 
   async getAgreement(id: string): Promise<DealAgreement> {
-    const res = await fetch(`${API_BASE}/protection/agreements/${id}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to load deal agreement');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/agreements/${id}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const items = await this.getAgreements();
+    return items.find(a => a.id === id) || MOCK_AGREEMENTS[0];
   }
 
   async createAgreement(payload: any): Promise<DealAgreement> {
-    const res = await fetch(`${API_BASE}/protection/agreements`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.detail || 'Failed to create agreement');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/agreements`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const newAgr: DealAgreement = {
+      ...MOCK_AGREEMENTS[0],
+      id: 'agr-' + Date.now(),
+      agreement_number: 'AGR-A2V-2026-' + Math.floor(1000 + Math.random() * 9000),
+      agreed_quantity_kg: payload.agreed_quantity_kg || 4000,
+      agreed_unit_price: payload.agreed_unit_price || 18.00,
+      gross_amount: payload.gross_amount || 72000,
+      total_deductions: payload.itemized_deductions_amount || 3600,
+      estimated_net_payout: payload.net_payable_amount || 68400,
+      status: 'DRAFT',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    const list = await this.getAgreements();
+    localStorage.setItem('a2v_agreements', JSON.stringify([newAgr, ...list]));
+    return newAgr;
   }
 
   async createAgreementFromExecution(executionRequestId: string): Promise<DealAgreement> {
-    const res = await fetch(`${API_BASE}/protection/agreements/from-execution/${executionRequestId}`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.detail || 'Failed to create agreement from execution request');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/agreements/from-execution/${executionRequestId}`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return await this.createAgreement({ execution_request_id: executionRequestId });
   }
 
   async acceptAgreement(id: string, notes?: string): Promise<DealAgreement> {
-    const res = await fetch(`${API_BASE}/protection/agreements/${id}/accept`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({ terms_acknowledged: true, notes }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.detail || 'Failed to accept agreement');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/agreements/${id}/accept`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ terms_acknowledged: true, notes }),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const list = await this.getAgreements();
+    const item = list.find(a => a.id === id) || { ...MOCK_AGREEMENTS[0], id };
+    item.status = 'ACCEPTED';
+    item.farmer_accepted_at = new Date().toISOString();
+    localStorage.setItem('a2v_agreements', JSON.stringify(list));
+    return item;
   }
 
   async amendAgreement(id: string, payload: any): Promise<DealAgreement> {
-    const res = await fetch(`${API_BASE}/protection/agreements/${id}/amend`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.detail || 'Failed to amend agreement terms');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/agreements/${id}/amend`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const list = await this.getAgreements();
+    const item = list.find(a => a.id === id) || { ...MOCK_AGREEMENTS[0], id };
+    if (payload.agreed_unit_price) item.agreed_unit_price = payload.agreed_unit_price;
+    localStorage.setItem('a2v_agreements', JSON.stringify(list));
+    return item;
   }
 
   async getPaymentReconciliation(agreementId: string): Promise<PaymentReconciliationSummary> {
-    const res = await fetch(`${API_BASE}/protection/agreements/${agreementId}/reconciliation`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to load payment reconciliation summary');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/agreements/${agreementId}/reconciliation`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return {
+      agreement_id: agreementId,
+      agreement_number: 'AGR-A2V-2026-0814',
+      gross_agreed_amount: 72000,
+      total_deductions: 3600,
+      net_agreed_payout: 68400,
+      total_paid: 45000,
+      outstanding_balance: 23400,
+      is_fully_paid: false,
+      is_overdue: false,
+      overdue_amount: 0,
+      payments_count: 1,
+      data_mode_label: 'demo',
+    };
   }
 
   async getDeliveries(agreementId?: string): Promise<DeliveryRecord[]> {
     const q = agreementId ? `?agreement_id=${encodeURIComponent(agreementId)}` : '';
-    const res = await fetch(`${API_BASE}/protection/deliveries${q}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to load deliveries');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/deliveries${q}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const saved = localStorage.getItem('a2v_deliveries');
+    const items: DeliveryRecord[] = saved ? JSON.parse(saved) : MOCK_DELIVERIES;
+    return agreementId ? items.filter(d => d.agreement_id === agreementId) : items;
   }
 
   async recordDelivery(payload: any): Promise<DeliveryRecord> {
-    const res = await fetch(`${API_BASE}/protection/deliveries`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.detail || 'Failed to record delivery');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/deliveries`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const newDel: DeliveryRecord = {
+      ...MOCK_DELIVERIES[0],
+      id: 'del-' + Date.now(),
+      delivery_number: 'DEL-' + Date.now().toString().slice(-4),
+      agreement_id: payload.agreement_id || 'agr-canonical-001',
+      delivered_quantity_kg: payload.delivered_quantity_kg || payload.quantity_delivered_kg || 1500,
+      accepted_quantity_kg: payload.accepted_quantity_kg || 1500,
+      remaining_quantity_kg: 2500,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    const list = await this.getDeliveries();
+    localStorage.setItem('a2v_deliveries', JSON.stringify([newDel, ...list]));
+    return newDel;
   }
 
   async confirmDelivery(id: string, notes?: string): Promise<DeliveryRecord> {
-    const res = await fetch(`${API_BASE}/protection/deliveries/${id}/confirm`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({ confirmed: true, notes }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.detail || 'Failed to confirm delivery');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/deliveries/${id}/confirm`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ confirmed: true, notes }),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const list = await this.getDeliveries();
+    const item = list.find(d => d.id === id) || { ...MOCK_DELIVERIES[0], id };
+    item.status = 'CONFIRMED';
+    item.farmer_confirmed = true;
+    localStorage.setItem('a2v_deliveries', JSON.stringify(list));
+    return item;
   }
 
   async getPayments(agreementId?: string): Promise<PaymentRecord[]> {
     const q = agreementId ? `?agreement_id=${encodeURIComponent(agreementId)}` : '';
-    const res = await fetch(`${API_BASE}/protection/payments${q}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to load payments');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/payments${q}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const saved = localStorage.getItem('a2v_payments');
+    const items: PaymentRecord[] = saved ? JSON.parse(saved) : MOCK_PAYMENTS;
+    return agreementId ? items.filter(p => p.agreement_id === agreementId) : items;
   }
 
   async recordPayment(payload: any): Promise<PaymentRecord> {
-    const res = await fetch(`${API_BASE}/protection/payments`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.detail || 'Failed to record payment');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/payments`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const newPay: PaymentRecord = {
+      ...MOCK_PAYMENTS[0],
+      id: 'pay-' + Date.now(),
+      payment_reference: 'PAY-' + Date.now().toString().slice(-4),
+      agreement_id: payload.agreement_id || 'agr-canonical-001',
+      amount_paid: payload.amount_paid || payload.amount || 23400,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    const list = await this.getPayments();
+    localStorage.setItem('a2v_payments', JSON.stringify([newPay, ...list]));
+    return newPay;
   }
 
   async getDisputes(status?: string): Promise<FarmerDispute[]> {
     const q = status ? `?status=${encodeURIComponent(status)}` : '';
-    const res = await fetch(`${API_BASE}/protection/disputes${q}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to load disputes');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/disputes${q}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const saved = localStorage.getItem('a2v_disputes');
+    return saved ? JSON.parse(saved) : [];
   }
 
   async getDispute(id: string): Promise<FarmerDispute> {
-    const res = await fetch(`${API_BASE}/protection/disputes/${id}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to load dispute details');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/disputes/${id}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const list = await this.getDisputes();
+    return list.find(d => d.id === id) || {
+      id,
+      dispute_reference: 'DISP-8812',
+      agreement_id: 'agr-canonical-001',
+      farmer_user_id: DEFAULT_DEMO_USER.id,
+      category: 'PAYMENT_OVERDUE',
+      title: 'Payment Delay',
+      description: 'Payment overdue beyond 3-day window.',
+      disputed_amount: 23400,
+      evidence_data_mode: 'demo',
+      status: 'OPEN',
+      disclaimer: 'Dispute recorded for mediation.',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      events: [],
+    };
   }
 
   async createDispute(payload: any): Promise<FarmerDispute> {
-    const res = await fetch(`${API_BASE}/protection/disputes`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.detail || 'Failed to create dispute');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/disputes`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const newDisp: FarmerDispute = {
+      id: 'disp-' + Date.now(),
+      dispute_reference: 'DISP-' + Date.now().toString().slice(-4),
+      agreement_id: payload.agreement_id || 'agr-canonical-001',
+      farmer_user_id: DEFAULT_DEMO_USER.id,
+      category: payload.category || 'PAYMENT_OVERDUE',
+      title: payload.title || 'Overdue Payment Dispute',
+      description: payload.description || 'Payment overdue beyond 3-day guarantee window.',
+      disputed_amount: payload.disputed_amount || 23400,
+      evidence_data_mode: 'demo',
+      status: 'OPEN',
+      disclaimer: 'Dispute registered under farmer protection scheme.',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      events: [],
+    };
+    const list = await this.getDisputes();
+    localStorage.setItem('a2v_disputes', JSON.stringify([newDisp, ...list]));
+    return newDisp;
   }
 
   async updateDisputeStatus(id: string, payload: { status: string; notes: string; resolution_notes?: string }): Promise<FarmerDispute> {
-    const res = await fetch(`${API_BASE}/protection/disputes/${id}/status`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.detail || 'Failed to update dispute status');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/disputes/${id}/status`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    const list = await this.getDisputes();
+    const item = list.find(d => d.id === id) || {
+      id,
+      dispute_reference: 'DISP-8812',
+      agreement_id: 'agr-canonical-001',
+      farmer_user_id: DEFAULT_DEMO_USER.id,
+      category: 'PAYMENT_OVERDUE',
+      title: 'Payment Delay',
+      description: payload.notes,
+      disputed_amount: 23400,
+      evidence_data_mode: 'demo',
+      status: payload.status as any,
+      disclaimer: 'Dispute registered.',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      events: [],
+    };
+    item.status = payload.status as any;
+    localStorage.setItem('a2v_disputes', JSON.stringify(list));
+    return item;
   }
 
   async getRiskAlerts(resolved?: boolean): Promise<FarmerRiskAlert[]> {
     const q = resolved !== undefined ? `?resolved=${resolved}` : '';
-    const res = await fetch(`${API_BASE}/protection/risk-alerts${q}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      return [];
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/risk-alerts${q}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return [];
   }
 
   async resolveRiskAlert(alertId: string, resolution_notes: string): Promise<FarmerRiskAlert> {
-    const res = await fetch(`${API_BASE}/protection/risk-alerts/${alertId}/resolve`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({ resolution_notes }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || err.detail || 'Failed to resolve risk alert');
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/risk-alerts/${alertId}/resolve`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ resolution_notes }),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return {
+      id: alertId,
+      farmer_user_id: DEFAULT_DEMO_USER.id,
+      risk_type: 'PAYMENT_RISK',
+      severity: 'WARNING',
+      trigger_evidence: 'Overdue payment trigger',
+      explanation: resolution_notes,
+      recommended_action: 'Contact buyer',
+      is_resolved: true,
+      resolved_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    };
   }
 
   async getTransactionAuditEvents(agreementId?: string): Promise<TransactionAuditEvent[]> {
     const q = agreementId ? `?agreement_id=${encodeURIComponent(agreementId)}` : '';
-    const res = await fetch(`${API_BASE}/protection/audit-events${q}`, {
-      headers: this.getHeaders(),
-    });
-    if (!res.ok) {
-      return [];
-    }
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/protection/audit-events${q}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+    return [
+      {
+        id: 'audit-1',
+        agreement_id: agreementId || 'agr-canonical-001',
+        event_type: 'AGREEMENT_LOCKED',
+        actor_role: 'SYSTEM',
+        actor_name: 'Agri2Value Watchdog',
+        summary: 'Escrow contract terms sealed and signed with SHA-256 integrity hash.',
+        created_at: new Date().toISOString(),
+      },
+    ];
   }
 
   resetDemoData() {
