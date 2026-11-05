@@ -103,3 +103,4 @@ All screenshots have been captured and archived in `docs/screenshots/`:
 - **`frontend/src/components/DashboardView.tsx`**: Complete redesign implementing Sections A through G, dynamic Mandi quote integration, multi-lot switcher, and cohesive design tokens.
 - **`frontend/src/components/WeatherSprayWidget.tsx`**: Aligned container layout to `h-full flex flex-col justify-between` for matching heights with adjacent cards.
 - **`docs/DASHBOARD_REDESIGN_REPORT.md`**: Master redesign report and verification audit.
+
