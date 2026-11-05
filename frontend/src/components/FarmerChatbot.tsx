@@ -1,5 +1,6 @@
 // frontend/src/components/FarmerChatbot.tsx
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   X,
   Send,
@@ -31,6 +32,7 @@ const SMART_SUGGESTIONS = [
 ];
 
 export const FarmerChatbot: React.FC = () => {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -165,6 +167,11 @@ export const FarmerChatbot: React.FC = () => {
       setIsListening(false);
     }
   };
+
+  // Do not render the floating advisor on auth screens (/login, /register) to avoid obstructing form controls
+  if (['/login', '/register'].includes(location.pathname)) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
