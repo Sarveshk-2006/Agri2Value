@@ -86,3 +86,4 @@ As documented in `docs/HARVEST_LOTS_BUG_AUDIT.md`, all baseline visual defects a
 - `docs/HARVEST_LOTS_REDESIGN_REPORT.md`: This comprehensive implementation report.
 - `docs/HARVEST_LOTS_RESPONSIVE_TESTS.md`: Viewport-by-viewport responsive matrix.
 - `docs/screenshots/`: All 10 baseline and redesigned visual verification captures.
+

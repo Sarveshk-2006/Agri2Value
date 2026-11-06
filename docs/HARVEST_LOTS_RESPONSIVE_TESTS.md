@@ -53,3 +53,4 @@ All verification screenshots are stored in `docs/screenshots/`:
 | `lots_redesign_mobile_320.png` | Redesigned small mobile view | 320 × 700 | 39,034 bytes |
 | `lots_redesign_add_modal.png` | Validated Register Harvest modal dialogue | 1440 × 1000 | 209,327 bytes |
 | `lots_redesign_empty_state.png` | Zero-lot empty state | 1440 × 900 | 128,345 bytes |
+
