@@ -360,6 +360,7 @@ const AppContent: React.FC = () => {
             element={
               <FarmsView
                 farms={farms}
+                cropLots={cropLots}
                 onCreateFarm={handleCreateFarm}
                 isOpenCreateModal={isCreateFarmOpen}
                 onCloseCreateModal={() => setIsCreateFarmOpen(false)}
