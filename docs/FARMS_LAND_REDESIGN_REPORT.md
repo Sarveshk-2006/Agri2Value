@@ -127,3 +127,4 @@ The 3D visualization was engineered using **Three.js `v0.160.0`**, selected for 
 - `docs/FARMS_LAND_RESPONSIVE_TESTS.md`: Viewport-by-viewport responsive matrix.
 - `docs/DIGITAL_FARM_VISUALIZATION.md`: Technical specification of the 3D Digital Farm twin.
 - `docs/screenshots/`: All 11 baseline and redesigned visual verification captures.
+

@@ -54,3 +54,4 @@ All verification screenshots are permanently stored in `docs/screenshots/`:
 | `farms_redesign_add_modal.png` | Validated Add Farm registration modal | 1440 × 1000 | 183,332 bytes |
 | `farms_redesign_empty_state.png` | Zero-farm holding empty state | 1440 × 900 | 113,036 bytes |
 | `farms_redesign_selected_resource.png` | 3D object selection with contextual information card | 1440 × 1100 | 125,087 bytes |
+

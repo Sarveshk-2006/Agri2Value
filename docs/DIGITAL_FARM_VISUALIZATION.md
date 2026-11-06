@@ -112,3 +112,4 @@ In environments where WebGL is unavailable or disabled:
   - On unmount or farm change, the animation loop is cancelled via `cancelAnimationFrame`.
   - Resize observers and window event listeners are disconnected.
   - `renderer.dispose()` and `scene.clear()` release WebGL buffer memory and textures immediately.
+
