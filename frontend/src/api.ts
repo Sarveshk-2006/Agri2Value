@@ -675,7 +675,14 @@ class ApiService {
       }
     } catch {}
     const saved = localStorage.getItem('a2v_exec_requests');
-    const items: ExecutionRequest[] = saved ? JSON.parse(saved) : MOCK_EXECUTION_REQUESTS;
+    let items: ExecutionRequest[] = saved ? JSON.parse(saved) : MOCK_EXECUTION_REQUESTS;
+    if (saved && Array.isArray(items)) {
+      for (const mockReq of MOCK_EXECUTION_REQUESTS) {
+        if (!items.some(i => i.id === mockReq.id)) {
+          items.push(mockReq);
+        }
+      }
+    }
     return status ? items.filter(r => r.status === status) : items;
   }
 
