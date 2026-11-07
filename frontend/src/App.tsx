@@ -445,6 +445,7 @@ const AppContent: React.FC = () => {
                 cropLots={cropLots}
                 selectedLotId={selectedLotIdForDecision}
                 onLotSelect={setSelectedLotIdForDecision}
+                onNavigateToExecution={() => navigate('/app/execution')}
               />
             }
           />
