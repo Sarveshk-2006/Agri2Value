@@ -420,7 +420,12 @@ const AppContent: React.FC = () => {
 
           <Route
             path="infra"
-            element={<InfrastructureView cropLots={cropLots} />}
+            element={
+              <InfrastructureView
+                cropLots={cropLots}
+                onNavigateToExecution={() => navigate('/app/execution')}
+              />
+            }
           />
 
           <Route
