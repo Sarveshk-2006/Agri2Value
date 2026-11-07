@@ -53,6 +53,9 @@ import {
   MOCK_AGREEMENTS,
   MOCK_DELIVERIES,
   MOCK_PAYMENTS,
+  MOCK_DISPUTES,
+  MOCK_RISK_ALERTS,
+  MOCK_AUDIT_EVENTS,
   MOCK_PROTECTION_METRICS,
 } from './mockData';
 
@@ -1232,7 +1235,7 @@ class ApiService {
       }
     } catch {}
     const saved = localStorage.getItem('a2v_disputes');
-    return saved ? JSON.parse(saved) : [];
+    return saved ? JSON.parse(saved) : MOCK_DISPUTES;
   }
 
   async getDispute(id: string): Promise<FarmerDispute> {
@@ -1338,7 +1341,10 @@ class ApiService {
         return await res.json();
       }
     } catch {}
-    return [];
+    if (resolved !== undefined) {
+      return MOCK_RISK_ALERTS.filter(a => a.is_resolved === resolved);
+    }
+    return MOCK_RISK_ALERTS;
   }
 
   async resolveRiskAlert(alertId: string, resolution_notes: string): Promise<FarmerRiskAlert> {
@@ -1352,6 +1358,13 @@ class ApiService {
         return await res.json();
       }
     } catch {}
+    const existing = MOCK_RISK_ALERTS.find(a => a.id === alertId);
+    if (existing) {
+      existing.is_resolved = true;
+      existing.resolution_notes = resolution_notes;
+      existing.resolved_at = new Date().toISOString();
+      return existing;
+    }
     return {
       id: alertId,
       farmer_user_id: DEFAULT_DEMO_USER.id,
@@ -1376,17 +1389,10 @@ class ApiService {
         return await res.json();
       }
     } catch {}
-    return [
-      {
-        id: 'audit-1',
-        agreement_id: agreementId || 'agr-canonical-001',
-        event_type: 'AGREEMENT_LOCKED',
-        actor_role: 'SYSTEM',
-        actor_name: 'Agri2Value Watchdog',
-        summary: 'Escrow contract terms sealed and signed with SHA-256 integrity hash.',
-        created_at: new Date().toISOString(),
-      },
-    ];
+    if (agreementId) {
+      return MOCK_AUDIT_EVENTS.filter(e => e.agreement_id === agreementId);
+    }
+    return MOCK_AUDIT_EVENTS;
   }
 
   resetDemoData() {
