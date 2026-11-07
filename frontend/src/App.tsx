@@ -410,7 +410,12 @@ const AppContent: React.FC = () => {
 
           <Route
             path="buyers"
-            element={<BuyersView cropLots={cropLots} />}
+            element={
+              <BuyersView
+                cropLots={cropLots}
+                onNavigateToExecution={() => navigate('/app/execution')}
+              />
+            }
           />
 
           <Route
