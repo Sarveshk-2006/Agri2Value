@@ -5,7 +5,7 @@ Integrates with Open-Meteo REST API (server-side, cached, asynchronous).
 Never calls from the client browser. Provides farm-level ownership protection,
 strict attribution, separate observed vs forecast models, and advisory disclaimers.
 """
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import time
 from typing import Dict, Any, Optional, Tuple, List
 import httpx
@@ -189,91 +189,22 @@ def _get_offline_reference_weather(latitude: float, longitude: float) -> Weather
 
     advisory = compute_field_work_advisory(observed)
 
+    today = datetime.now(timezone.utc).date()
+    forecast_templates = [
+        {"weather_code": 1, "weather_description": "Mainly clear", "weather_icon": "🌤️", "temp_max_c": 31.2, "temp_min_c": 18.5, "precipitation_sum_mm": 0.0, "max_wind_speed_kmh": 14.0, "sunrise": "06:28", "sunset": "18:02"},
+        {"weather_code": 2, "weather_description": "Partly cloudy", "weather_icon": "⛅", "temp_max_c": 30.8, "temp_min_c": 19.1, "precipitation_sum_mm": 0.2, "max_wind_speed_kmh": 16.2, "sunrise": "06:29", "sunset": "18:01"},
+        {"weather_code": 0, "weather_description": "Clear sky", "weather_icon": "☀️", "temp_max_c": 32.0, "temp_min_c": 18.0, "precipitation_sum_mm": 0.0, "max_wind_speed_kmh": 11.8, "sunrise": "06:29", "sunset": "18:01"},
+        {"weather_code": 0, "weather_description": "Clear sky", "weather_icon": "☀️", "temp_max_c": 32.5, "temp_min_c": 18.2, "precipitation_sum_mm": 0.0, "max_wind_speed_kmh": 12.0, "sunrise": "06:30", "sunset": "18:00"},
+        {"weather_code": 2, "weather_description": "Partly cloudy", "weather_icon": "⛅", "temp_max_c": 31.5, "temp_min_c": 19.0, "precipitation_sum_mm": 0.0, "max_wind_speed_kmh": 15.0, "sunrise": "06:30", "sunset": "18:00"},
+        {"weather_code": 3, "weather_description": "Overcast", "weather_icon": "☁️", "temp_max_c": 29.0, "temp_min_c": 19.5, "precipitation_sum_mm": 1.5, "max_wind_speed_kmh": 19.0, "sunrise": "06:31", "sunset": "17:59"},
+        {"weather_code": 61, "weather_description": "Slight rain", "weather_icon": "🌧️", "temp_max_c": 27.5, "temp_min_c": 18.0, "precipitation_sum_mm": 4.2, "max_wind_speed_kmh": 22.5, "sunrise": "06:31", "sunset": "17:59"},
+    ]
     forecast_days = [
         DailyForecastItem(
-            date="2026-11-01",
-            weather_code=1,
-            weather_description="Mainly clear",
-            weather_icon="🌤️",
-            temp_max_c=31.2,
-            temp_min_c=18.5,
-            precipitation_sum_mm=0.0,
-            max_wind_speed_kmh=14.0,
-            sunrise="06:28",
-            sunset="18:02",
-        ),
-        DailyForecastItem(
-            date="2026-11-02",
-            weather_code=2,
-            weather_description="Partly cloudy",
-            weather_icon="⛅",
-            temp_max_c=30.8,
-            temp_min_c=19.1,
-            precipitation_sum_mm=0.2,
-            max_wind_speed_kmh=16.2,
-            sunrise="06:29",
-            sunset="18:01",
-        ),
-        DailyForecastItem(
-            date="2026-11-03",
-            weather_code=0,
-            weather_description="Clear sky",
-            weather_icon="☀️",
-            temp_max_c=32.0,
-            temp_min_c=18.0,
-            precipitation_sum_mm=0.0,
-            max_wind_speed_kmh=11.8,
-            sunrise="06:29",
-            sunset="18:01",
-        ),
-        DailyForecastItem(
-            date="2026-11-04",
-            weather_code=0,
-            weather_description="Clear sky",
-            weather_icon="☀️",
-            temp_max_c=32.5,
-            temp_min_c=18.2,
-            precipitation_sum_mm=0.0,
-            max_wind_speed_kmh=12.0,
-            sunrise="06:30",
-            sunset="18:00",
-        ),
-        DailyForecastItem(
-            date="2026-11-05",
-            weather_code=2,
-            weather_description="Partly cloudy",
-            weather_icon="⛅",
-            temp_max_c=31.5,
-            temp_min_c=19.0,
-            precipitation_sum_mm=0.0,
-            max_wind_speed_kmh=15.0,
-            sunrise="06:30",
-            sunset="18:00",
-        ),
-        DailyForecastItem(
-            date="2026-11-06",
-            weather_code=3,
-            weather_description="Overcast",
-            weather_icon="☁️",
-            temp_max_c=29.0,
-            temp_min_c=19.5,
-            precipitation_sum_mm=1.5,
-            max_wind_speed_kmh=19.0,
-            sunrise="06:31",
-            sunset="17:59",
-        ),
-        DailyForecastItem(
-            date="2026-11-07",
-            weather_code=61,
-            weather_description="Slight rain",
-            weather_icon="🌧️",
-            temp_max_c=27.5,
-            temp_min_c=18.0,
-            precipitation_sum_mm=4.2,
-            max_wind_speed_kmh=22.5,
-            sunrise="06:31",
-            sunset="17:59",
-        ),
+            date=(today + timedelta(days=i)).isoformat(),
+            **tmpl,
+        )
+        for i, tmpl in enumerate(forecast_templates)
     ]
 
     return WeatherResponse(
@@ -358,12 +289,14 @@ class WeatherService:
 
             forecast_items: List[DailyForecastItem] = []
             dates = daily_raw.get("time", [])
+            today_utc = datetime.now(timezone.utc).date()
             for i, d in enumerate(dates):
                 f_code = daily_raw.get("weather_code", [])[i] if i < len(daily_raw.get("weather_code", [])) else 0
                 f_info = _get_wmo_info(f_code)
+                valid_date = d if (isinstance(d, str) and len(d.strip()) >= 8) else (today_utc + timedelta(days=i)).isoformat()
                 forecast_items.append(
                     DailyForecastItem(
-                        date=d,
+                        date=valid_date,
                         weather_code=f_code,
                         weather_description=f_info["label"],
                         weather_icon=f_info["icon"],

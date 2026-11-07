@@ -405,7 +405,7 @@ const AppContent: React.FC = () => {
 
           <Route
             path="market"
-            element={<MarketWeatherView />}
+            element={<MarketWeatherView onNavigateToDecision={() => navigate('/app/decision')} />}
           />
 
           <Route

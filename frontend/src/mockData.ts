@@ -371,6 +371,15 @@ export const MOCK_OUTCOME_COMPARISON: OutcomeComparison = {
   comparison_notes: 'Realized exact contract value without defaults or deductions.',
 };
 
+const getMockForecastDate = (daysAhead: number): string => {
+  const d = new Date();
+  d.setDate(d.getDate() + daysAhead);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
+
 export const MOCK_WEATHER: WeatherResponse = {
   latitude: 20.0768,
   longitude: 74.0375,
@@ -392,13 +401,13 @@ export const MOCK_WEATHER: WeatherResponse = {
     observed_at: new Date().toISOString(),
   },
   daily_forecast: [
-    { date: 'Today', weather_code: 1, weather_description: 'Sunny', weather_icon: '☀️', temp_max_c: 32.1, temp_min_c: 18.5, precipitation_sum_mm: 0, max_wind_speed_kmh: 14 },
-    { date: 'Tomorrow', weather_code: 1, weather_description: 'Sunny', weather_icon: '☀️', temp_max_c: 33.0, temp_min_c: 19.0, precipitation_sum_mm: 0, max_wind_speed_kmh: 12 },
-    { date: 'Day 3', weather_code: 2, weather_description: 'Partly Cloudy', weather_icon: '⛅', temp_max_c: 31.8, temp_min_c: 19.5, precipitation_sum_mm: 0.5, max_wind_speed_kmh: 15 },
-    { date: 'Day 4', weather_code: 61, weather_description: 'Scattered Showers', weather_icon: '🌦️', temp_max_c: 30.5, temp_min_c: 18.0, precipitation_sum_mm: 4.2, max_wind_speed_kmh: 18 },
-    { date: 'Day 5', weather_code: 1, weather_description: 'Sunny', weather_icon: '☀️', temp_max_c: 31.2, temp_min_c: 18.2, precipitation_sum_mm: 0, max_wind_speed_kmh: 13 },
-    { date: 'Day 6', weather_code: 0, weather_description: 'Clear', weather_icon: '☀️', temp_max_c: 32.5, temp_min_c: 19.1, precipitation_sum_mm: 0, max_wind_speed_kmh: 11 },
-    { date: 'Day 7', weather_code: 0, weather_description: 'Clear', weather_icon: '☀️', temp_max_c: 33.2, temp_min_c: 19.8, precipitation_sum_mm: 0, max_wind_speed_kmh: 10 },
+    { date: getMockForecastDate(0), weather_code: 1, weather_description: 'Sunny', weather_icon: '☀️', temp_max_c: 32.1, temp_min_c: 18.5, precipitation_sum_mm: 0, max_wind_speed_kmh: 14 },
+    { date: getMockForecastDate(1), weather_code: 1, weather_description: 'Sunny', weather_icon: '☀️', temp_max_c: 33.0, temp_min_c: 19.0, precipitation_sum_mm: 0, max_wind_speed_kmh: 12 },
+    { date: getMockForecastDate(2), weather_code: 2, weather_description: 'Partly Cloudy', weather_icon: '⛅', temp_max_c: 31.8, temp_min_c: 19.5, precipitation_sum_mm: 0.5, max_wind_speed_kmh: 15 },
+    { date: getMockForecastDate(3), weather_code: 61, weather_description: 'Scattered Showers', weather_icon: '🌦️', temp_max_c: 30.5, temp_min_c: 18.0, precipitation_sum_mm: 4.2, max_wind_speed_kmh: 18 },
+    { date: getMockForecastDate(4), weather_code: 1, weather_description: 'Sunny', weather_icon: '☀️', temp_max_c: 31.2, temp_min_c: 18.2, precipitation_sum_mm: 0, max_wind_speed_kmh: 13 },
+    { date: getMockForecastDate(5), weather_code: 0, weather_description: 'Clear', weather_icon: '☀️', temp_max_c: 32.5, temp_min_c: 19.1, precipitation_sum_mm: 0, max_wind_speed_kmh: 11 },
+    { date: getMockForecastDate(6), weather_code: 0, weather_description: 'Clear', weather_icon: '☀️', temp_max_c: 33.2, temp_min_c: 19.8, precipitation_sum_mm: 0, max_wind_speed_kmh: 10 },
   ],
   advisory: {
     status: 'FAVORABLE',

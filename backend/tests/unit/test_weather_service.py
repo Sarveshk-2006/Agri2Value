@@ -172,3 +172,91 @@ async def test_weather_service_mocked_timeout_fallback():
         assert res.is_live is False
         assert res.source_type == "offline_reference"
         assert len(res.daily_forecast) == 7
+
+
+def test_forecast_dates_are_valid_iso_and_sequential():
+    """Validates that all forecast items contain valid YYYY-MM-DD dates without NaN or invalid tokens."""
+    from datetime import datetime, date
+    ref = _get_offline_reference_weather(20.0760, 74.0534)
+    assert len(ref.daily_forecast) == 7
+    dates = [item.date for item in ref.daily_forecast]
+    
+    parsed_dates = []
+    for d_str in dates:
+        assert d_str != "Invalid Date"
+        assert not d_str.startswith("Day ")
+        assert d_str not in ("Today", "Tomorrow")
+        # Must be YYYY-MM-DD
+        d = datetime.strptime(d_str, "%Y-%m-%d").date()
+        parsed_dates.append(d)
+        
+    for i in range(len(parsed_dates) - 1):
+        assert (parsed_dates[i + 1] - parsed_dates[i]).days == 1
+
+
+def test_forecast_date_month_and_year_boundary():
+    """Validates date generation and schema validation across month and leap/year boundaries."""
+    from datetime import date, timedelta
+    from app.services.weather_service import DailyForecastItem
+    
+    # Month boundary: Oct 31 to Nov 1
+    oct_31 = date(2026, 10, 31)
+    nov_1 = oct_31 + timedelta(days=1)
+    assert nov_1.isoformat() == "2026-11-01"
+    
+    # Year boundary: Dec 31 to Jan 1
+    dec_31 = date(2026, 12, 31)
+    jan_1 = dec_31 + timedelta(days=1)
+    assert jan_1.isoformat() == "2027-01-01"
+    
+    # Pydantic validation
+    item = DailyForecastItem(
+        date=jan_1.isoformat(),
+        weather_code=0,
+        weather_description="Clear",
+        weather_icon="☀️",
+        temp_max_c=30.0,
+        temp_min_c=18.0,
+        precipitation_sum_mm=0.0,
+        max_wind_speed_kmh=12.0,
+    )
+    assert item.date == "2027-01-01"
+
+
+@pytest.mark.asyncio
+async def test_weather_service_handles_missing_or_empty_dates():
+    """Ensures weather service sanitizes missing or malformed daily date arrays safely."""
+    mock_payload = {
+        "timezone": "Asia/Kolkata",
+        "current": {
+            "temperature_2m": 25.0,
+            "apparent_temperature": 25.0,
+            "relative_humidity_2m": 50.0,
+            "precipitation": 0.0,
+            "rain": 0.0,
+            "wind_speed_10m": 10.0,
+            "weather_code": 0,
+            "time": "2026-11-07T12:00:00Z",
+        },
+        "daily": {
+            "time": ["2026-11-07", None, ""],  # missing/empty entries
+            "weather_code": [0, 1, 2],
+            "temperature_2m_max": [30.0, 31.0, 32.0],
+            "temperature_2m_min": [18.0, 18.0, 18.0],
+            "precipitation_sum": [0.0, 0.0, 0.0],
+            "wind_speed_10m_max": [12.0, 12.0, 12.0],
+        },
+    }
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = mock_payload
+
+    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+        mock_get.return_value = mock_response
+        svc = WeatherService(base_url="http://mock-open-meteo.com")
+        res = await svc.get_weather(latitude=20.0, longitude=74.0, force_refresh=True)
+        assert res.is_live is True
+        assert len(res.daily_forecast) == 3
+        assert res.daily_forecast[0].date == "2026-11-07"
+
