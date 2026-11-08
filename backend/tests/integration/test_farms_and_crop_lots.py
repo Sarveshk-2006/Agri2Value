@@ -116,3 +116,54 @@ async def test_farm_ownership_isolation(client: AsyncClient):
     # Farmer B attempts to access Farmer A's farm -> returns 404 (does not leak existence)
     b_access = await client.get(f"/api/v1/farms/{farm_id}", headers=headers_b)
     assert b_access.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_update_farm_with_boundary_and_resources(client: AsyncClient, auth_headers: dict):
+    # 1. Create farm
+    farm_resp = await client.post(
+        "/api/v1/farms",
+        json={
+            "farm_name": "Initial Farm",
+            "state": "Maharashtra",
+            "district": "Nashik",
+            "village": "Niphad",
+            "land_area": "4.0",
+            "land_area_unit": "acre",
+        },
+        headers=auth_headers,
+    )
+    assert farm_resp.status_code == 201
+    farm_id = farm_resp.json()["id"]
+
+    # 2. Update farm with boundary GeoJSON and new resources
+    geojson_str = '{"type":"Polygon","coordinates":[[[74.037,20.076],[74.039,20.076],[74.039,20.078],[74.037,20.078],[74.037,20.076]]]}'
+    patch_payload = {
+        "farm_name": "Updated Smart Farm",
+        "boundary_geojson": geojson_str,
+        "resources": [
+            {
+                "resource_type": "storage",
+                "name": "Solar Cold Shed",
+                "quantity": "5000",
+                "unit": "kg",
+                "availability_status": "available",
+            },
+            {
+                "resource_type": "equipment",
+                "name": "Drip Irrigation Controller",
+                "quantity": "1",
+                "unit": "unit",
+                "availability_status": "available",
+            },
+        ],
+    }
+    patch_resp = await client.patch(f"/api/v1/farms/{farm_id}", json=patch_payload, headers=auth_headers)
+    assert patch_resp.status_code == 200
+    updated_data = patch_resp.json()
+    assert updated_data["farm_name"] == "Updated Smart Farm"
+    assert updated_data["boundary_geojson"] == geojson_str
+    assert len(updated_data["resources"]) == 2
+    res_names = [r["name"] for r in updated_data["resources"]]
+    assert "Solar Cold Shed" in res_names
+    assert "Drip Irrigation Controller" in res_names

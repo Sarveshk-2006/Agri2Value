@@ -83,6 +83,16 @@ export const DEFAULT_DEMO_FARM: Farm = {
   longitude: 74.0375,
   land_area: 3.5,
   land_area_unit: 'acre',
+  boundary_geojson: JSON.stringify({
+    type: 'Polygon',
+    coordinates: [[
+      [74.036931, 20.076265],
+      [74.038069, 20.076265],
+      [74.038069, 20.077335],
+      [74.036931, 20.077335],
+      [74.036931, 20.076265]
+    ]]
+  }),
   is_active: true,
   resources: [
     {
@@ -113,6 +123,53 @@ export const DEFAULT_DEMO_FARM: Farm = {
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };
+
+export const DEFAULT_DEMO_FARMS: Farm[] = [
+  DEFAULT_DEMO_FARM,
+  {
+    id: '2b41e8d7-4f8a-510f-9b6c-fb5b8176d5b0',
+    owner_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
+    farm_name: 'Sahyadri Farms',
+    state: 'Maharashtra',
+    district: 'Nashik',
+    village: 'Pimpalgaon',
+    latitude: 20.1654,
+    longitude: 73.9880,
+    land_area: 5.6,
+    land_area_unit: 'acre',
+    boundary_geojson: JSON.stringify({
+      type: 'Polygon',
+      coordinates: [[
+        [73.987280, 20.164723],
+        [73.988720, 20.164723],
+        [73.988720, 20.166077],
+        [73.987280, 20.166077],
+        [73.987280, 20.164723]
+      ]]
+    }),
+    is_active: true,
+    resources: [
+      {
+        id: 'res-4',
+        resource_type: 'storage',
+        name: 'On-farm Shaded Shed',
+        quantity: 2000,
+        unit: 'kg',
+        availability_status: 'available',
+      },
+      {
+        id: 'res-5',
+        resource_type: 'equipment',
+        name: 'Harvesting Crates',
+        quantity: 60,
+        unit: 'crates',
+        availability_status: 'available',
+      },
+    ],
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+];
 
 export const DEFAULT_DEMO_LOT: CropLot = {
   id: '862b8403-0889-43f4-9402-a2e1da4c0032',
@@ -260,7 +317,13 @@ class ApiService {
     }
     // Return stored or default
     const saved = localStorage.getItem('a2v_farms');
-    return saved ? JSON.parse(saved) : [DEFAULT_DEMO_FARM];
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch {}
+    }
+    return DEFAULT_DEMO_FARMS;
   }
 
   async createFarm(farmData: Partial<Farm>): Promise<Farm> {
@@ -289,6 +352,7 @@ class ApiService {
       longitude: farmData.longitude,
       land_area: farmData.land_area,
       land_area_unit: farmData.land_area_unit || 'acre',
+      boundary_geojson: farmData.boundary_geojson,
       is_active: true,
       resources: farmData.resources || [],
       created_at: new Date().toISOString(),
@@ -298,6 +362,42 @@ class ApiService {
     farms.unshift(newFarm);
     localStorage.setItem('a2v_farms', JSON.stringify(farms));
     return newFarm;
+  }
+
+  async updateFarm(farmId: string, farmData: Partial<Farm>): Promise<Farm> {
+    try {
+      const res = await fetch(`${API_BASE}/farms/${farmId}`, {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+        body: JSON.stringify(farmData),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        const farms = await this.getFarms();
+        const idx = farms.findIndex((f) => f.id === farmId);
+        if (idx !== -1) {
+          farms[idx] = { ...farms[idx], ...updated };
+          localStorage.setItem('a2v_farms', JSON.stringify(farms));
+        }
+        return updated;
+      }
+    } catch {
+      // Fallback
+    }
+
+    // Local persistence fallback
+    const farms = await this.getFarms();
+    const idx = farms.findIndex((f) => f.id === farmId);
+    if (idx !== -1) {
+      farms[idx] = {
+        ...farms[idx],
+        ...farmData,
+        updated_at: new Date().toISOString(),
+      };
+      localStorage.setItem('a2v_farms', JSON.stringify(farms));
+      return farms[idx];
+    }
+    throw new Error('Farm not found');
   }
 
   async getCropLots(farmId?: string): Promise<CropLot[]> {
@@ -1418,7 +1518,7 @@ class ApiService {
   resetDemoData() {
     localStorage.removeItem('a2v_farms');
     localStorage.removeItem('a2v_crop_lots');
-    localStorage.setItem('a2v_farms', JSON.stringify([DEFAULT_DEMO_FARM]));
+    localStorage.setItem('a2v_farms', JSON.stringify(DEFAULT_DEMO_FARMS));
     localStorage.setItem('a2v_crop_lots', JSON.stringify([DEFAULT_DEMO_LOT]));
   }
 }

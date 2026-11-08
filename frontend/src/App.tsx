@@ -33,7 +33,7 @@ import { SpecsView } from './components/SpecsView';
 import { ProfileView } from './pages/app/ProfileView';
 import { NotFoundView } from './pages/NotFoundView';
 
-import { api, DEFAULT_DEMO_USER } from './api';
+import { api, DEFAULT_DEMO_USER, DEFAULT_DEMO_FARMS } from './api';
 import type { CropLot, Farm, User, TabKey } from './types';
 import { RotateCcw, CheckCircle2 } from 'lucide-react';
 import { FarmerChatbot } from './components/FarmerChatbot';
@@ -208,7 +208,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 const AppContent: React.FC = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(DEFAULT_DEMO_USER);
-  const [farms, setFarms] = useState<Farm[]>([]);
+  const [farms, setFarms] = useState<Farm[]>(DEFAULT_DEMO_FARMS);
   const [cropLots, setCropLots] = useState<CropLot[]>([]);
   const [selectedLotIdForDecision, setSelectedLotIdForDecision] = useState<string | undefined>(undefined);
   const [backendOnline, setBackendOnline] = useState<boolean>(false);
@@ -263,6 +263,13 @@ const AppContent: React.FC = () => {
     const newFarm = await api.createFarm(farmData);
     setFarms([newFarm, ...farms]);
     showToast(`Farm '${newFarm.farm_name}' registered successfully`);
+  };
+
+  const handleUpdateFarm = async (farmId: string, farmData: Partial<Farm>) => {
+    const updated = await api.updateFarm(farmId, farmData);
+    setFarms(farms.map((f) => (f.id === farmId ? { ...f, ...updated } : f)));
+    showToast(`Farm '${updated.farm_name}' updated successfully`);
+    return updated;
   };
 
   const handleCreateLot = async (farmId: string, lotData: Partial<CropLot>) => {
@@ -362,6 +369,7 @@ const AppContent: React.FC = () => {
                 farms={farms}
                 cropLots={cropLots}
                 onCreateFarm={handleCreateFarm}
+                onUpdateFarm={handleUpdateFarm}
                 isOpenCreateModal={isCreateFarmOpen}
                 onCloseCreateModal={() => setIsCreateFarmOpen(false)}
                 onOpenCreateModal={() => setIsCreateFarmOpen(true)}

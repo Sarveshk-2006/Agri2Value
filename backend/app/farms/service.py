@@ -5,7 +5,7 @@ All ownership checks are enforced here — never rely on client-supplied ownersh
 """
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
 
 from app.core.errors import NotFoundError, AuthorizationError
@@ -43,6 +43,7 @@ async def create_farm(
         longitude=farm_data.longitude,
         land_area=farm_data.land_area,
         land_area_unit=farm_data.land_area_unit,
+        boundary_geojson=farm_data.boundary_geojson,
         resources=resources,
     )
     db.add(farm)
@@ -103,9 +104,26 @@ async def update_farm(
     farm = await get_farm_by_id(db, farm_id, user_id)
 
     update_fields = update_data.model_dump(exclude_none=True)
+    resources_data = update_fields.pop("resources", None)
+
     for field, value in update_fields.items():
         setattr(farm, field, value)
 
+    if resources_data is not None:
+        await db.execute(delete(FarmResource).where(FarmResource.farm_id == farm.id))
+        farm.resources = [
+            FarmResource(
+                farm_id=farm.id,
+                resource_type=res_dict.get("resource_type", "storage"),
+                name=res_dict.get("name", "Resource"),
+                quantity=res_dict.get("quantity"),
+                unit=res_dict.get("unit"),
+                availability_status=res_dict.get("availability_status", "available"),
+            )
+            for res_dict in resources_data
+        ]
+
     await db.flush()
+    await db.refresh(farm)
     logger.info("Farm updated", farm_id=farm_id, fields=list(update_fields.keys()))
     return farm

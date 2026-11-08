@@ -103,6 +103,9 @@ class Farm(Base):
     land_area_unit: Mapped[str] = mapped_column(String(20), nullable=False, default="acre")
     # Supported units: acre | hectare | bigha | guntha | sq_meter
 
+    # 3D Geospatial Boundary (GeoJSON Polygon string)
+    boundary_geojson: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=_now

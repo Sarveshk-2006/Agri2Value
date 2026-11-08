@@ -44,6 +44,7 @@ class FarmCreate(BaseModel):
     longitude: Optional[float] = Field(None, ge=-180.0, le=180.0)
     land_area: Optional[Decimal] = Field(None, gt=Decimal("0"))
     land_area_unit: str = Field("acre", max_length=20)
+    boundary_geojson: Optional[str] = None
     resources: List[FarmResourceCreate] = Field(default_factory=list)
 
     @field_validator("land_area_unit")
@@ -63,6 +64,8 @@ class FarmUpdate(BaseModel):
     longitude: Optional[float] = Field(None, ge=-180.0, le=180.0)
     land_area: Optional[Decimal] = Field(None, gt=Decimal("0"))
     land_area_unit: Optional[str] = Field(None, max_length=20)
+    boundary_geojson: Optional[str] = None
+    resources: Optional[List[FarmResourceCreate]] = None
 
     @field_validator("land_area_unit")
     @classmethod
@@ -83,6 +86,7 @@ class FarmResponse(BaseModel):
     longitude: Optional[float]
     land_area: Optional[Decimal]
     land_area_unit: str
+    boundary_geojson: Optional[str] = None
     is_active: bool
     resources: List[FarmResourceResponse] = []
     created_at: datetime

@@ -33,6 +33,7 @@ export interface Farm {
   longitude?: number;
   land_area?: number;
   land_area_unit: string;
+  boundary_geojson?: string;
   is_active: boolean;
   resources: FarmResource[];
   created_at: string;
