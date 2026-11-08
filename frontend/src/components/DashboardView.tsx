@@ -127,7 +127,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span>Smart Execution Network Active • Competition Pilot 2026</span>
+              <span>Smart Execution Network Active</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight font-display text-white">
@@ -250,7 +250,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* KPI 3: APMC Benchmark */}
         <div className="card p-5 sm:p-6 flex flex-col justify-between hover:border-slate-300 transition-all shadow-2xs">
           <div className="flex items-start justify-between">
-            <span className="label text-[11px] font-bold text-slate-500 mb-0">APMC Modal Benchmark</span>
+            <span className="label text-[11px] font-bold text-slate-500 mb-0">APMC Mandi Price</span>
             <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
               <TrendingUp className="w-4 h-4" />
             </div>
@@ -265,9 +265,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
           <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-            <span className="text-slate-400">Agmarknet Feed</span>
+            <span className="text-slate-400">Market Source</span>
             <span className={mandiQuote?.is_live ? 'badge-green text-[10px]' : 'badge-slate text-[10px]'}>
-              {mandiQuote?.is_live ? 'LIVE VERIFIED' : 'CURATED BENCHMARK'}
+              {mandiQuote?.is_live ? 'LIVE AGMARKNET' : 'REGIONAL RATE'}
             </span>
           </div>
         </div>
@@ -319,7 +319,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 {mandiLoading && <RefreshCw className="w-3 h-3 animate-spin text-emerald-600 ml-1" />}
               </span>
               <span className={mandiQuote?.is_live ? 'badge-green text-[10px]' : 'badge-slate text-[10px]'}>
-                {mandiQuote?.is_live ? 'LIVE AGMARKNET FEED' : 'CURATED BENCHMARK'}
+                {mandiQuote?.is_live ? 'LIVE AGMARKNET FEED' : 'REGIONAL RATE'}
               </span>
             </div>
 

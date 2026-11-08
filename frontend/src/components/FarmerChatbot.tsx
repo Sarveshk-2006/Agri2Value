@@ -210,7 +210,7 @@ export const FarmerChatbot: React.FC = () => {
                 <h3 className="font-extrabold text-sm font-display flex items-center gap-1.5">
                   <span>Agri2Value Assistant</span>
                   <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-500/30 border border-green-400/40 text-emerald-200">
-                    AI 2.0
+                    AI Advisor
                   </span>
                 </h3>
                 <p className="text-[11px] text-emerald-100/90 flex items-center gap-1">

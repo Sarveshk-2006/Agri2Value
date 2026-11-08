@@ -171,26 +171,24 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         </main>
       </div>
 
-      {/* Footer / Demo Control Bar */}
+      {/* Footer / Application Control Bar */}
       <footer className="border-t border-slate-200 bg-white py-4 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-slate-700 font-bold">Agri2Value (कृषि-मूल्य) — Smart Farm-to-Profit Execution Platform</span>
-            <span>•</span>
-            <span className="text-slate-500">Indradhanu: PCCOE International Grand Challenge 2026</span>
+            <span className="text-slate-700 font-medium">© 2026 Agri2Value (कृषि-मूल्य) — Agricultural Intelligence & Execution Platform</span>
           </div>
 
           <div className="flex items-center gap-4">
             <button
               onClick={onResetDemoData}
-              className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-amber-600 transition-colors cursor-pointer font-semibold"
+              className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-700 transition-colors cursor-pointer font-semibold"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Demo Seed</span>
+              <span>Reset Demo Data</span>
             </button>
-            <span>•</span>
-            <span className="font-mono text-[11px] text-slate-400">v1.0.0-competition</span>
+            <span className="text-slate-300">•</span>
+            <span className="text-[11px] text-slate-400 font-medium">Enterprise Edition</span>
           </div>
         </div>
       </footer>

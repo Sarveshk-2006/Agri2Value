@@ -91,3 +91,4 @@ Captured across all 5 standard viewports with zero horizontal overflow:
 - **Backend Pytest Suite:** **125 passed**, 0 failed (`python -m pytest backend/tests`).
 - **Frontend Build:** **Vite build passed in 466ms** with 0 TypeScript errors.
 - **Production URL:** `https://agri2value.vercel.app/app/farms`
+

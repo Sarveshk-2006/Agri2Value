@@ -111,20 +111,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           key: 'decision-preview',
           label: 'Profit Engine',
           icon: Sparkles,
-          badge: 'DECIDE',
-          badgeColor: 'emerald',
+          badge: null,
         },
         {
           key: 'market-weather',
           label: 'Market & Weather',
           icon: CloudSun,
-          badge: 'LIVE',
-          badgeColor: 'blue',
+          badge: null,
         },
       ],
     },
     {
-      sectionTitle: 'Execution Network',
+      sectionTitle: 'Marketplace & Execution',
       items: [
         {
           key: 'buyers',
@@ -147,7 +145,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
     {
-      sectionTitle: 'Protection & Safety',
+      sectionTitle: 'Protection',
       items: [
         {
           key: 'rescue',
@@ -160,26 +158,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
           key: 'protection',
           label: 'Farmer Protection',
           icon: ShieldCheck,
-          badge: 'TRUST',
-          badgeColor: 'emerald',
-        },
-        {
-          key: 'specs',
-          label: 'Engine Specs',
-          icon: FileCode2,
           badge: null,
         },
       ],
     },
     {
-      sectionTitle: 'Telematics',
+      sectionTitle: 'Smart Farming',
       items: [
         {
           key: 'iot-monitoring',
           label: 'IoT Monitoring',
           icon: Activity,
-          badge: 'PREVIEW',
-          badgeColor: 'amber',
+          badge: null,
+        },
+      ],
+    },
+    {
+      sectionTitle: 'Technical',
+      items: [
+        {
+          key: 'specs',
+          label: 'Engine Specs',
+          icon: FileCode2,
+          badge: null,
         },
       ],
     },
@@ -280,8 +281,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Mobile Drawer Bottom Info */}
         <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between">
-          <span className="font-medium">PCCOE Grand Challenge 2026</span>
-          <span className="font-mono text-[10px]">v1.0.0</span>
+          <span className="font-medium text-slate-600">Agri2Value Platform</span>
+          <span className="font-medium text-[10px] text-slate-400">Enterprise</span>
         </div>
       </aside>
 

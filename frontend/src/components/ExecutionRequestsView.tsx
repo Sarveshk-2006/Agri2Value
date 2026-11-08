@@ -826,7 +826,7 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
                         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                           <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                             <TrendingUp className="w-4 h-4 text-blue-600" />
-                            <span>Decision Engine Estimate (Pre-Trade Snapshot)</span>
+                            <span>Estimated Earnings (Agreed Terms)</span>
                           </span>
                           <span className="text-[10px] font-mono text-slate-400">Lock-In</span>
                         </div>
@@ -1102,7 +1102,7 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
 
               {/* Section C: Audit Trail Events */}
               <div className="space-y-3 text-xs">
-                <div className="font-black text-slate-900 text-xs uppercase tracking-wider">C. Immutable Audit Trail</div>
+                <div className="font-black text-slate-900 text-xs uppercase tracking-wider">C. Transaction History & Audit Trail</div>
                 <div className="space-y-2">
                   {detailDrawerRequest.events && detailDrawerRequest.events.length > 0 ? (
                     detailDrawerRequest.events.map((evt, i) => (

@@ -1,7 +1,7 @@
 // frontend/src/components/Header.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sprout, Wifi, WifiOff, LogOut, ShieldAlert, Bell, HelpCircle, Globe, Menu, X } from 'lucide-react';
+import { Sprout, LogOut, Bell, HelpCircle, Globe, Menu, X } from 'lucide-react';
 import type { User } from '../types';
 
 interface HeaderProps {
@@ -56,9 +56,6 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 font-display">
                   Agri<span className="text-emerald-600">2Value</span>
                 </span>
-                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  PRO 2026
-                </span>
               </div>
               <p className="text-[11px] font-medium text-slate-500 hidden sm:block">
                 कृषि-मूल्य • Farm-to-Profit Decision & Execution Network
@@ -67,33 +64,15 @@ export const Header: React.FC<HeaderProps> = ({
           </Link>
         </div>
 
-        {/* Center Indicators (Desktop & Tablet) */}
+        {/* Center Indicator (Desktop & Tablet) */}
         <div className="hidden md:flex items-center gap-2.5">
-          {/* Demo Mode Badge */}
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
-            <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
-            <span>DEMO MODE</span>
-            <span className="text-amber-600/70 font-mono text-[11px]">(OTP: 123456)</span>
-          </div>
-
-          {/* Backend Connection Badge */}
-          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border ${
             backendOnline 
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
-              : 'bg-rose-50 border-rose-200 text-rose-700'
+              ? 'bg-emerald-50/80 border-emerald-200/80 text-emerald-800' 
+              : 'bg-amber-50/80 border-amber-200/80 text-amber-800'
           }`}>
-            {backendOnline ? (
-              <>
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <Wifi className="w-3.5 h-3.5 text-emerald-600" />
-                <span>API Live (Nashik Edge)</span>
-              </>
-            ) : (
-              <>
-                <WifiOff className="w-3.5 h-3.5 text-rose-500" />
-                <span>Offline / Mock Mode</span>
-              </>
-            )}
+            <span className={`w-2 h-2 rounded-full ${backendOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+            <span>{backendOnline ? 'Live Network Connected' : 'Offline / Standalone Mode'}</span>
           </div>
         </div>
 

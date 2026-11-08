@@ -343,9 +343,9 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
                 <ShoppingBag className="w-3.5 h-3.5" />
                 Live B2B Procurement Marketplace
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-200 border border-emerald-500/30">
                 <Sparkles className="w-3.5 h-3.5" />
-                Phase 3 Simulation Mode Active
+                Verified Commercial Quotes
               </span>
             </div>
 

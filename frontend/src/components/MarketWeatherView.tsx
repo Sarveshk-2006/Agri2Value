@@ -312,7 +312,7 @@ export const MarketWeatherView: React.FC<MarketWeatherViewProps> = ({
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                 <Sparkles className="w-3.5 h-3.5" />
-                Phase 2.6 External Intelligence Engine
+                Real-Time Agmarknet & Weather Feeds
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-slate-300 border border-white/10">
                 <MapPin className="w-3.5 h-3.5 text-emerald-400" />

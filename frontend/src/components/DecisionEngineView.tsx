@@ -367,7 +367,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
 
           {/* Step 2: Active Lot Context Overview */}
           <div className="space-y-1.5">
-            <label className="label">2. Active Harvest Snapshot</label>
+            <label className="label">2. Selected Harvest Lot</label>
             <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs space-y-1">
               <div className="flex items-center justify-between font-bold text-slate-800">
                 <span className="flex items-center gap-1.5">
@@ -1096,8 +1096,8 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
                   Audits post-delivery weighbridge tickets and bank realizations against initial decision forecasts.
                 </p>
               </div>
-              <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-xl">
-                Phase 5 Closed-Loop Settlement
+              <span className="text-xs font-medium text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200">
+                Integrated Farmer Settlement
               </span>
             </div>
 

@@ -268,3 +268,4 @@ export function generateInitialBoundary(
     [Number((lon - dLon).toFixed(6)), Number((lat - dLat).toFixed(6))],
   ];
 }
+

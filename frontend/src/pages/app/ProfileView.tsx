@@ -91,8 +91,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>ACTIVE SESSION</span>
             </span>
-            <span className="badge-slate font-mono text-[10px]">
-              DEMO PILOT ACCOUNT
+            <span className="badge-slate font-medium text-[10px]">
+              VERIFIED FARMER ACCOUNT
             </span>
           </div>
         </div>
@@ -195,7 +195,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             {/* Read-only verification notice */}
             <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-[11px] text-slate-500 leading-snug flex items-start gap-2">
               <Info className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-              <span>Identity parameters are synchronized from state pilot demonstration registries and are currently managed as read-only.</span>
+              <span>Identity parameters are synchronized from the agricultural land registry and are currently managed as read-only.</span>
             </div>
 
             {/* Section G: Sign Out Action */}
@@ -467,14 +467,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     <RotateCcw className="w-3.5 h-3.5 text-amber-700" />
                   </div>
                   <h3 className="font-extrabold text-sm text-amber-950 font-display">
-                    Competition Demonstration Controls
+                    Demo Data Controls
                   </h3>
                   <span className="badge-yellow text-[9px] uppercase tracking-wider">
                     Demo Mode
                   </span>
                 </div>
                 <p className="text-xs text-amber-900/90 leading-relaxed max-w-xl">
-                  Restore local state back to the canonical Phase 1 benchmark: <strong>Ramesh Patil</strong> (Niphad, Nashik), <strong>4,000 kg Grade A Tomato</strong> lot, default Pimpalgaon APMC market quotes, and default simulation parameters.
+                  Restore local state back to the canonical benchmark: <strong>Ramesh Patil</strong> (Niphad, Nashik), <strong>4,000 kg Grade A Tomato</strong> lot, default Pimpalgaon APMC market quotes, and default simulation parameters.
                 </p>
               </div>
 
@@ -483,7 +483,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 className="btn-secondary text-xs py-2.5 px-4 bg-white hover:bg-amber-100 border-amber-300 text-amber-950 font-bold shrink-0 shadow-2xs cursor-pointer flex items-center justify-center gap-1.5 self-start sm:self-center"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-amber-700" />
-                <span>Reset Demo Seed</span>
+                <span>Reset Demo Data</span>
               </button>
             </div>
           </div>
@@ -504,10 +504,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 </div>
                 <div>
                   <h3 className="text-base font-extrabold text-slate-900 font-display">
-                    Confirm Demo State Reset
+                    Confirm Demo Data Reset
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Competition benchmark restoration
+                    Benchmark dataset restoration
                   </p>
                 </div>
               </div>
@@ -521,7 +521,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to reset all local session state back to the canonical Phase 1 demo baseline?
+              Are you sure you want to reset all local session state back to the standard demo baseline?
             </p>
 
             <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">

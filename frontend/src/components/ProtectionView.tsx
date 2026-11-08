@@ -428,11 +428,11 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                Phase 5: Financial Trust & Protection
+                Farmer Protection & Trust
               </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Demo Transparency Ledger
+                Commercial Ledger
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200">
                 <Clock className="w-3 h-3 text-slate-400" />
@@ -479,7 +479,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
         <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-start gap-2 text-xs text-slate-500">
           <Info className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
           <span>
-            <strong>Demo Architecture Disclaimer:</strong> Agri2Value provides structured commercial transparency, versioned snapshots, and immutable transaction audit trails. No real-world banking, escrow, lending or legal arbitration services are provided.
+            <strong>Commercial Protection Note:</strong> Agri2Value provides structured commercial transparency, versioned contract snapshots, and verifiable transaction records for farmer assurance.
           </span>
         </div>
       </div>
@@ -1053,15 +1053,15 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
             </div>
           )}
 
-          {/* IMMUTABLE TRANSACTION AUDIT STREAM (White Card with Hash Hashes) */}
+          {/* TRANSACTION HISTORY & AUDIT STREAM (White Card) */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-xs space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="space-y-0.5">
                 <h3 className="text-base font-extrabold text-slate-900 font-display flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>Immutable Transaction Audit Stream</span>
+                  <span>Transaction History & Audit Stream</span>
                 </h3>
-                <p className="text-xs text-slate-500">Cryptographically verifiable sequence of deal milestones, weighbridge receipts, and escrow disbursements.</p>
+                <p className="text-xs text-slate-500">Verifiable sequence of deal milestones, weighbridge receipts, and payment settlements.</p>
               </div>
               <span className="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
                 {auditEvents.length} Events

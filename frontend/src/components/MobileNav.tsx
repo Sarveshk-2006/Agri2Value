@@ -40,19 +40,18 @@ export const MobileNav: React.FC<MobileNavProps> = ({
       label: 'Profit',
       icon: Sparkles,
       isActive: activeTab === 'decision-preview' || path.includes('/app/decision'),
-      badge: 'AI'
     },
     {
       to: '/app/protection',
       key: 'protection' as TabKey,
-      label: 'Trust',
+      label: 'Protection',
       icon: ShieldCheck,
       isActive: activeTab === 'protection' || path.includes('/app/protection')
     },
     {
       to: '/app/execution',
       key: 'execution' as TabKey,
-      label: 'Dispatch',
+      label: 'Tracker',
       icon: Truck,
       isActive: activeTab === 'execution' || path.includes('/app/execution')
     },
@@ -62,7 +61,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
       label: 'Sensors',
       icon: Radio,
       isActive: activeTab === 'iot-monitoring' || path.includes('/app/iot'),
-      badge: urgentRescueCount > 0 ? 'ALERT' : 'LIVE'
+      badge: urgentRescueCount > 0 ? 'ALERT' : undefined
     },
     {
       to: '/app/profile',

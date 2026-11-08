@@ -53,7 +53,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onSuccess }) => {
           </div>
           <h2 className="text-xl font-extrabold text-slate-900 tracking-tight font-display">Farmer Sign In</h2>
           <p className="text-xs text-slate-500 mt-1">
-            Agri2Value (कृषि-मूल्य) • Indradhanu Grand Challenge 2026
+            Agri2Value (कृषि-मूल्य) • Agricultural Intelligence Platform
           </p>
         </div>
 

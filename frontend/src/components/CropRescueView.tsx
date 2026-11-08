@@ -69,7 +69,7 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
     return cropLots.find(l => l.id === activeLotId) || cropLots[0];
   }, [cropLots, activeLotId]);
 
-  // Phase 6 Configurable Assumptions Drawer
+  // Configurable Assumptions Drawer
   const [showConfigDrawer, setShowConfigDrawer] = useState<boolean>(false);
   const [customAssumptions, setCustomAssumptions] = useState<CropRescueCustomAssumptions>({
     ambient_shelf_life_days: 4,
@@ -90,7 +90,7 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
   // Emergency Dispatch Workflow Modal State
   const [dispatchModalPathway, setDispatchModalPathway] = useState<RescuePathwayOption | null>(null);
   const [dispatchScheduledWindow, setDispatchScheduledWindow] = useState<string>('IMMEDIATE_6H');
-  const [dispatchNotes, setDispatchNotes] = useState<string>('Urgent rescue dispatch requested under Phase 6 protocol.');
+  const [dispatchNotes, setDispatchNotes] = useState<string>('Urgent rescue dispatch requested under emergency salvage protocol.');
   const [dispatchSubmitting, setDispatchSubmitting] = useState<boolean>(false);
   const [dispatchedRefCode, setDispatchedRefCode] = useState<string | null>(null);
 
@@ -239,7 +239,7 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
               </span>
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-amber-200 border border-white/15">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                Phase 6 Grounded Rules Protocol
+                Grounded Salvage Rules Engine
               </span>
             </div>
 

@@ -554,14 +554,14 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-display">
-                  Farms & Land Holdings 2.0
+                  Farms & Land Holdings
                 </h1>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">
-                  Location-Aware 3D Twin
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold tracking-wide">
+                  3D Map Active
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                Intelligent farm management, location-specific 3D geospatial exploration, and boundary mapping.
+                Manage land holdings, location-specific 3D geospatial visualization, and boundary mapping.
               </p>
             </div>
           </div>

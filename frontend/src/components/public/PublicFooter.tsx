@@ -27,9 +27,9 @@ export const PublicFooter: React.FC = () => {
             </p>
 
             <div className="pt-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-[11px] text-emerald-400 font-mono">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-[11px] text-emerald-400 font-medium">
                 <Cpu className="w-3.5 h-3.5" />
-                <span>Indradhanu: PCCOE 2026</span>
+                <span>Smart Agricultural Intelligence</span>
               </div>
             </div>
           </div>
@@ -151,7 +151,7 @@ export const PublicFooter: React.FC = () => {
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
             <span>
-              © 2026 Agri2Value (कृषि-मूल्य). Built for Indradhanu: PCCOE International Grand Challenge.
+              © 2026 Agri2Value (कृषि-मूल्य) — Agricultural Intelligence & Execution Platform. All rights reserved.
             </span>
           </div>
 

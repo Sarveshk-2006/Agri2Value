@@ -426,8 +426,8 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-emerald-900/60 text-emerald-300 border border-emerald-700/50">
-                Phase 3 Supply-Chain Grid
+              <span className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-emerald-900/40 text-emerald-300 border border-emerald-700/40">
+                Multi-Commodity Grid
               </span>
             </div>
           </div>

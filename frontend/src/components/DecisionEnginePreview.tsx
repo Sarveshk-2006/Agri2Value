@@ -15,16 +15,16 @@ export const DecisionEnginePreview: React.FC<DecisionEnginePreviewProps> = ({ pr
       
       {/* Header */}
       <div className="rounded-2xl glass-panel p-6 sm:p-8 border border-slate-800 space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold">
           <Clock className="w-3.5 h-3.5" />
-          <span>Scheduled for Phase 2: Profit Engine Vertical Slice</span>
+          <span>Active Architecture: Profit Decision Engine</span>
         </div>
         <h1 className="text-2xl font-bold text-white flex items-center gap-2">
           <Cpu className="w-6 h-6 text-emerald-400" />
           <span>Decision Engine Architecture & Simulation</span>
         </h1>
         <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
-          The Profit Decision Engine takes the verified farm and crop lot from Phase 1, evaluates real market prices and verified processing conversion ratios, and enforces a strict feasibility gate before recommending any option.
+          The Profit Decision Engine takes the verified farm and crop lot, evaluates real market prices and verified processing conversion ratios, and enforces a strict feasibility gate before recommending any option.
         </p>
       </div>
 
@@ -32,7 +32,7 @@ export const DecisionEnginePreview: React.FC<DecisionEnginePreviewProps> = ({ pr
       <div className="rounded-xl bg-slate-900 border border-slate-800 p-5 space-y-3">
         <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
           <Calculator className="w-4 h-4 text-emerald-400" />
-          <span>Net Profit Calculation Formula (Enforced in Phase 2)</span>
+          <span>Net Profit Calculation Formula</span>
         </div>
         <div className="p-4 rounded-xl bg-slate-950 font-mono text-xs sm:text-sm text-emerald-400 border border-slate-800/80 overflow-x-auto leading-relaxed">
           Net Profit = Gross Revenue - (Processing Cost + Transport Cost + Packaging + Holding Storage + Mandi Cess/Commission)
@@ -171,7 +171,7 @@ export const DecisionEnginePreview: React.FC<DecisionEnginePreviewProps> = ({ pr
           <span>Feasibility Enforcement Gate</span>
         </h3>
         <p className="text-xs text-slate-400">
-          In Phase 2, an option cannot be marked "Feasible" without satisfying the following:
+          An option cannot be marked "Feasible" without satisfying the following:
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 flex items-start gap-2">
