@@ -818,5 +818,34 @@ export interface ProtectionDashboardMetrics {
   disclaimer: string;
 }
 
+export interface NotificationItem {
+  id: string;
+  category: 'RISK_ALERT' | 'EXECUTION' | 'PROTECTION' | 'HARVEST' | 'IOT';
+  title: string;
+  message: string;
+  severity: 'INFO' | 'WARNING' | 'CRITICAL' | 'SUCCESS';
+  is_read: boolean;
+  created_at: string;
+  action_route?: string;
+  action_label?: string;
+}
+
+export interface NotificationListResponse {
+  items: NotificationItem[];
+  unread_count: number;
+  total: number;
+}
+
+export interface AIAdvisorResponse {
+  answer: string;
+  provider: string;
+  is_ai_generated: boolean;
+  model_name: string;
+  confidence_score: number;
+  suggested_actions: Array<{ label: string; route: string }>;
+  disclaimer: string;
+}
+
+
 
 

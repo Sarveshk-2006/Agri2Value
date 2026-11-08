@@ -82,6 +82,12 @@ class Settings(BaseSettings):
     DATA_GOV_IN_RESOURCE_ID: str = "9ef84268-d588-465a-a308-a864a43d0070"
     DATA_GOV_IN_BASE_URL: str = "https://api.data.gov.in/resource"
 
+    # ---- AI Advisor & Post-Harvest Intelligence (Phase 4) ----
+    GEMINI_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""
+    AI_ADVISOR_PROVIDER: str = "auto"
+    AI_ADVISOR_MODEL: str = "gemini-1.5-flash"
+
     # ---- CORS ----
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,https://agri2value.vercel.app"
 

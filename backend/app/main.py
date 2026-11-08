@@ -30,6 +30,8 @@ from app.mandi.router import mandi_router, market_prices_router
 from app.execution.router import execution_router, crop_rescue_router
 from app.iot.router import iot_router
 from app.protection.router import protection_router
+from app.ai_advisor.router import router as ai_advisor_router
+from app.notifications.router import router as notifications_router
 
 settings = get_settings()
 configure_logging(debug=settings.DEBUG)
@@ -86,6 +88,18 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # ---- Security Headers Middleware ----
+    @app.middleware("http")
+    async def add_security_headers(request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        if not settings.DEBUG:
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        return response
+
     # ---- Exception handlers ----------------------------------
     from fastapi import HTTPException
     app.add_exception_handler(AppError, app_error_handler)
@@ -131,6 +145,8 @@ def create_app() -> FastAPI:
     app.include_router(crop_rescue_router, prefix=prefix)
     app.include_router(iot_router, prefix=prefix)
     app.include_router(protection_router, prefix=prefix)
+    app.include_router(ai_advisor_router, prefix=prefix)
+    app.include_router(notifications_router, prefix=prefix)
 
     return app
 

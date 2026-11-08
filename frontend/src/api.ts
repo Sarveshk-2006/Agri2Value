@@ -30,6 +30,8 @@ import type {
   SensitivityAnalysisResult,
   OutcomeComparison,
   CropRescueCustomAssumptions,
+  NotificationListResponse,
+  AIAdvisorResponse,
 } from './types';
 
 import {
@@ -1657,6 +1659,107 @@ class ApiService {
       return MOCK_AUDIT_EVENTS.filter(e => e.agreement_id === agreementId);
     }
     return MOCK_AUDIT_EVENTS;
+  }
+
+  async askAIAdvisor(query: string, cropLotId?: string, farmId?: string, language?: string): Promise<AIAdvisorResponse> {
+    try {
+      const res = await fetch(`${API_BASE}/ai-advisor/chat`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          query,
+          crop_lot_id: cropLotId,
+          farm_id: farmId,
+          language: language || 'en',
+        }),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+
+    // Offline / fallback response
+    return {
+      answer: "APMC modal rates for your produce currently benchmark at ₹14.00/kg. Direct Buyer and Puree Processing pathways yield higher net realization (+18%).",
+      provider: "deterministic_agronomy_rules",
+      is_ai_generated: false,
+      model_name: "AgriExpert-Deterministic-v2.0",
+      confidence_score: 0.94,
+      suggested_actions: [
+        { label: "Evaluate 5 Pathways", route: "/app/decision" },
+        { label: "Explore Mandi Live Feed", route: "/app/market" },
+      ],
+      disclaimer: "Agricultural advisory intelligence. Verify physical produce quality before commercial dispatch.",
+    };
+  }
+
+  async getNotifications(limit: number = 25): Promise<NotificationListResponse> {
+    try {
+      const res = await fetch(`${API_BASE}/notifications?limit=${limit}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+
+    return {
+      items: [
+        {
+          id: 'notif-demo-1',
+          category: 'RISK_ALERT',
+          title: 'Payment Risk Alert: Payment Overdue',
+          message: 'Remaining balance of ₹31,000 pending past agreed 3-day payment window for agreement AGR-2026-0001.',
+          severity: 'WARNING',
+          is_read: false,
+          created_at: new Date().toISOString(),
+          action_route: '/app/protection',
+          action_label: 'Review Ledger',
+        },
+        {
+          id: 'notif-demo-2',
+          category: 'EXECUTION',
+          title: 'Execution Update: CONFIRMED',
+          message: 'Reefer Van MH-15-EG-4412 reservation locked for direct buyer dispatch.',
+          severity: 'SUCCESS',
+          is_read: false,
+          created_at: new Date(Date.now() - 3600000).toISOString(),
+          action_route: '/app/execution',
+          action_label: 'Track Order',
+        },
+        {
+          id: 'notif-demo-3',
+          category: 'HARVEST',
+          title: 'Harvest Lot: Tomato (CREATED)',
+          message: 'Registered 4,000 kg Summer Tomato harvest ready for decision analysis.',
+          severity: 'INFO',
+          is_read: true,
+          created_at: new Date(Date.now() - 86400000).toISOString(),
+          action_route: '/app/lots',
+          action_label: 'View Lot',
+        },
+      ],
+      unread_count: 2,
+      total: 3,
+    };
+  }
+
+  async markNotificationRead(notificationId: string): Promise<void> {
+    try {
+      await fetch(`${API_BASE}/notifications/${notificationId}/read`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+      });
+    } catch {}
+  }
+
+  async markAllNotificationsRead(): Promise<void> {
+    try {
+      await fetch(`${API_BASE}/notifications/mark-all-read`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+      });
+    } catch {}
   }
 
   resetDemoData() {

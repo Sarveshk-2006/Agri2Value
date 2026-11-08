@@ -12,6 +12,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { api } from '../api';
 import { getAIContent } from '../services/aiAdvisorI18n';
 import { getIntlLocale } from '../i18n/formatters';
 
@@ -20,6 +21,8 @@ interface ChatMessage {
   sender: 'ai' | 'user';
   text: string;
   timestamp: string;
+  provider?: string;
+  disclaimer?: string;
   quickAction?: {
     label: string;
     route?: string;
@@ -130,7 +133,7 @@ export const FarmerChatbot: React.FC = () => {
     };
   };
 
-  const handleSend = (textToSend?: string) => {
+  const handleSend = async (textToSend?: string) => {
     const query = textToSend || input;
     if (!query.trim()) return;
 
@@ -145,18 +148,34 @@ export const FarmerChatbot: React.FC = () => {
     if (!textToSend) setInput('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      const response = generateAnswer(query);
+    try {
+      const serverAdvice = await api.askAIAdvisor(query, undefined, undefined, currentLang);
+      const action = serverAdvice.suggested_actions?.[0];
       const aiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: 'ai',
-        text: response.text,
+        text: serverAdvice.answer,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        quickAction: response.action
+        provider: serverAdvice.provider === 'google_gemini' ? 'Google Gemini AI' : 'Agronomic Rules Engine',
+        disclaimer: serverAdvice.disclaimer,
+        quickAction: action ? { label: action.label, route: action.route } : undefined,
       };
       setMessages(prev => [...prev, aiMsg]);
+    } catch {
+      // Offline fallback
+      const fallback = generateAnswer(query);
+      const aiMsg: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        sender: 'ai',
+        text: fallback.text,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        provider: 'Agronomic Rules Engine',
+        quickAction: fallback.action,
+      };
+      setMessages(prev => [...prev, aiMsg]);
+    } finally {
       setIsTyping(false);
-    }, 600);
+    }
   };
 
   const toggleSpeech = () => {
@@ -297,8 +316,13 @@ export const FarmerChatbot: React.FC = () => {
                     </a>
                   )}
 
-                  <div className="text-[9px] text-slate-400 px-1 font-mono">
-                    {msg.timestamp}
+                  <div className="flex items-center justify-between text-[9px] text-slate-400 px-1 font-mono gap-2">
+                    <span>{msg.timestamp}</span>
+                    {msg.provider && (
+                      <span className="font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 font-sans">
+                        {msg.provider}
+                      </span>
+                    )}
                   </div>
                 </div>
 
