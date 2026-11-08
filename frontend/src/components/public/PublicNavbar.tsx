@@ -62,7 +62,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ user, onLogout }) =>
                   Agri<span className="text-emerald-500">2Value</span>
                 </span>
                 <span className="badge-green text-[10px] font-mono py-0.5 px-1.5 hidden sm:inline-flex">
-                  PCCOE 2026
+                  PRO 2026
                 </span>
               </div>
               <p className={`text-[10px] tracking-wide hidden sm:block ${isNavSolid ? 'text-slate-500' : 'text-slate-600 md:text-emerald-100/90'}`}>

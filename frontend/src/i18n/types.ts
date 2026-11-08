@@ -267,4 +267,5 @@ export interface TranslationSchema {
     voiceHelp: string;
     welcomeMsg: string;
   };
+  landing?: Record<string, string>;
 }

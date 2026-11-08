@@ -1,7 +1,8 @@
 // frontend/src/components/public/PublicFooter.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sprout, Mail, Phone, MapPin, ExternalLink, ShieldCheck, Cpu } from 'lucide-react';
+import { Sprout, Mail, Phone, MapPin, ExternalLink, ShieldCheck, Cpu, Globe } from 'lucide-react';
+import { LanguageSelector } from '../LanguageSelector';
 
 export const PublicFooter: React.FC = () => {
   return (
@@ -26,10 +27,15 @@ export const PublicFooter: React.FC = () => {
               India&apos;s feasibility-aware post-harvest intelligence platform. Transforming horticultural yield into predictable farmer profits through transparent route optimization.
             </p>
 
-            <div className="pt-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-[11px] text-emerald-400 font-medium">
+            <div className="pt-2 flex flex-col gap-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-[11px] text-emerald-400 font-medium w-fit">
                 <Cpu className="w-3.5 h-3.5" />
-                <span>Smart Agricultural Intelligence</span>
+                <span>Deterministic Profit Engine Active</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-slate-400 pt-1">
+                <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span className="text-[11px]">Select Language:</span>
+                <LanguageSelector variant="dark" />
               </div>
             </div>
           </div>
@@ -48,7 +54,7 @@ export const PublicFooter: React.FC = () => {
               </li>
               <li>
                 <Link to="/app/market" className="hover:text-emerald-400 transition-colors">
-                  Maharashtra APMC Mandi Rates
+                  APMC Mandi Yard Feeds
                 </Link>
               </li>
               <li>
@@ -58,12 +64,17 @@ export const PublicFooter: React.FC = () => {
               </li>
               <li>
                 <Link to="/app/buyers" className="hover:text-emerald-400 transition-colors">
-                  Corporate Buyer Network
+                  Pre-Qualified Buyer Network
                 </Link>
               </li>
               <li>
                 <Link to="/app/infra" className="hover:text-emerald-400 transition-colors">
-                  Cold Storage & Transport Fleet
+                  Cold Storage & Transport Fleets
+                </Link>
+              </li>
+              <li>
+                <Link to="/app/protection" className="hover:text-emerald-400 transition-colors">
+                  Farmer Protection & Trust Ledger
                 </Link>
               </li>
               <li>
@@ -83,32 +94,32 @@ export const PublicFooter: React.FC = () => {
             <ul className="space-y-2 text-xs text-slate-400">
               <li>
                 <Link to="/how-it-works" className="hover:text-emerald-400 transition-colors">
-                  Understand: Farm Digital Twin
+                  01. Understand: Farm Digital Twin
                 </Link>
               </li>
               <li>
                 <Link to="/how-it-works" className="hover:text-emerald-400 transition-colors">
-                  Decide: 4-Route Deterministic Math
+                  02. Decide: Deterministic 4-Way Math
                 </Link>
               </li>
               <li>
                 <Link to="/how-it-works" className="hover:text-emerald-400 transition-colors">
-                  Execute: Smart Logistics Network
+                  03. Execute: Smart Logistics Dispatch
                 </Link>
               </li>
               <li>
                 <Link to="/how-it-works" className="hover:text-emerald-400 transition-colors">
-                  Protect: Distress Salvage Pathways
+                  04. Protect: Emergency Crop Rescue
                 </Link>
               </li>
               <li>
                 <Link to="/how-it-works" className="hover:text-emerald-400 transition-colors">
-                  Verify: Financial Reconciliation
+                  05. Verify: Transparent Financial Settlement
                 </Link>
               </li>
               <li>
                 <Link to="/about" className="hover:text-emerald-400 transition-colors">
-                  About Agri2Value Vision
+                  About Agri2Value Architecture
                 </Link>
               </li>
             </ul>
@@ -126,7 +137,7 @@ export const PublicFooter: React.FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>+91 98765 43210 (Kisan Helpdesk)</span>
+                <span>+91 98765 43210 (Kisan Advisory Helpdesk)</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -137,7 +148,7 @@ export const PublicFooter: React.FC = () => {
                   to="/contact"
                   className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 hover:text-emerald-300"
                 >
-                  <span>Submit Inquiry or Feedback</span>
+                  <span>Submit Inquiry or Partnership</span>
                   <ExternalLink className="w-3 h-3" />
                 </Link>
               </div>
@@ -156,11 +167,11 @@ export const PublicFooter: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap gap-4 text-[11px]">
-            <Link to="/about" className="hover:text-slate-300 transition-colors">Academic Blueprint</Link>
+            <Link to="/about" className="hover:text-slate-300 transition-colors">System Architecture</Link>
             <span>•</span>
-            <Link to="/features" className="hover:text-slate-300 transition-colors">Provenance & Verification</Link>
+            <Link to="/features" className="hover:text-slate-300 transition-colors">Features & Provenance</Link>
             <span>•</span>
-            <Link to="/contact" className="hover:text-slate-300 transition-colors">Pilot Inquiries</Link>
+            <Link to="/contact" className="hover:text-slate-300 transition-colors">Contact Support</Link>
           </div>
         </div>
 

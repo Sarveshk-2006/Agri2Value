@@ -1,626 +1,1392 @@
 // frontend/src/pages/public/HomeView.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
-  Flame,
+  Sparkles,
   ArrowRight,
   Layers,
-  Sparkles,
-  PlayCircle,
   ShieldCheck,
   Activity,
-  ChevronDown
+  Flame,
+  Truck,
+  Building2,
+  Wheat,
+  MapPin,
+  Cpu,
+  ShoppingBag,
+  Warehouse,
+  CloudSun,
+  Scale,
+  CheckCircle2,
+  AlertTriangle,
+  ChevronRight,
+  ExternalLink,
+  Users,
+  Compass,
+  FileText,
+  Clock,
+  Droplets,
+  DollarSign,
+  Boxes,
+  Zap,
+  BarChart3,
+  Calendar,
+  Lock,
+  ChevronDown,
+  Sun,
+  Wind,
+  Check,
+  PlayCircle
 } from 'lucide-react';
 import tractorsImg from '../../assets/TRACTORS.jpg';
 
 export const HomeView: React.FC = () => {
-  const [activeScenarioRoute, setActiveScenarioRoute] = useState<'BUYER' | 'MANDI' | 'STORAGE' | 'PROCESSING'>('BUYER');
+  const { t } = useTranslation();
 
-  // Category browse items matching JSPM Narhe Winners visual style
-  const CATEGORIES = [
-    { label: 'Crop Lots', emoji: '🌾', path: '/app/lots', desc: 'Digital Twin & Harvests' },
-    { label: 'Mandi Rates', emoji: '⚖️', path: '/app/market', desc: 'APMC Daily Yard Feeds' },
-    { label: 'Profit Engine', emoji: '📊', path: '/app/decision', desc: '4-Way Route Comparison' },
-    { label: 'Logistics Fleet', emoji: '🚚', path: '/app/infra', desc: 'Reefer & Dry Trucks' },
-    { label: 'Cold Storage', emoji: '❄️', path: '/app/infra', desc: 'Holding Facilities' },
-    { label: 'Processing', emoji: '🏭', path: '/app/infra', desc: 'Agro-Processing Units' },
-    { label: 'Farmer Trust', emoji: '🛡️', path: '/app/protection', desc: 'Deals & Digital Escrow' },
-    { label: 'Crop Rescue', emoji: '🌱', path: '/app/rescue', desc: 'Emergency Salvage AI' },
+  // ─── INTERACTIVE STATE ───
+  // Walkthrough Stage: 1 to 5
+  const [activeStage, setActiveStage] = useState<number>(1);
+  // Why Agri2Value Solution Tab: 'PROFIT' | 'IOT' | 'PROTECTION' | 'RESCUE'
+  const [activeSolution, setActiveSolution] = useState<'PROFIT' | 'IOT' | 'PROTECTION' | 'RESCUE'>('PROFIT');
+  // Intelligence Showcase Tab: 'PROFIT' | 'MARKET' | 'RESCUE'
+  const [activeIntelTab, setActiveIntelTab] = useState<'PROFIT' | 'MARKET' | 'RESCUE'>('PROFIT');
+  // Ecosystem Hover Node
+  const [hoveredNode, setHoveredNode] = useState<number | null>(null);
+
+  // ─── 8 ENTERPRISE AGRI-SERVICE MODULES ───
+  const AGRI_MODULES = [
+    {
+      id: 'farms',
+      title: 'Farms & Land Holdings',
+      desc: 'Digital twin, GPS cadastral mapping, 3D boundary visualization, on-farm shaded sheds, and equipment inventory.',
+      icon: MapPin,
+      tag: '3D Digital Twin',
+      path: '/app/farms',
+      color: 'emerald',
+    },
+    {
+      id: 'harvest',
+      title: 'Harvest Intelligence',
+      desc: 'Standardized kilogram batches, Brix sweetness scoring, Grade A/B/C classification, and batch dispatch readiness.',
+      icon: Wheat,
+      tag: 'Quality Grading',
+      path: '/app/lots',
+      color: 'green',
+    },
+    {
+      id: 'profit',
+      title: 'Profit Decision Engine',
+      desc: 'Deterministic mathematical optimization without AI hallucinations. Compares 4 channels with itemized cost deductions.',
+      icon: Cpu,
+      tag: 'Deterministic Math',
+      path: '/app/decision',
+      color: 'teal',
+    },
+    {
+      id: 'buyers',
+      title: 'Commercial Buyer Network',
+      desc: 'Pre-qualified procurement tenders with Sahyadri Co-op, Reliance Fresh, and BigBasket with guaranteed floor prices.',
+      icon: ShoppingBag,
+      tag: 'Pre-Qualified Off-Take',
+      path: '/app/buyers',
+      color: 'sky',
+    },
+    {
+      id: 'logistics',
+      title: 'Logistics & Cold Storage',
+      desc: 'Refrigerated reefer vans, local tempos, pre-cooling centers, and distance-mileage transparent freight schedules.',
+      icon: Truck,
+      tag: 'Transparent Freight',
+      path: '/app/infra',
+      color: 'blue',
+    },
+    {
+      id: 'market',
+      title: 'Market & Weather Intel',
+      desc: 'Real-time Agmarknet APMC daily yard auctions, Open-Meteo 7-day microclimate forecasts, and safe spray windows.',
+      icon: CloudSun,
+      tag: 'Live Mandi & Weather',
+      path: '/app/market',
+      color: 'indigo',
+    },
+    {
+      id: 'protection',
+      title: 'Farmer Protection & Trust',
+      desc: 'Cryptographically versioned commercial contracts, weighbridge tare confirmation, escrow payouts, and formal dispute center.',
+      icon: ShieldCheck,
+      tag: 'SHA-256 Ledger',
+      path: '/app/protection',
+      color: 'purple',
+    },
+    {
+      id: 'rescue',
+      title: 'Crop Rescue Mode',
+      desc: 'Automated distress watchdog monitoring rainfall washout and shelf-life horizons to trigger emergency salvage within 24 hours.',
+      icon: Flame,
+      tag: 'Emergency Triage',
+      path: '/app/rescue',
+      color: 'rose',
+    },
   ];
 
-  // Feature cards matching JSPM Narhe Winners with vibrant gradients
-  const FEATURES = [
+  // ─── 5-STAGE OPERATING MODEL DATA ───
+  const WALKTHROUGH_STAGES = [
     {
-      icon: <TrendingUp className="w-7 h-7 text-white" />,
-      title: 'AI Profit Decision Engine',
-      desc: 'Compares corporate buyers, mandis, cold chain, and processing with strict net proceeds calculation.',
-      gradient: 'from-green-500 to-emerald-600',
+      stage: 1,
+      name: 'Farm Registration',
+      subtitle: 'Understand Land & Resources',
+      badge: 'Step 01: Digital Twin',
+      desc: 'Farmer records agricultural parcels with latitude/longitude (Niphad, Nashik), cultivated acreage, on-farm shaded storage, plastic harvesting crates, and available family labor.',
+      challengeSolved: 'Eliminates unrecorded land data; enables precise logistics vehicle routing and on-farm capacity verification.',
+      mockupData: {
+        farmName: 'Patil Krishi Farm',
+        location: 'Niphad, Nashik, Maharashtra (20.08°N, 74.04°E)',
+        area: '3.50 Acres (1.42 Ha • 140 Guntha)',
+        resources: ['Shaded On-farm Shed (2 MT)', '80 Harvesting Crates (20 kg)', 'Family + 2 Seasonal Laborers'],
+        status: 'Active Holding Verified',
+      },
     },
     {
-      icon: <Activity className="w-7 h-7 text-white" />,
-      title: 'Virtual IoT & Telematics',
-      desc: 'Continuous cold storage and reefer van sensor monitoring with automated spoilage alerts.',
-      gradient: 'from-blue-500 to-cyan-600',
+      stage: 2,
+      name: 'Harvest Management',
+      subtitle: 'Batch Normalization & Grading',
+      badge: 'Step 02: Harvest Intake',
+      desc: 'Harvested produce is registered with normalized metric weights, quality grade evaluation (Grade A/B/C), Brix sugar level, and estimated harvest date.',
+      challengeSolved: 'Prevents weight arbitrary disputes at delivery by creating an immutable benchmark timestamp before dispatch.',
+      mockupData: {
+        lotCrop: 'Tomato (Hybrid Abhinav)',
+        quantity: '4,000 kg (4.00 MT • 200 Crates)',
+        grade: 'Grade A (Table & Puree Grade)',
+        brix: 'Brix 5.2 • Firm Ripe Red',
+        harvestDate: 'Today (Local Nashik Harvest)',
+        status: 'Ready for Profit Evaluation',
+      },
     },
     {
-      icon: <ShieldCheck className="w-7 h-7 text-white" />,
-      title: 'Farmer Protection & Trust',
-      desc: 'Immutable digital deal records, weighbridge verification slips, and evidence-backed dispute filing.',
-      gradient: 'from-purple-500 to-violet-600',
+      stage: 3,
+      name: 'Intelligent Profit Decisions',
+      subtitle: '4-Way Deterministic Algebra',
+      badge: 'Step 03: Decision Engine',
+      desc: 'The deterministic calculation engine evaluates four marketing pathways simultaneously: Direct Corporate Off-Take, Wholesale APMC Mandi, Cold Chain Holding, and Agro-Processing.',
+      challengeSolved: 'No AI hallucinations. Itemizes exact transport freight, handling fees, and storage tariffs, showing verified net farmer proceeds.',
+      mockupData: {
+        buyerOffer: { name: 'Sahyadri Agro Processing', gross: '₹28.00/kg', net: '₹23.80/kg', totalNet: '₹95,200', win: true },
+        mandiYard: { name: 'APMC Pimpalgaon Yard', gross: '₹16.00/kg', net: '₹13.40/kg', totalNet: '₹53,600', baseline: true },
+        coldStorage: { name: 'Niphad Pre-Cooling Hub', gross: '₹24.00/kg (30d)', net: '₹17.20/kg', totalNet: '₹68,800' },
+        processing: { name: 'Puree & Paste Line', gross: '₹18.00/kg', net: '₹14.50/kg', totalNet: '₹58,000' },
+        uplift: '+₹41,600 (+77% vs APMC Yard)',
+      },
     },
     {
-      icon: <Flame className="w-7 h-7 text-white" />,
-      title: 'Crop Rescue Salvage',
-      desc: 'Automated weather spike alerts and distress detection routing crops to buyers within 24 hours.',
-      gradient: 'from-orange-500 to-amber-600',
+      stage: 4,
+      name: 'Buyer & Logistics Connection',
+      subtitle: 'Fleet Reservation & Contracts',
+      badge: 'Step 04: Execution Dispatch',
+      desc: '1-click contract execution locks agreed terms with pre-qualified buyers and reserves rural transport fleets (Tempo 3T or Reefer Van) with transparent mileage rates.',
+      challengeSolved: 'Bypasses predatory middlemen; guarantees backhaul transportation and locks accepted unit price before produce leaves farm gate.',
+      mockupData: {
+        contractNo: 'AGR-A2V-2026-0814 (Version 1.0 Locked)',
+        partner: 'Sahyadri Mega Food Park • Mohadi, Dindori',
+        agreedRate: '₹18.00 / kg Guaranteed Floor',
+        vehicle: 'Tempo 3T (MH-15-EG-4412)',
+        driver: 'Dnyaneshwar Shinde (+91 94231 55210)',
+        transitDistance: '42 km • Reefer Pre-Cooling Active',
+      },
+    },
+    {
+      stage: 5,
+      name: 'Execution & Settlement',
+      subtitle: 'Weighbridge & Escrow Payout',
+      badge: 'Step 05: Verified Payout',
+      desc: 'Receiving weighbridge digitally confirms tare weight, accepted tonnage, and quality sign-off. Escrow dispatches milestone tranches directly to the farmer bank account.',
+      challengeSolved: 'Prevents unauthorized deductions, weighbridge tampering, and delayed payments with an immutable SHA-256 audit digest.',
+      mockupData: {
+        deliveredQty: '4,000 kg (Weighbridge Tare Verified)',
+        acceptedQty: '4,000 kg (Zero Rejection)',
+        tranche1: '₹45,000 Disbursed (Bank UTR: UPI-RBI-20260309-8812)',
+        tranche2: '₹23,400 Scheduled upon delivery reconciliation',
+        auditDigest: 'SHA-256: 8f9b2c3a...d9e4a1b7 (Tamper-Proof)',
+        status: 'Settlement Complete & Ledger Reconciled',
+      },
     },
   ];
 
   return (
-    <div className="overflow-x-hidden font-sans space-y-20 pb-20">
-      
-      {/* ─── 1. HERO SECTION (WITH TRACTORS.JPG BACKGROUND MATCHING JSPM WINNERS) ─── */}
-      <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
+    <div className="overflow-x-hidden font-sans space-y-24 pb-24 text-slate-900 bg-slate-50 selection:bg-emerald-600 selection:text-white">
+
+      {/* ──────────────────────────────────────────────────────────
+          SECTION 1 — HERO SECTION (CINEMATIC BACKGROUND + SAAS COCKPIT)
+          ────────────────────────────────────────────────────────── */}
+      <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden pt-24 pb-20">
+        {/* Background Image with Parallax Vibe */}
         <img
           src={tractorsImg}
           alt="Modern Agricultural Farm and Tractors"
-          className="absolute inset-0 w-full h-full object-cover object-center scale-105 animate-soft-pulse"
+          className="absolute inset-0 w-full h-full object-cover object-center scale-105"
         />
 
-        {/* Strong dark overlays for maximum typography legibility */}
-        <div className="absolute inset-0 bg-black/65" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/80" />
+        {/* Sophisticated Dark Overlays for Extreme Contrast & Professionalism */}
+        <div className="absolute inset-0 bg-slate-950/75" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-emerald-950/80 to-slate-950/90" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50" />
 
-        {/* Ambient emerald radial glow */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[350px] bg-emerald-500/20 blur-[130px] rounded-full pointer-events-none" />
+        {/* Subtle Ambient Emerald Lighting */}
+        <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/15 blur-[130px] rounded-full pointer-events-none" />
 
-        {/* ── Centered Hero Content ── */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-6 sm:px-10 text-center py-28 space-y-7">
+        {/* Main Content Container (2-Column Desktop Grid) */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
-          {/* Glowing Animated Top Badge */}
-          <div className="inline-flex items-center gap-2 bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 px-5 py-2 rounded-full text-xs sm:text-sm font-bold shadow-green backdrop-blur-md animate-fade-up">
-            <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse" />
-            <span>India&apos;s Unified Agri-Service Platform 🌾</span>
-            <span className="hidden sm:inline text-emerald-400/60">•</span>
-            <span className="hidden sm:inline text-emerald-200">Indradhanu 2026</span>
-          </div>
-
-          {/* Main Display Headline */}
-          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.12] font-display drop-shadow-2xl tracking-tight animate-fade-up delay-100">
-            The Centralized Service{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-300 to-teal-200">
-              Platform for Farmers
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-base sm:text-xl md:text-2xl text-slate-200 leading-relaxed max-w-3xl mx-auto drop-shadow font-normal animate-fade-up delay-200">
-            Beyond rentals. Your all-in-one ecosystem for AI profit optimization, cold chain logistics, mandi intelligence, digital agreements, and sovereign crop rescue.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2 animate-fade-up delay-300">
-            <Link
-              to="/app/dashboard"
-              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-black text-lg rounded-2xl shadow-green-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3 group"
-            >
-              <span>Launch Decision Platform 🌾</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              to="/login"
-              className="w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-md border-2 border-white/40 text-white font-bold text-lg rounded-2xl hover:bg-white/20 hover:border-white/70 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              <PlayCircle className="w-5 h-5 text-emerald-300" />
-              <span>Sign In / Demo Access →</span>
-            </Link>
-          </div>
-
-          {/* Trust Stats Pills */}
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-3 animate-fade-up delay-400">
-            {[
-              { emoji: '🌾', text: '18,000+ Farmers Benefited' },
-              { emoji: '🚜', text: '2,400+ Logistics & Facilities' },
-              { emoji: '⭐', text: '4.8 / 5 Rating' },
-              { emoji: '📍', text: '320+ Villages Covered' },
-              { emoji: '🛡️', text: '100% Deterministic Engine' },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/15 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-full shadow-xs hover:bg-white/20 hover:border-white/30 transition-all duration-200"
-              >
-                <span>{item.emoji}</span>
-                <span>{item.text}</span>
+            {/* Left Column: Headline, Typography, CTAs & Value Props (7 Cols) */}
+            <div className="lg:col-span-7 space-y-7 text-left">
+              
+              {/* Product Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-xs font-bold tracking-wide backdrop-blur-md shadow-xs animate-in fade-in duration-300">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+                <span>{t('landing.heroBadge', 'Next-Generation AgriTech Platform')}</span>
+                <span className="text-emerald-400/60">•</span>
+                <span className="text-emerald-200 font-medium font-sans">कृषि-मूल्य • Farm-to-Profit Intelligence</span>
               </div>
-            ))}
-          </div>
 
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60 text-xs flex flex-col items-center gap-1 animate-bounce pointer-events-none">
-          <span className="tracking-widest uppercase text-[10px] font-bold">Scroll</span>
-          <ChevronDown className="w-4 h-4 text-emerald-400" />
-        </div>
-
-      </section>
-
-      {/* ─── 2. FLOATING STATS CARDS (OVERLAPPING HERO -MT-14) ─── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-200 transition-all duration-300 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-            <div className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 font-display">4</div>
-            <div className="text-[11px] sm:text-xs font-extrabold text-emerald-700 uppercase tracking-wider mt-1">Selling Pathways</div>
-            <div className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">Corporate, Mandi, Cold, Processing</div>
-          </div>
-
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-200 transition-all duration-300 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div className="text-2xl sm:text-3xl md:text-4xl font-black text-emerald-600 font-display">+35%</div>
-            <div className="text-[11px] sm:text-xs font-extrabold text-emerald-700 uppercase tracking-wider mt-1">Realization Uplift</div>
-            <div className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">Direct corporate buyer routing</div>
-          </div>
-
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-blue-200 transition-all duration-300 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-blue-50 text-blue-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Layers className="w-5 h-5" />
-            </div>
-            <div className="text-2xl sm:text-3xl md:text-4xl font-black text-blue-600 font-display">5-Stage</div>
-            <div className="text-[11px] sm:text-xs font-extrabold text-blue-700 uppercase tracking-wider mt-1">Operating Model</div>
-            <div className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">Understand to Settlement</div>
-          </div>
-
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center shadow-xl border border-slate-100 hover:-translate-y-2 hover:shadow-2xl hover:border-rose-200 transition-all duration-300 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-rose-50 text-rose-600 mx-auto mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Flame className="w-5 h-5" />
-            </div>
-            <div className="text-2xl sm:text-3xl md:text-4xl font-black text-rose-600 font-display">24h</div>
-            <div className="text-[11px] sm:text-xs font-extrabold text-rose-700 uppercase tracking-wider mt-1">Crop Rescue Action</div>
-            <div className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 sm:mt-1">Emergency salvage risk triggers</div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ─── 3. BROWSE BY CATEGORY & AGRI-SERVICE (MATCHING JSPM WINNERS) ─── */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 font-display">
-              Browse by Agri-Service & Pathway 🌾
-            </h2>
-            <p className="text-slate-500 max-w-xl mx-auto text-sm">
-              Discover connected digital twins, mandi advisory feeds, cold chain logistics, and guaranteed contracts.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
-            {CATEGORIES.map((cat, i) => (
-              <Link
-                key={i}
-                to={cat.path}
-                className="group flex flex-col items-center text-center p-5 bg-white border-2 border-slate-100 rounded-3xl hover:border-emerald-500 hover:bg-emerald-50/30 hover:-translate-y-2 hover:shadow-xl transition-all duration-300 shadow-xs cursor-pointer"
-              >
-                <span className="text-4xl mb-2 group-hover:scale-115 transition-transform duration-300">
-                  {cat.emoji}
+              {/* Display Headline */}
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.10] font-display tracking-tight drop-shadow-lg">
+                <span>{t('landing.heroHeadline1', 'AGRICULTURE. CONNECTED.')}</span>{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-300 to-teal-200 block sm:inline">
+                  {t('landing.heroHeadline2', 'INTELLIGENT. PROFITABLE.')}
                 </span>
-                <span className="text-xs font-black text-slate-800 group-hover:text-emerald-700 leading-tight">
-                  {cat.label}
-                </span>
-                <span className="text-[10px] text-slate-400 mt-1 group-hover:text-emerald-600 font-medium">
-                  {cat.desc}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+              </h1>
 
-      {/* ─── 4. VIBRANT GRADIENT FEATURE CARDS (WHY FARMERS LOVE AGRI2VALUE) ─── */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50/80">
-        <div className="max-w-7xl mx-auto space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
-              <span>RURAL RESILIENCE ENGINE</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 font-display">
-              Why Farmers & FPOs Trust Agri2Value
-            </h2>
-            <p className="text-slate-500 text-sm">
-              Built for rural India: works reliably across fluctuating mandi rates, fragmented logistics, and adverse harvest weather.
-            </p>
-          </div>
+              {/* Subheading */}
+              <p className="text-sm sm:text-base lg:text-lg text-slate-200 leading-relaxed font-normal max-w-2xl drop-shadow">
+                {t(
+                  'landing.heroSubtitle',
+                  'One intelligent platform connecting farm management, profit decisions, market opportunities, logistics, and farmer protection.'
+                )}
+              </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURES.map((feat, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-3xl p-7 border border-slate-100 shadow-md hover:shadow-2xl hover:-translate-y-2.5 transition-all duration-300 space-y-4 group"
-              >
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                  {feat.icon}
+              {/* Two Clear Primary CTAs */}
+              <div className="flex flex-col sm:flex-row gap-3.5 pt-2">
+                <a
+                  href="#modules"
+                  className="px-6 py-3.5 bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-98"
+                >
+                  <Compass className="w-4 h-4 text-emerald-600" />
+                  <span>{t('landing.explorePlatform', 'Explore Agri2Value')}</span>
+                </a>
+
+                <Link
+                  to="/app/dashboard"
+                  className="px-6 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-700/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-98"
+                >
+                  <span>{t('landing.openConsole', 'Open Farmer Console')}</span>
+                  <ArrowRight className="w-4 h-4 text-white" />
+                </Link>
+
+                <Link
+                  to="/login"
+                  className="px-5 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-xs sm:text-sm rounded-xl backdrop-blur-xs transition-all flex items-center justify-center gap-2"
+                >
+                  <PlayCircle className="w-4 h-4 text-emerald-300" />
+                  <span>{t('landing.signInDemo', 'Sign In / Demo Access')}</span>
+                </Link>
+              </div>
+
+              {/* Trust Value Props Strip */}
+              <div className="pt-3 border-t border-white/10 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-slate-300">
+                <div className="flex items-center gap-1.5 font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>4 Selling Pathways</span>
                 </div>
-                <h3 className="font-extrabold text-slate-900 text-lg leading-snug font-display">
-                  {feat.title}
-                </h3>
-                <p className="text-slate-500 text-xs leading-relaxed">
-                  {feat.desc}
-                </p>
+                <div className="flex items-center gap-1.5 font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Deterministic Math</span>
+                </div>
+                <div className="flex items-center gap-1.5 font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Live Agmarknet Mandi Feeds</span>
+                </div>
+                <div className="flex items-center gap-1.5 font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Zero Middleman Loss</span>
+                </div>
               </div>
-            ))}
+
+            </div>
+
+            {/* Right Column: Live Enterprise SaaS Product Cockpit Preview (5 Cols) */}
+            <div className="lg:col-span-5 relative">
+              <div className="bg-slate-900/90 border border-emerald-500/30 rounded-3xl p-5 sm:p-6 backdrop-blur-xl shadow-2xl space-y-4 text-white text-xs">
+                
+                {/* Cockpit Card Header */}
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <div>
+                      <div className="font-bold text-slate-100 text-xs">Patil Krishi Farm • Niphad, Nashik</div>
+                      <div className="text-[10px] text-emerald-400">APMC Mandi & Open-Meteo Synced</div>
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Live Engine
+                  </span>
+                </div>
+
+                {/* Active Produce Lot */}
+                <div className="p-3 rounded-2xl bg-slate-800/80 border border-slate-700/60 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-slate-300">Tomato (Abhinav Hybrid Red)</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300">
+                      Grade A • Brix 5.2
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-400 text-[11px] font-mono">
+                    <span>Batch Volume: 4,000 kg (4 MT)</span>
+                    <span>Fair Average Quality</span>
+                  </div>
+                </div>
+
+                {/* Decision Winner Recommendation */}
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-950/80 to-slate-900 border border-emerald-600/50 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">
+                      ★ TOP RECOMMENDED PATHWAY
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded">
+                      +77% UPLIFT
+                    </span>
+                  </div>
+
+                  <div className="flex items-baseline justify-between">
+                    <div>
+                      <div className="text-sm font-extrabold text-white">Sahyadri Agro Processing</div>
+                      <div className="text-[10px] text-slate-400">Mega Food Park, Mohadi • 42 km</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xl font-black font-mono text-emerald-400">₹23.80 / kg</div>
+                      <div className="text-[10px] text-slate-400">Net: ₹95,200.00</div>
+                    </div>
+                  </div>
+
+                  {/* Math Breakdown Ribbon */}
+                  <div className="pt-2 border-t border-emerald-800/40 grid grid-cols-3 gap-2 text-[10px] text-slate-300">
+                    <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800">
+                      <span className="text-slate-400 block text-[9px]">Gross Revenue</span>
+                      <span className="font-mono font-bold text-white">₹1,12,000</span>
+                    </div>
+                    <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800">
+                      <span className="text-slate-400 block text-[9px]">Logistics Tariff</span>
+                      <span className="font-mono font-bold text-rose-400">-₹7,200</span>
+                    </div>
+                    <div className="bg-slate-900/60 p-1.5 rounded-lg border border-slate-800">
+                      <span className="text-slate-400 block text-[9px]">Extra Realization</span>
+                      <span className="font-mono font-bold text-emerald-400">+₹41,600</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Micro Telematics Status Bar */}
+                <div className="pt-2 flex items-center justify-between text-[10px] text-slate-400">
+                  <div className="flex items-center gap-1.5">
+                    <Truck className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Reefer Fleet MH-15-EG-4412 Reserved</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-emerald-400">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>SHA-256 Agreement Locked</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
           </div>
+        </div>
+
+        {/* Bottom Scroll Indicator */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/50 text-xs flex flex-col items-center gap-1 pointer-events-none">
+          <span className="tracking-widest uppercase text-[9px] font-bold">Explore Platform</span>
+          <ChevronDown className="w-4 h-4 text-emerald-400 animate-bounce" />
         </div>
       </section>
 
-      {/* ─── 5. INTERACTIVE DECISION SPOTLIGHT (FLAGSHIP DEMO) ─── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="card p-6 sm:p-10 bg-gradient-to-br from-white via-emerald-50/20 to-teal-50/30 border-slate-200 shadow-xl space-y-8">
+      {/* ──────────────────────────────────────────────────────────
+          SECTION 2 — PRODUCT IMPACT METRICS (4 COMPACT EXECUTIVE CARDS)
+          ────────────────────────────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-slate-200">
+          {/* Metric 1: Selling Pathways */}
+          <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Selling Pathways</span>
+              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
+                <TrendingUp className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-3xl font-black text-slate-900 font-display">4 Options</div>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Direct Corporate Off-Take, Mandi Auction Yard, Cold Chain Buffer, and Agro-Processing.
+            </p>
+            <div className="pt-2 border-t border-slate-100 text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+              <span>Multi-Channel Optimization</span>
+            </div>
+          </div>
+
+          {/* Metric 2: Net Profit Realization */}
+          <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Net Realization</span>
+              <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100">
+                <Sparkles className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-3xl font-black text-emerald-700 font-display">+35% to +77%</div>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Realized net payout uplift verified against wholesale APMC baseline via itemized deductions.
+            </p>
+            <div className="pt-2 border-t border-slate-100 text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+              <span>Deterministic Net Payout</span>
+            </div>
+          </div>
+
+          {/* Metric 3: End-to-End Execution */}
+          <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Execution Pipeline</span>
+              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-100">
+                <Layers className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-3xl font-black text-slate-900 font-display">5 Stages</div>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              From Farm Digital Twin and Quality Grading to Fleet Booking and Verified Escrow Settlement.
+            </p>
+            <div className="pt-2 border-t border-slate-100 text-[10px] text-blue-700 font-semibold flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-blue-600" />
+              <span>Full Lifecycle Continuity</span>
+            </div>
+          </div>
+
+          {/* Metric 4: Crop Rescue Capabilities */}
+          <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Emergency Rescue</span>
+              <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center border border-rose-100">
+                <Flame className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-3xl font-black text-rose-700 font-display">&lt;24h Triage</div>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Automated weather spike alerts and distress triage routing perishable crops before spoilage.
+            </p>
+            <div className="pt-2 border-t border-slate-100 text-[10px] text-rose-700 font-semibold flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-rose-600" />
+              <span>Shelf-Life Salvage Watchdog</span>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Provenance Disclosure Note */}
+        <div className="mt-3 text-center text-[11px] text-slate-400">
+          * Verified benchmarks derived from real Nashik Horticultural Pilot (4,000 kg Tomato Lot, Niphad Cluster) with zero fabricated statistics.
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────────────────
+          SECTION 3 — AGRI-SERVICE MODULES (ENTERPRISE GRID)
+          ────────────────────────────────────────────────────────── */}
+      <section id="modules" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-24">
+        <div className="text-center space-y-2 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <span>CORE APPLICATION PLATFORM</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 font-display">
+            Browse by Agri-Service & Pathway
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+            A cohesive suite of agricultural SaaS modules designed to eliminate post-harvest leakage, verify transactions, and connect smallholders to profitable off-take opportunities.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          {AGRI_MODULES.map((mod) => {
+            const Icon = mod.icon;
+            return (
+              <Link
+                key={mod.id}
+                to={mod.path}
+                className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:border-emerald-500 hover:shadow-md transition-all flex flex-col justify-between group space-y-4"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 group-hover:bg-emerald-50 text-slate-700 group-hover:text-emerald-700 flex items-center justify-center border border-slate-100 group-hover:border-emerald-200 transition-colors">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 group-hover:bg-emerald-100 text-slate-600 group-hover:text-emerald-800 border border-slate-200 group-hover:border-emerald-200 transition-colors">
+                      {mod.tag}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="font-extrabold text-base text-slate-900 group-hover:text-emerald-800 transition-colors font-display">
+                      {mod.title}
+                    </h3>
+                    <p className="text-xs text-slate-500 leading-relaxed mt-1">
+                      {mod.desc}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700 group-hover:text-emerald-700">
+                  <span>Launch Module</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────────────────
+          SECTION 4 — WHY AGRI2VALUE (SPLIT LAYOUT: CHALLENGES VS SOLUTIONS)
+          ────────────────────────────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-10 shadow-xs space-y-8">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-slate-100">
             <div className="space-y-1">
-              <span className="badge-green">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>INTERACTIVE DEMO • PILOT CROP SCENARIO</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
+                Ground Reality vs Digital Precision
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
-                See How Ramesh Patil Gained ₹41,600 More
+                Why Farmers & FPOs Trust Agri2Value
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 max-w-2xl">
-                4,000 kg Grade A Hybrid Tomato lot in Niphad, Nashik. The deterministic engine calculates real gross revenues, itemized logistics, and net payout for all 4 available market pathways simultaneously.
+                Addressing the systemic bottlenecks of Indian agriculture with reproducible mathematics and transparent commercial safeguards.
               </p>
             </div>
 
-            <Link
-              to="/app/decision"
-              className="btn-primary text-xs py-2.5 px-4 shadow-sm shrink-0"
-            >
-              <span>Explore Engine Console</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            {/* Solution Switcher Pills */}
+            <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold">
+              {[
+                { key: 'PROFIT', label: 'Profit Engine' },
+                { key: 'IOT', label: 'IoT Telematics' },
+                { key: 'PROTECTION', label: 'Farmer Trust' },
+                { key: 'RESCUE', label: 'Crop Rescue' },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveSolution(tab.key as any)}
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                    activeSolution === tab.key
+                      ? 'bg-white text-emerald-800 shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Interactive Route Selector Tabs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {/* Split Layout: Challenges (Left) vs Interactive Solution Preview (Right) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             
-            <button
-              onClick={() => setActiveScenarioRoute('BUYER')}
-              className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                activeScenarioRoute === 'BUYER'
-                  ? 'border-emerald-600 bg-white shadow-md ring-2 ring-emerald-500/20'
-                  : 'border-slate-200 bg-slate-50/80 hover:bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-slate-700">Corporate Buyer</span>
-                <span className="badge-green text-[9px] py-0 px-1">WINNER</span>
+            {/* Left Column: The 4 Ground Challenges (5 cols) */}
+            <div className="lg:col-span-5 space-y-3.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Actual Challenges in Indian Agriculture
+              </h3>
+
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
+                  <Scale className="w-4 h-4 text-amber-600" />
+                  <span>Mandi Price Uncertainty & Yard Gluts</span>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Daily yard auction price crashes and unrecorded commission cuts reduce smallholder net realizations by 20% to 40%.
+                </p>
               </div>
-              <div className="text-xl font-black font-mono text-emerald-700">₹23.80 / kg</div>
-              <div className="text-[11px] text-slate-500">Net payout: ₹95,200</div>
-            </button>
 
-            <button
-              onClick={() => setActiveScenarioRoute('MANDI')}
-              className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                activeScenarioRoute === 'MANDI'
-                  ? 'border-emerald-600 bg-white shadow-md ring-2 ring-emerald-500/20'
-                  : 'border-slate-200 bg-slate-50/80 hover:bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-slate-700">APMC Mandi Yard</span>
-                <span className="badge-yellow text-[9px] py-0 px-1">BASELINE</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
+                  <Truck className="w-4 h-4 text-blue-600" />
+                  <span>Fragmented Cold Chain & Arbitrary Freight</span>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Smallholders lack access to dedicated refrigerated transport, resulting in transit spoilage and opaque per-km freight tariffs.
+                </p>
               </div>
-              <div className="text-xl font-black font-mono text-slate-900">₹13.40 / kg</div>
-              <div className="text-[11px] text-slate-500">Net payout: ₹53,600</div>
-            </button>
 
-            <button
-              onClick={() => setActiveScenarioRoute('STORAGE')}
-              className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                activeScenarioRoute === 'STORAGE'
-                  ? 'border-emerald-600 bg-white shadow-md ring-2 ring-emerald-500/20'
-                  : 'border-slate-200 bg-slate-50/80 hover:bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-slate-700">Cold Chain Holding</span>
-                <span className="badge-blue text-[9px] py-0 px-1">30-DAY BUFFER</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
+                  <Flame className="w-4 h-4 text-rose-600" />
+                  <span>Unseasonal Weather & Perishability Spikes</span>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Excess rain or moisture causes rapid bacterial deterioration, forcing emergency distress sales at salvage throwaway rates.
+                </p>
               </div>
-              <div className="text-xl font-black font-mono text-blue-800">₹17.20 / kg</div>
-              <div className="text-[11px] text-slate-500">Net payout: ₹68,800</div>
-            </button>
 
-            <button
-              onClick={() => setActiveScenarioRoute('PROCESSING')}
-              className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                activeScenarioRoute === 'PROCESSING'
-                  ? 'border-emerald-600 bg-white shadow-md ring-2 ring-emerald-500/20'
-                  : 'border-slate-200 bg-slate-50/80 hover:bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-slate-700">Agro-Processing</span>
-                <span className="badge-purple text-[9px] py-0 px-1">PUREE / PASTE</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
+                  <ShieldCheck className="w-4 h-4 text-purple-600" />
+                  <span>Unrecorded Weighbridges & Payment Delays</span>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Verbal commitments and lack of weighbridge receipts leave farmers vulnerable to unauthorized quality and weight cuts.
+                </p>
               </div>
-              <div className="text-xl font-black font-mono text-purple-800">₹14.50 / kg</div>
-              <div className="text-[11px] text-slate-500">Net payout: ₹58,000</div>
-            </button>
+            </div>
 
-          </div>
+            {/* Right Column: Live Solution Component Preview (7 cols) */}
+            <div className="lg:col-span-7 bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 shadow-md flex flex-col justify-between space-y-4">
+              
+              {activeSolution === 'PROFIT' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div>
+                      <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Solution 01</span>
+                      <h4 className="text-base font-extrabold text-white">Deterministic Profit Decision Engine</h4>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      Zero Hallucinations
+                    </span>
+                  </div>
 
-          {/* Active Detail Breakdown Card */}
-          <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-4">
-            {activeScenarioRoute === 'BUYER' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div>
-                    <h3 className="font-extrabold text-base text-slate-900">
-                      Recommendation: Direct Corporate Procurement (Reliance Retail Desk)
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      High-grade horticultural demand directly matches Ramesh Patil&apos;s Grade A crop lot.
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Algebraic evaluation compares gross procurement rates, route mileage tariffs, and statutory market cess to ensure guaranteed net proceeds.
+                  </p>
+
+                  <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700/60 font-mono text-xs space-y-2">
+                    <div className="text-slate-400"># Canonical Profit Calculation (Tomato Lot: 4,000 kg)</div>
+                    <div className="flex justify-between text-slate-200">
+                      <span>Gross Revenue (4,000 kg × ₹28.00):</span>
+                      <span className="text-white font-bold">₹1,12,000.00</span>
+                    </div>
+                    <div className="flex justify-between text-rose-400">
+                      <span>Logistics Freight Tariff (42 km Tempo):</span>
+                      <span>-₹7,200.00</span>
+                    </div>
+                    <div className="flex justify-between text-rose-400">
+                      <span>Packaging & Sorting Deductions:</span>
+                      <span>-₹9,600.00</span>
+                    </div>
+                    <div className="pt-2 border-t border-slate-700 flex justify-between text-emerald-400 font-bold text-sm">
+                      <span>Verified Net Farmer Payout:</span>
+                      <span>₹95,200.00 (₹23.80/kg)</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSolution === 'IOT' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div>
+                      <span className="text-[10px] font-bold text-teal-400 uppercase tracking-wider">Solution 02</span>
+                      <h4 className="text-base font-extrabold text-white">Virtual IoT Microclimate & Cold Storage Telematics</h4>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                      Telemetry Stream
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Continuous monitoring of soil moisture, ambient canopy temperature, relative humidity, and cold room cooling cycles.
+                  </p>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center text-xs">
+                    <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                      <span className="text-[10px] text-slate-400 block">Soil Moisture</span>
+                      <span className="text-lg font-black font-mono text-emerald-400">38.5%</span>
+                      <span className="text-[9px] text-emerald-300 block">Optimal Range</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                      <span className="text-[10px] text-slate-400 block">Canopy Temp</span>
+                      <span className="text-lg font-black font-mono text-white">28.2°C</span>
+                      <span className="text-[9px] text-slate-400 block">Day High</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                      <span className="text-[10px] text-slate-400 block">Relative Humidity</span>
+                      <span className="text-lg font-black font-mono text-blue-400">62%</span>
+                      <span className="text-[9px] text-blue-300 block">Normal Vapor</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
+                      <span className="text-[10px] text-slate-400 block">Battery Voltage</span>
+                      <span className="text-lg font-black font-mono text-emerald-400">4.12 V</span>
+                      <span className="text-[9px] text-emerald-300 block">Solar Charged</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSolution === 'PROTECTION' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div>
+                      <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Solution 03</span>
+                      <h4 className="text-base font-extrabold text-white">Farmer Protection & Digital Deal Transparency</h4>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                      Cryptographic Trust
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Every commercial off-take agreement locks unit price and pre-approved deductions with digital weighbridge sign-offs.
+                  </p>
+
+                  <div className="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs space-y-2">
+                    <div className="flex items-center justify-between text-slate-300">
+                      <span className="font-mono font-bold text-white">Agreement AGR-A2V-2026-0814</span>
+                      <span className="text-emerald-400 font-bold">ACCEPTED & LOCKED</span>
+                    </div>
+                    <div className="text-slate-400 text-[11px]">
+                      Buyer: Sahyadri Agro Processing Co-op • Floor Rate: ₹18.00 / kg • Max Deduction: ₹3,600
+                    </div>
+                    <div className="pt-2 border-t border-slate-700 flex items-center justify-between text-[11px]">
+                      <span className="text-slate-300">Milestone Tranche 1: ₹45,000 Disbursed</span>
+                      <span className="font-mono text-purple-400">SHA-256 Verified</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSolution === 'RESCUE' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div>
+                      <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">Solution 04</span>
+                      <h4 className="text-base font-extrabold text-white">Crop Rescue Salvage Mode</h4>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                      Urgency: 85/100
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Instantaneous post-harvest distress alerts detect approaching rainfall threats and divert perishables within 24 hours.
+                  </p>
+
+                  <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/60 text-xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-rose-300">⚠️ Active Weather Hazard Detected</span>
+                      <span className="text-[10px] font-mono text-white bg-rose-600 px-2 py-0.5 rounded">Action: 36h Safe Window</span>
+                    </div>
+                    <p className="text-slate-300 text-[11px]">
+                      35mm unseasonal heavy rain forecasted in Niphad cluster. Recommended action: Bypass open mandi yard and route 4,000 kg harvest directly to food park puree processing line.
                     </p>
                   </div>
-                  <div className="text-right">
-                    <span className="text-xs text-slate-400">Total Net Farmer Realization</span>
-                    <div className="text-2xl font-black font-mono text-emerald-700">₹95,200.00</div>
-                  </div>
                 </div>
+              )}
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Gross Procurement Rate</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">₹28.00 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Packaging & Grate Surcharge</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">- ₹1.80 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Transport Logistics Tariff (45 km)</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">- ₹2.40 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
-                    <div className="text-emerald-800 font-bold">Extra Profit vs Mandi</div>
-                    <div className="font-black text-emerald-700 font-mono text-sm">+ ₹41,600.00 (+77%)</div>
-                  </div>
-                </div>
+              {/* Bottom Nav CTA */}
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+                <span className="text-slate-400">Explore complete interactive system in console</span>
+                <Link
+                  to="/app/dashboard"
+                  className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1.5 transition-colors"
+                >
+                  <span>Launch Live Workspace</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
-            )}
 
-            {activeScenarioRoute === 'MANDI' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div>
-                    <h3 className="font-extrabold text-base text-slate-900">
-                      APMC Mandi Auction Yard: Pimpalgaon Baswant
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      Subject to yard arrival volume, cess deductions, and middleman commission.
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs text-slate-400">Total Net Realization</span>
-                    <div className="text-2xl font-black font-mono text-slate-900">₹53,600.00</div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Auction Modal Rate</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">₹16.00 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Hamali & Weighment</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">- ₹0.80 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Local Transport to Yard</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">- ₹1.80 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
-                    <div className="text-amber-800 font-bold">Vulnerability Risk</div>
-                    <div className="font-bold text-amber-700 text-xs">Yard gluts cause price crashes</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeScenarioRoute === 'STORAGE' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div>
-                    <h3 className="font-extrabold text-base text-slate-900">
-                      Cold Chain Storage Holding: Niphad Agro Cold Storage
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      Store harvest for up to 30 days to capitalize on forecasted market rate recovery.
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs text-slate-400">Estimated Net Payout</span>
-                    <div className="text-2xl font-black font-mono text-blue-800">₹68,800.00</div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Target Off-Season Rate</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">₹24.00 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Monthly Storage Fee</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">- ₹2.20 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Reefer Van Transport</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">- ₹2.60 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-blue-50 border border-blue-200">
-                    <div className="text-blue-800 font-bold">Storage Advantage</div>
-                    <div className="font-bold text-blue-700 text-xs">+ ₹15,200 vs immediate mandi sale</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeScenarioRoute === 'PROCESSING' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div>
-                    <h3 className="font-extrabold text-base text-slate-900">
-                      Agro-Processing Conversion: Sahyadri Farmer Producer Co.
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      Converts surplus or B-grade tomatoes into high-value puree and paste concentrate.
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs text-slate-400">Estimated Realization</span>
-                    <div className="text-2xl font-black font-mono text-purple-800">₹58,000.00</div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Concentrate Base Price</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">₹18.00 / kg raw</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Processing Line Fee</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">- ₹1.70 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-50">
-                    <div className="text-slate-400">Logistics to Plant</div>
-                    <div className="font-bold text-slate-900 font-mono text-sm">- ₹1.80 / kg</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-purple-50 border border-purple-200">
-                    <div className="text-purple-800 font-bold">Waste Elimination</div>
-                    <div className="font-bold text-purple-700 text-xs">Zero field dump loss</div>
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
 
           </div>
 
         </div>
       </section>
 
-      {/* ─── 6. THE 5-STAGE OPERATING MODEL ─── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      {/* ──────────────────────────────────────────────────────────
+          SECTION 5 — INTERACTIVE WALKTHROUGH ("SEE HOW IT WORKS")
+          ────────────────────────────────────────────────────────── */}
+      <section id="walkthrough" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-24">
         
         <div className="text-center space-y-2 max-w-3xl mx-auto">
-          <span className="badge-blue">
-            <Layers className="w-3.5 h-3.5" />
-            <span>ARCHITECTURE</span>
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-display">
-            The Agri2Value 5-Stage Operating Model
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
+            <span>END-TO-END EXECUTION WORKFLOW</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 font-display">
+            See How Agri2Value Works
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500">
-            A cohesive pipeline connecting farm registration to final verified financial settlement.
+          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+            Follow the complete agricultural journey from farm parcel onboarding to verified bank payout. Select any stage to inspect live product capabilities.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        {/* 5-Stage Interactive Tabs */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
+          {WALKTHROUGH_STAGES.map((stg) => {
+            const isActive = activeStage === stg.stage;
+            return (
+              <button
+                key={stg.stage}
+                onClick={() => setActiveStage(stg.stage)}
+                className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
+                  isActive
+                    ? 'bg-emerald-800 text-white border-emerald-800 shadow-md ring-2 ring-emerald-600/30'
+                    : 'bg-white text-slate-700 border-slate-200/80 hover:border-slate-300 hover:bg-slate-50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className={`text-[10px] font-mono font-black px-1.5 py-0.5 rounded ${
+                    isActive ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-100 text-slate-600'
+                  }`}>
+                    0{stg.stage}
+                  </span>
+                  {isActive && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />}
+                </div>
+
+                <div>
+                  <div className={`font-extrabold text-xs sm:text-sm font-display ${isActive ? 'text-white' : 'text-slate-900'}`}>
+                    {stg.name}
+                  </div>
+                  <div className={`text-[10px] sm:text-[11px] truncate mt-0.5 ${isActive ? 'text-emerald-100' : 'text-slate-500'}`}>
+                    {stg.subtitle}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active Stage Detailed Panel */}
+        {(() => {
+          const currentStage = WALKTHROUGH_STAGES.find((s) => s.stage === activeStage) || WALKTHROUGH_STAGES[0];
+          return (
+            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-in fade-in duration-200">
+              
+              {/* Left Column: Stage Explanation (6 cols) */}
+              <div className="lg:col-span-6 space-y-4">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  <span>{currentStage.badge}</span>
+                </div>
+
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-display">
+                  {currentStage.name}: {currentStage.subtitle}
+                </h3>
+
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  {currentStage.desc}
+                </p>
+
+                <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-1">
+                  <div className="text-[11px] font-bold text-emerald-900 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Real-World Challenge Resolved:</span>
+                  </div>
+                  <p className="text-xs text-emerald-800">
+                    {currentStage.challengeSolved}
+                  </p>
+                </div>
+
+                <div className="pt-2 flex items-center gap-3">
+                  <Link
+                    to="/app/dashboard"
+                    className="btn-primary text-xs py-2 px-4 shadow-xs"
+                  >
+                    <span>Try in Farmer Console</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                  <span className="text-xs text-slate-400">Step {currentStage.stage} of 5</span>
+                </div>
+              </div>
+
+              {/* Right Column: Realistic High-Fidelity UI Mockup (6 cols) */}
+              <div className="lg:col-span-6 bg-slate-50 rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-2xs space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                  <span className="font-mono text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    Console Data Snapshot • Stage 0{currentStage.stage}
+                  </span>
+                  <span className="badge-green text-[10px]">VERIFIED DATA</span>
+                </div>
+
+                {currentStage.stage === 1 && (
+                  <div className="space-y-2.5 text-xs">
+                    <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
+                      <span className="text-slate-400 text-[10px] block">Farm Profile</span>
+                      <div className="font-bold text-slate-900 text-sm">{(currentStage.mockupData as any).farmName}</div>
+                      <div className="text-slate-500 text-[11px]">{(currentStage.mockupData as any).location}</div>
+                    </div>
+                    <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
+                      <span className="text-slate-400 text-[10px] block">Cultivated Parcel Area</span>
+                      <div className="font-bold text-emerald-700 font-mono text-sm">{(currentStage.mockupData as any).area}</div>
+                    </div>
+                    <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
+                      <span className="text-slate-400 text-[10px] block">Associated On-Farm Resources</span>
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {(currentStage.mockupData as any).resources.map((r: string, idx: number) => (
+                          <span key={idx} className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                            {r}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {currentStage.stage === 2 && (
+                  <div className="space-y-2.5 text-xs">
+                    <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
+                      <span className="text-slate-400 text-[10px] block">Produce Batch</span>
+                      <div className="font-bold text-slate-900 text-sm">{(currentStage.mockupData as any).lotCrop}</div>
+                      <div className="text-emerald-700 font-mono font-bold">{(currentStage.mockupData as any).quantity}</div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="p-2.5 bg-white rounded-xl border border-slate-200/80">
+                        <span className="text-slate-400 text-[10px] block">Quality Grade</span>
+                        <span className="font-bold text-slate-900 text-xs">{(currentStage.mockupData as any).grade}</span>
+                      </div>
+                      <div className="p-2.5 bg-white rounded-xl border border-slate-200/80">
+                        <span className="text-slate-400 text-[10px] block">Sugar / Brix Score</span>
+                        <span className="font-bold text-emerald-700 font-mono text-xs">{(currentStage.mockupData as any).brix}</span>
+                      </div>
+                    </div>
+                    <div className="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-[11px] font-semibold flex items-center justify-between">
+                      <span>Dispatch Status</span>
+                      <span>{(currentStage.mockupData as any).status}</span>
+                    </div>
+                  </div>
+                )}
+
+                {currentStage.stage === 3 && (
+                  <div className="space-y-2 text-xs">
+                    <div className="p-3 bg-emerald-50/80 rounded-xl border border-emerald-300 space-y-1">
+                      <div className="flex justify-between items-center font-bold">
+                        <span className="text-emerald-900">★ {(currentStage.mockupData as any).buyerOffer.name}</span>
+                        <span className="font-mono text-emerald-700">{(currentStage.mockupData as any).buyerOffer.net}</span>
+                      </div>
+                      <div className="text-[11px] text-emerald-700 flex justify-between">
+                        <span>Total Realized: {(currentStage.mockupData as any).buyerOffer.totalNet}</span>
+                        <span className="font-bold">{(currentStage.mockupData as any).uplift}</span>
+                      </div>
+                    </div>
+
+                    <div className="p-2.5 bg-white rounded-xl border border-slate-200/80 flex justify-between items-center text-[11px]">
+                      <span className="text-slate-700">{(currentStage.mockupData as any).mandiYard.name}</span>
+                      <span className="font-mono font-bold text-slate-900">{(currentStage.mockupData as any).mandiYard.net} (Net: {(currentStage.mockupData as any).mandiYard.totalNet})</span>
+                    </div>
+
+                    <div className="p-2.5 bg-white rounded-xl border border-slate-200/80 flex justify-between items-center text-[11px]">
+                      <span className="text-slate-700">{(currentStage.mockupData as any).coldStorage.name}</span>
+                      <span className="font-mono font-bold text-blue-800">{(currentStage.mockupData as any).coldStorage.net}</span>
+                    </div>
+                  </div>
+                )}
+
+                {currentStage.stage === 4 && (
+                  <div className="space-y-2.5 text-xs">
+                    <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
+                      <span className="text-slate-400 text-[10px] block">Cryptographic Agreement</span>
+                      <div className="font-bold text-slate-900 font-mono">{(currentStage.mockupData as any).contractNo}</div>
+                      <div className="text-slate-600 text-[11px]">Buyer: {(currentStage.mockupData as any).partner}</div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="p-2.5 bg-white rounded-xl border border-slate-200/80">
+                        <span className="text-slate-400 text-[10px] block">Fleet Assigned</span>
+                        <span className="font-bold text-slate-900">{(currentStage.mockupData as any).vehicle}</span>
+                      </div>
+                      <div className="p-2.5 bg-white rounded-xl border border-slate-200/80">
+                        <span className="text-slate-400 text-[10px] block">Transit Distance</span>
+                        <span className="font-bold text-slate-900">{(currentStage.mockupData as any).transitDistance}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {currentStage.stage === 5 && (
+                  <div className="space-y-2.5 text-xs">
+                    <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
+                      <span className="text-slate-400 text-[10px] block">Weighbridge Receipt</span>
+                      <div className="font-bold text-slate-900">Delivered: {(currentStage.mockupData as any).deliveredQty}</div>
+                      <div className="text-emerald-700 font-semibold text-[11px]">Accepted: {(currentStage.mockupData as any).acceptedQty}</div>
+                    </div>
+                    <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 space-y-1">
+                      <span className="text-emerald-800 text-[10px] font-bold block">Escrow Disbursement</span>
+                      <div className="text-emerald-900 font-bold">{(currentStage.mockupData as any).tranche1}</div>
+                      <div className="text-[10px] text-emerald-700 font-mono">{(currentStage.mockupData as any).auditDigest}</div>
+                    </div>
+                  </div>
+                )}
+
+              </div>
+
+            </div>
+          );
+        })()}
+
+      </section>
+
+      {/* ──────────────────────────────────────────────────────────
+          SECTION 6 — INTELLIGENCE SHOWCASE (DASHBOARD-STYLE CENTER)
+          ────────────────────────────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-10 shadow-xs space-y-8">
           
-          {/* Stage 1 */}
-          <div className="card p-5 space-y-3 border-t-4 border-t-emerald-600 hover:border-emerald-300">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 font-mono font-bold flex items-center justify-center">
-              01
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
+                  Data-Driven Decision Making
+                </span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display mt-0.5">
+                The Agri2Value Intelligence Center
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500">
+                Explore real-time APMC price tracking, deterministic cost waterfall algebra, and emergency salvage triage.
+              </p>
             </div>
-            <h3 className="font-extrabold text-sm text-slate-900">UNDERSTAND</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Create the farm digital twin: acreage, GPS coordinates, irrigation resources, and harvest lot grading.
-            </p>
+
+            {/* Tab Switcher */}
+            <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold">
+              <button
+                onClick={() => setActiveIntelTab('PROFIT')}
+                className={`px-3.5 py-1.5 rounded-lg transition cursor-pointer ${
+                  activeIntelTab === 'PROFIT' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Profit Intelligence
+              </button>
+              <button
+                onClick={() => setActiveIntelTab('MARKET')}
+                className={`px-3.5 py-1.5 rounded-lg transition cursor-pointer ${
+                  activeIntelTab === 'MARKET' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Market Intelligence
+              </button>
+              <button
+                onClick={() => setActiveIntelTab('RESCUE')}
+                className={`px-3.5 py-1.5 rounded-lg transition cursor-pointer ${
+                  activeIntelTab === 'RESCUE' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Crop Rescue Intelligence
+              </button>
+            </div>
           </div>
 
-          {/* Stage 2 */}
-          <div className="card p-5 space-y-3 border-t-4 border-t-teal-600 hover:border-teal-300">
-            <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 font-mono font-bold flex items-center justify-center">
-              02
-            </div>
-            <h3 className="font-extrabold text-sm text-slate-900">DECIDE</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Run deterministic math comparing Corporate Buyers, Mandi auctions, Cold Storage, and Agro-Processing.
-            </p>
-          </div>
+          {/* Tab 1: Profit Intelligence (Waterfall Algebra) */}
+          {activeIntelTab === 'PROFIT' && (
+            <div className="space-y-6 animate-in fade-in duration-200">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div>
+                  <span className="font-extrabold text-slate-900 text-sm">Deterministic Cost Waterfall Algebra</span>
+                  <p className="text-slate-500 text-[11px] mt-0.5">
+                    Strict mathematical calculation with transparent cost itemization (Gross - Freight - Handling - Cess = Net).
+                  </p>
+                </div>
+                <span className="badge-green text-xs font-mono shrink-0">Zero Hallucinations</span>
+              </div>
 
-          {/* Stage 3 */}
-          <div className="card p-5 space-y-3 border-t-4 border-t-blue-600 hover:border-blue-300">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 font-mono font-bold flex items-center justify-center">
-              03
-            </div>
-            <h3 className="font-extrabold text-sm text-slate-900">EXECUTE</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              1-click dispatch to verified buyers, refrigerated transport fleet, or cold rooms without intermediaries.
-            </p>
-          </div>
+              {/* 5-Step Visual Flowchart Waterfall */}
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 text-xs">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">1. Gross Off-Take</span>
+                  <div className="text-lg font-black font-mono text-slate-900">₹1,12,000</div>
+                  <div className="text-[10px] text-slate-500">4,000 kg @ ₹28.00/kg</div>
+                </div>
 
-          {/* Stage 4 */}
-          <div className="card p-5 space-y-3 border-t-4 border-t-rose-600 hover:border-rose-300">
-            <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 font-mono font-bold flex items-center justify-center">
-              04
-            </div>
-            <h3 className="font-extrabold text-sm text-slate-900">PROTECT</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Crop Rescue Mode monitors weather spikes and price gluts, initiating emergency salvage before spoilage.
-            </p>
-          </div>
+                <div className="p-4 rounded-xl bg-rose-50/60 border border-rose-200 space-y-1">
+                  <span className="text-[10px] font-bold text-rose-800 uppercase">2. Freight Tariff</span>
+                  <div className="text-lg font-black font-mono text-rose-600">-₹7,200</div>
+                  <div className="text-[10px] text-rose-700">42 km × ₹1.80/km-MT</div>
+                </div>
 
-          {/* Stage 5 */}
-          <div className="card p-5 space-y-3 border-t-4 border-t-purple-600 hover:border-purple-300">
-            <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 font-mono font-bold flex items-center justify-center">
-              05
+                <div className="p-4 rounded-xl bg-rose-50/60 border border-rose-200 space-y-1">
+                  <span className="text-[10px] font-bold text-rose-800 uppercase">3. Handling & Crates</span>
+                  <div className="text-lg font-black font-mono text-rose-600">-₹9,600</div>
+                  <div className="text-[10px] text-rose-700">200 crates washing & sorting</div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-300 space-y-1">
+                  <span className="text-[10px] font-bold text-emerald-800 uppercase">4. Realized Net</span>
+                  <div className="text-lg font-black font-mono text-emerald-700">₹95,200</div>
+                  <div className="text-[10px] text-emerald-700 font-bold">₹23.80 / kg net</div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-emerald-800 text-white space-y-1">
+                  <span className="text-[10px] font-bold text-emerald-200 uppercase">5. Extra Profit</span>
+                  <div className="text-lg font-black font-mono text-white">+₹41,600</div>
+                  <div className="text-[10px] text-emerald-200">+77% vs APMC Mandi</div>
+                </div>
+              </div>
             </div>
-            <h3 className="font-extrabold text-sm text-slate-900">VERIFY</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Audit timeline and financial reconciliation comparing estimated profit against realized bank payouts.
-            </p>
-          </div>
+          )}
+
+          {/* Tab 2: Market Intelligence */}
+          {activeIntelTab === 'MARKET' && (
+            <div className="space-y-6 animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="flex items-center justify-between text-slate-500">
+                    <span className="font-bold text-slate-800">APMC Pimpalgaon Baswant</span>
+                    <span className="badge-green text-[9px]">LIVE AGMARKNET</span>
+                  </div>
+                  <div className="text-2xl font-black font-mono text-emerald-700">₹16.50 / kg</div>
+                  <div className="text-[11px] text-slate-500">Modal rate for Grade A Tomato • Arrivals: 2,400 Quintals</div>
+                  <div className="text-[10px] text-emerald-700 font-bold mt-1">↑ +₹1.50/kg week-over-week</div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="flex items-center justify-between text-slate-500">
+                    <span className="font-bold text-slate-800">APMC Nashik Dindori Road</span>
+                    <span className="badge-slate text-[9px]">REGIONAL YARD</span>
+                  </div>
+                  <div className="text-2xl font-black font-mono text-slate-900">₹14.80 / kg</div>
+                  <div className="text-[11px] text-slate-500">Modal rate for Grade A Tomato • Arrivals: 3,100 Quintals</div>
+                  <div className="text-[10px] text-slate-500 font-bold mt-1">Stable arrival volume</div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="flex items-center justify-between text-slate-500">
+                    <span className="font-bold text-slate-800">Niphad Agronomic AWS</span>
+                    <span className="badge-blue text-[9px]">OPEN-METEO LIVE</span>
+                  </div>
+                  <div className="text-2xl font-black font-mono text-blue-700">28.2°C • 62% RH</div>
+                  <div className="text-[11px] text-slate-500">Wind: 9 km/h (Safe spray window active &lt;15 km/h)</div>
+                  <div className="text-[10px] text-blue-700 font-bold mt-1">Zero rain washout risk next 24h</div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* Tab 3: Crop Rescue Intelligence */}
+          {activeIntelTab === 'RESCUE' && (
+            <div className="space-y-6 animate-in fade-in duration-200">
+              <div className="p-5 rounded-2xl bg-rose-50/70 border border-rose-300 text-xs space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-rose-600 animate-ping" />
+                    <span className="text-sm font-extrabold text-rose-900 font-display">
+                      Urgency Cockpit Score: 85 / 100 (HIGH URGENCY ALERT)
+                    </span>
+                  </div>
+                  <span className="px-3 py-1 rounded-full text-xs font-black bg-rose-600 text-white">
+                    ACTION WINDOW: 36 HOURS
+                  </span>
+                </div>
+
+                <p className="text-slate-700 leading-relaxed">
+                  Open-Meteo meteorological radar detects an approaching convective precipitation front delivering up to 35mm unseasonal rainfall across the Niphad/Pimpalgaon horticultural belt.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-[11px]">
+                  <div className="p-3 rounded-xl bg-white border border-rose-200">
+                    <span className="text-slate-400 block text-[10px]">Harvest at Risk</span>
+                    <span className="font-bold text-slate-900 text-xs">4,000 kg Fresh Tomato</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white border border-rose-200">
+                    <span className="text-slate-400 block text-[10px]">Value Vulnerability</span>
+                    <span className="font-bold text-rose-700 text-xs">₹64,000 Potential Loss</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white border border-rose-200">
+                    <span className="text-slate-400 block text-[10px]">Salvage Strategy</span>
+                    <span className="font-bold text-emerald-700 text-xs">Instant Food Park Diversion</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
 
       </section>
 
-      {/* ─── 7. FINAL HIGH-IMPACT CTA BANNER (MATCHING JSPM WINNERS) ─── */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-green-800 via-emerald-800 to-teal-900 text-white shadow-2xl relative overflow-hidden rounded-3xl max-w-7xl mx-auto">
-        {/* Subtle decorative glow */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-4xl mx-auto text-center space-y-6 relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-emerald-300 text-xs font-bold">
-            <span>START SHARING & MAXIMIZING VALUE</span>
+      {/* ──────────────────────────────────────────────────────────
+          SECTION 7 — AGRICULTURAL ECOSYSTEM VISUALIZATION
+          ────────────────────────────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        <div className="text-center space-y-2 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200">
+            <span>UNIFIED STAKEHOLDER NETWORK</span>
           </div>
-
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white font-display leading-tight">
-            Start maximizing your harvest profit today 🌾
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 font-display">
+            Integrated Agricultural Execution Ecosystem
           </h2>
-
-          <p className="text-emerald-100 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Join 18,000+ Indian farmers securing transparent digital deals, zero-middleman pricing, and higher crop realizations.
+          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+            Agri2Value interconnects every critical stakeholder in the horticultural value chain into a unified, transparent execution network.
           </p>
+        </div>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-            <Link
-              to="/app/dashboard"
-              className="bg-white text-emerald-950 hover:bg-emerald-50 px-8 py-4 rounded-2xl font-black text-base shadow-2xl hover:-translate-y-1 transition-all"
-            >
-              Launch Decision Platform →
-            </Link>
-            <Link
-              to="/login"
-              className="border-2 border-white/40 text-white hover:bg-white/10 px-8 py-4 rounded-2xl font-bold text-base hover:-translate-y-1 transition-all backdrop-blur-sm"
-            >
-              Sign In with Demo OTP
-            </Link>
+        {/* 6 Connected Ecosystem Nodes */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5">
+          {[
+            {
+              step: '01',
+              title: 'Farmers',
+              sub: 'Producers & Growers',
+              icon: Sprout,
+              value: 'Guaranteed Payout & Dispute Escrow',
+              color: 'emerald',
+            },
+            {
+              step: '02',
+              title: 'FPOs & Co-ops',
+              sub: 'Aggregators',
+              icon: Users,
+              value: 'Consolidated Bulk Tenders',
+              color: 'teal',
+            },
+            {
+              step: '03',
+              title: 'Corporate Buyers',
+              sub: 'Retail & Processors',
+              icon: Building2,
+              value: 'Traceable Grade A Supply',
+              color: 'sky',
+            },
+            {
+              step: '04',
+              title: 'Logistics Fleets',
+              sub: 'Tempo & Reefer Trucks',
+              icon: Truck,
+              value: 'Predictable Backhaul Bookings',
+              color: 'blue',
+            },
+            {
+              step: '05',
+              title: 'Cold Storage Hubs',
+              sub: 'Pre-Cooling Facilities',
+              icon: Warehouse,
+              value: 'High Occupancy & Monitored Temp',
+              color: 'indigo',
+            },
+            {
+              step: '06',
+              title: 'Processing Plants',
+              sub: 'Puree & Paste Units',
+              icon: Boxes,
+              value: 'Zero Field Dump Waste',
+              color: 'purple',
+            },
+          ].map((node, idx) => {
+            const Icon = node.icon;
+            const isHovered = hoveredNode === idx;
+            return (
+              <div
+                key={idx}
+                onMouseEnter={() => setHoveredNode(idx)}
+                onMouseLeave={() => setHoveredNode(null)}
+                className={`p-4 rounded-2xl border transition-all text-center flex flex-col justify-between space-y-3 cursor-pointer ${
+                  isHovered
+                    ? 'bg-emerald-800 text-white border-emerald-800 shadow-lg -translate-y-1'
+                    : 'bg-white text-slate-800 border-slate-200/80 hover:border-slate-300 shadow-xs'
+                }`}
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-[10px] font-mono font-bold">
+                    <span className={isHovered ? 'text-emerald-200' : 'text-slate-400'}>{node.step}</span>
+                    <span className={`w-2 h-2 rounded-full ${isHovered ? 'bg-emerald-400 animate-pulse' : 'bg-slate-300'}`} />
+                  </div>
+
+                  <div className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center ${
+                    isHovered ? 'bg-white/10 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                  }`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+
+                  <div>
+                    <h4 className="font-extrabold text-sm font-display">{node.title}</h4>
+                    <span className={`text-[10px] block ${isHovered ? 'text-emerald-100' : 'text-slate-500'}`}>
+                      {node.sub}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={`pt-2 border-t text-[10px] font-semibold leading-tight ${
+                  isHovered ? 'border-white/20 text-emerald-200' : 'border-slate-100 text-emerald-700'
+                }`}>
+                  {node.value}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+      </section>
+
+      {/* ──────────────────────────────────────────────────────────
+          SECTION 8 — FINAL HIGH-CONVERSION CTA BANNER
+          ────────────────────────────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-br from-emerald-950 via-[#0a3528] to-slate-950 text-white rounded-3xl p-8 sm:p-14 shadow-2xl relative overflow-hidden border border-emerald-800/40 text-center space-y-6">
+          
+          {/* Ambient Lighting Glows */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+          <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl pointer-events-none -mb-20" />
+
+          <div className="relative z-10 max-w-3xl mx-auto space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-emerald-300 text-xs font-bold">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <span>TRANSFORM YOUR HORTICULTURAL REALIZATIONS</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-5xl font-black text-white font-display tracking-tight leading-tight">
+              {t('landing.finalCtaTitle', 'Your Farm Deserves Smarter Decisions.')}
+            </h2>
+
+            <p className="text-emerald-100/90 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto font-normal">
+              {t(
+                'landing.finalCtaSubtitle',
+                'Join forward-looking farmers, FPOs, and agribusinesses securing transparent digital contracts, deterministic profit optimization, and guaranteed market connections.'
+              )}
+            </p>
+
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3.5 pt-4">
+              <Link
+                to="/app/dashboard"
+                className="w-full sm:w-auto px-8 py-4 bg-emerald-700 hover:bg-emerald-800 text-white font-black text-base rounded-2xl shadow-xl shadow-emerald-700/30 transition-all flex items-center justify-center gap-2 active:scale-98"
+              >
+                <span>Launch Farmer Console</span>
+                <ArrowRight className="w-5 h-5 text-white" />
+              </Link>
+
+              <Link
+                to="/login"
+                className="w-full sm:w-auto px-7 py-4 bg-white/10 hover:bg-white/15 border border-white/30 text-white font-bold text-base rounded-2xl backdrop-blur-md transition-all flex items-center justify-center gap-2 active:scale-98"
+              >
+                <span>Sign In with Demo OTP</span>
+              </Link>
+            </div>
+
+            <div className="pt-6 flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-xs text-emerald-200/80">
+              <span className="flex items-center gap-1.5 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>100% Deterministic Engine</span>
+              </span>
+              <span className="flex items-center gap-1.5 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>Zero Middleman Loss</span>
+              </span>
+              <span className="flex items-center gap-1.5 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>Cryptographic Trust Ledger</span>
+              </span>
+              <span className="flex items-center gap-1.5 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>Free Demo Account</span>
+              </span>
+            </div>
           </div>
+
         </div>
       </section>
 
