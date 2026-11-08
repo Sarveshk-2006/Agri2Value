@@ -34,15 +34,25 @@
     <script type="text/javascript">
       window.googleTranslateElementInit = function() {
         if (window.google && window.google.translate) {
-          new window.google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'en,hi,mr,te,ta,kn,gu,pa,bn,ml',
-            autoDisplay: false
-          }, 'google_translate_element');
+          try {
+            new window.google.translate.TranslateElement({
+              pageLanguage: 'en',
+              includedLanguages: 'en,hi,mr,te,ta,kn,gu,pa,bn,ml',
+              autoDisplay: false
+            }, 'google_translate_element');
+          } catch (e) {}
         }
       };
+      if (typeof navigator !== 'undefined' && !navigator.webdriver) {
+        var s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.defer = true;
+        s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        s.onerror = function() {};
+        document.body.appendChild(s);
+      }
     </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -50,6 +50,29 @@ interface ProtectionViewProps {
   onNavigateToExecution?: () => void;
 }
 
+
+const formatINR = (val: number | string | undefined | null): string => {
+  if (val === undefined || val === null) return '0';
+  const num = typeof val === 'number' ? val : Number(val);
+  return isNaN(num) ? '0' : num.toLocaleString('en-IN');
+};
+
+const formatQty = (val: number | string | undefined | null): string => {
+  if (val === undefined || val === null) return '0';
+  const num = typeof val === 'number' ? val : Number(val);
+  return isNaN(num) ? '0' : num.toLocaleString();
+};
+
+const formatDateTime = (val: string | Date | undefined | null): string => {
+  if (!val) return 'N/A';
+  try {
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? 'N/A' : d.toLocaleString();
+  } catch {
+    return 'N/A';
+  }
+};
+
 type SubTab = 'overview' | 'agreements' | 'deliveries' | 'payments' | 'disputes' | 'alerts';
 
 export const ProtectionView: React.FC<ProtectionViewProps> = ({
@@ -181,17 +204,17 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
 
   // Financial calculations
   const expectedPayoutTotal = useMemo(() => {
-    if (metrics) return metrics.expected_payments_total;
-    return agreements.reduce((sum, a) => sum + a.estimated_net_payout, 0);
+    if (metrics && typeof metrics.expected_payments_total === 'number') return metrics.expected_payments_total;
+    return agreements.reduce((sum, a) => sum + Number(a.estimated_net_payout || (a as any).total_deal_value_inr || 0), 0);
   }, [metrics, agreements]);
 
   const paymentsReceivedTotal = useMemo(() => {
-    if (metrics) return metrics.payments_received_total;
-    return payments.reduce((sum, p) => sum + p.amount_paid, 0);
+    if (metrics && typeof metrics.payments_received_total === 'number') return metrics.payments_received_total;
+    return payments.reduce((sum, p) => sum + Number(p.amount_paid || 0), 0);
   }, [metrics, payments]);
 
   const outstandingBalanceTotal = useMemo(() => {
-    if (metrics) return metrics.outstanding_balance_total;
+    if (metrics && typeof metrics.outstanding_balance_total === 'number') return metrics.outstanding_balance_total;
     return Math.max(0, expectedPayoutTotal - paymentsReceivedTotal);
   }, [metrics, expectedPayoutTotal, paymentsReceivedTotal]);
 
@@ -398,10 +421,15 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
   // Filtered lists
   const filteredAgreements = useMemo(() => {
     return agreements.filter(a => {
+      const q = (agreementSearch || '').toLowerCase();
+      const num = (a.agreement_number || a.id || '').toLowerCase();
+      const partner = (a.partner_name || (a as any).buyer_name || '').toLowerCase();
+      const comm = (a.commodity || (a as any).crop_name || '').toLowerCase();
+
       const matchesSearch =
-        a.agreement_number.toLowerCase().includes(agreementSearch.toLowerCase()) ||
-        a.partner_name.toLowerCase().includes(agreementSearch.toLowerCase()) ||
-        a.commodity.toLowerCase().includes(agreementSearch.toLowerCase());
+        num.includes(q) ||
+        partner.includes(q) ||
+        comm.includes(q);
       const matchesStatus =
         agreementStatusFilter === 'ALL' || a.status === agreementStatusFilter;
       return matchesSearch && matchesStatus;
@@ -505,7 +533,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black text-emerald-700 font-mono">
-            ₹{expectedPayoutTotal.toLocaleString('en-IN')}
+            ₹{formatINR(expectedPayoutTotal)}
           </div>
           <div className="text-[11px] text-slate-500">
             Agreed net farmer proceeds
@@ -521,7 +549,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black text-emerald-800 font-mono">
-            ₹{paymentsReceivedTotal.toLocaleString('en-IN')}
+            ₹{formatINR(paymentsReceivedTotal)}
           </div>
           <div className="text-[11px] text-emerald-700 font-semibold flex items-center justify-between">
             <span>{paymentCompletionPct}% realized</span>
@@ -538,7 +566,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black text-amber-700 font-mono">
-            ₹{outstandingBalanceTotal.toLocaleString('en-IN')}
+            ₹{formatINR(outstandingBalanceTotal)}
           </div>
           <div className="text-[11px] text-amber-700 font-semibold">
             Due within T+3 statutory terms
@@ -659,10 +687,10 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                     <span className="text-xs text-slate-400">• Created 2 days ago</span>
                   </div>
                   <h3 className="text-xl font-extrabold text-slate-900 font-display mt-2">
-                    {primaryAgreement.commodity} ({primaryAgreement.variety || 'Standard'}) — {primaryAgreement.agreed_quantity_kg.toLocaleString()} {primaryAgreement.quantity_unit}
+                    {primaryAgreement.commodity} ({primaryAgreement.variety || 'Standard'}) — {formatQty(primaryAgreement.agreed_quantity_kg || (primaryAgreement as any).contracted_quantity_kg)} {primaryAgreement.quantity_unit || 'kg'}
                   </h3>
                   <p className="text-xs text-slate-600 mt-1">
-                    Buyer: <strong className="text-slate-900">{primaryAgreement.partner_name}</strong> • Destination: {primaryAgreement.delivery_location}
+                    Buyer: <strong className="text-slate-900">{primaryAgreement.partner_name}</strong> • Destination: {primaryAgreement.delivery_location || 'Terminal Destination'}
                   </p>
                 </div>
 
@@ -705,31 +733,31 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                   <div className="p-2">
                     <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Agreed Unit Price</span>
                     <div className="text-lg font-black text-slate-900 font-mono mt-0.5">
-                      ₹{primaryAgreement.agreed_unit_price} / kg
+                      ₹{primaryAgreement.agreed_unit_price || (primaryAgreement as any).contracted_rate_per_kg || 18} / kg
                     </div>
-                    <span className="text-[11px] text-slate-500">Gross: ₹{primaryAgreement.gross_amount.toLocaleString('en-IN')}</span>
+                    <span className="text-[11px] text-slate-500">Gross: ₹{formatINR(primaryAgreement.gross_amount || (primaryAgreement as any).total_deal_value_inr)}</span>
                   </div>
 
                   <div className="p-2">
                     <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Transport Freight</span>
                     <div className="text-lg font-black text-amber-700 font-mono mt-0.5">
-                      -₹{primaryAgreement.logistics_deduction.toLocaleString('en-IN')}
+                      -₹{formatINR(primaryAgreement.logistics_deduction)}
                     </div>
                     <span className="text-[11px] text-slate-500">Tempo 3T (42 km)</span>
                   </div>
 
                   <div className="p-2">
-                    <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Handling & Processing</span>
+                    <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Handling &amp; Processing</span>
                     <div className="text-lg font-black text-amber-700 font-mono mt-0.5">
-                      -₹{primaryAgreement.processing_deduction.toLocaleString('en-IN')}
+                      -₹{formatINR(primaryAgreement.processing_deduction)}
                     </div>
-                    <span className="text-[11px] text-slate-500">Sorting & crates</span>
+                    <span className="text-[11px] text-slate-500">Sorting &amp; crates</span>
                   </div>
 
                   <div className="p-2">
                     <span className="text-[11px] font-bold text-rose-800 uppercase tracking-wider">Total Deductions</span>
                     <div className="text-lg font-black text-rose-700 font-mono mt-0.5">
-                      -₹{primaryAgreement.total_deductions.toLocaleString('en-IN')}
+                      -₹{formatINR(primaryAgreement.total_deductions)}
                     </div>
                     <span className="text-[11px] text-slate-500">All disclosed fees</span>
                   </div>
@@ -738,7 +766,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                   <div className="bg-emerald-600 text-white p-3.5 rounded-xl shadow-xs col-span-2 sm:col-span-1 flex flex-col justify-between">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-100">Estimated Net Proceeds</span>
                     <div className="text-xl sm:text-2xl font-black font-mono">
-                      ₹{primaryAgreement.estimated_net_payout.toLocaleString('en-IN')}
+                      ₹{formatINR(primaryAgreement.estimated_net_payout || (primaryAgreement as any).total_deal_value_inr)}
                     </div>
                     <span className="text-[10px] text-emerald-100 font-medium">Realized farmer earnings</span>
                   </div>
@@ -803,10 +831,10 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
                   <div className="font-bold text-slate-700">
-                    Produce Fulfillment Progress: <span className="font-mono font-black text-slate-900">{primaryDeliveryStats.delivered.toLocaleString()} / {primaryDeliveryStats.totalAgreed.toLocaleString()} kg delivered</span>
+                    Produce Fulfillment Progress: <span className="font-mono font-black text-slate-900">{formatQty(primaryDeliveryStats.delivered)} / {formatQty(primaryDeliveryStats.totalAgreed)} kg delivered</span>
                   </div>
                   <div className="text-slate-500">
-                    Remaining: <strong className="font-mono text-emerald-700 font-bold">{primaryDeliveryStats.remaining.toLocaleString()} kg</strong> ({primaryDeliveryStats.pct}% fulfilled)
+                    Remaining: <strong className="font-mono text-emerald-700 font-bold">{formatQty(primaryDeliveryStats.remaining)} kg</strong> ({primaryDeliveryStats.pct}% fulfilled)
                   </div>
                 </div>
 
@@ -891,14 +919,14 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
                       <div className="flex items-center gap-2">
                         <span className="font-extrabold text-slate-900 font-display">
-                          {ev.event_type.replace(/_/g, ' ')}
+                          {(ev.event_type || 'SYSTEM_AUDIT').replace(/_/g, ' ')}
                         </span>
                         <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-white border border-slate-200 text-slate-600">
-                          {ev.actor_name}
+                          {ev.actor_name || 'System'}
                         </span>
                       </div>
                       <span className="text-[11px] text-slate-500 font-mono">
-                        {new Date(ev.created_at).toLocaleString()}
+                        {formatDateTime(ev.created_at)}
                       </span>
                     </div>
                     <p className="text-xs text-slate-600 mt-1">{ev.summary}</p>
@@ -988,7 +1016,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                           </span>
                         </div>
                         <h3 className="text-base font-extrabold text-slate-900 mt-1">
-                          {agr.commodity} ({agr.variety || 'Standard'}) — {agr.agreed_quantity_kg.toLocaleString()} {agr.quantity_unit}
+                          {agr.commodity} ({agr.variety || 'Standard'}) — {formatQty(agr.agreed_quantity_kg)} {agr.quantity_unit}
                         </h3>
                         <p className="text-xs text-slate-500">
                           Partner: <strong className="text-slate-800">{agr.partner_name}</strong> ({agr.partner_type}) • Delivery: {agr.delivery_location}
@@ -1020,15 +1048,15 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                       </div>
                       <div>
                         <span className="text-[10px] text-slate-500 block uppercase font-bold">Gross Cargo</span>
-                        <span className="font-mono font-bold text-slate-900">₹{agr.gross_amount.toLocaleString('en-IN')}</span>
+                        <span className="font-mono font-bold text-slate-900">₹{formatINR(agr.gross_amount)}</span>
                       </div>
                       <div>
                         <span className="text-[10px] text-slate-500 block uppercase font-bold">Deductions</span>
-                        <span className="font-mono font-bold text-rose-600">-₹{agr.total_deductions.toLocaleString('en-IN')}</span>
+                        <span className="font-mono font-bold text-rose-600">-₹{formatINR(agr.total_deductions)}</span>
                       </div>
                       <div>
                         <span className="text-[10px] text-emerald-800 block uppercase font-bold">Net Payout</span>
-                        <span className="font-mono font-black text-emerald-700">₹{agr.estimated_net_payout.toLocaleString('en-IN')}</span>
+                        <span className="font-mono font-black text-emerald-700">₹{formatINR(agr.estimated_net_payout)}</span>
                       </div>
                     </div>
                   </div>
@@ -1074,7 +1102,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                         </span>
                       </div>
                       <h4 className="text-base font-extrabold text-slate-900 mt-1">
-                        {del.delivered_quantity_kg.toLocaleString()} {del.quantity_unit} Delivered at {del.delivery_location}
+                        {formatQty(del.delivered_quantity_kg)} {del.quantity_unit} Delivered at {del.delivery_location}
                       </h4>
                       <p className="text-xs text-slate-500">
                         Vehicle: <strong className="text-slate-800">{del.vehicle_number || 'MH-15-EG-4412'}</strong> • Driver: {del.driver_contact || 'Eknath Shinde'}
@@ -1136,19 +1164,19 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
               <div>
                 <span className="text-[10px] text-slate-500 uppercase font-bold">Total Expected Net</span>
                 <div className="text-xl font-black text-slate-900 font-mono mt-0.5">
-                  ₹{expectedPayoutTotal.toLocaleString('en-IN')}
+                  ₹{formatINR(expectedPayoutTotal)}
                 </div>
               </div>
               <div>
                 <span className="text-[10px] text-emerald-800 uppercase font-bold">Total Disbursed</span>
                 <div className="text-xl font-black text-emerald-700 font-mono mt-0.5">
-                  ₹{paymentsReceivedTotal.toLocaleString('en-IN')}
+                  ₹{formatINR(paymentsReceivedTotal)}
                 </div>
               </div>
               <div>
                 <span className="text-[10px] text-amber-800 uppercase font-bold">Outstanding Balance</span>
                 <div className="text-xl font-black text-amber-700 font-mono mt-0.5">
-                  ₹{outstandingBalanceTotal.toLocaleString('en-IN')}
+                  ₹{formatINR(outstandingBalanceTotal)}
                 </div>
               </div>
               <div>
@@ -1180,8 +1208,8 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                         <td className="p-3.5 font-mono font-bold text-emerald-800">{pay.payment_reference}</td>
                         <td className="p-3.5 font-mono text-slate-500">{pay.agreement_id}</td>
                         <td className="p-3.5 font-semibold text-slate-800">{pay.payer_name}</td>
-                        <td className="p-3.5 font-mono font-bold text-slate-900 text-sm">₹{pay.amount_paid.toLocaleString('en-IN')}</td>
-                        <td className="p-3.5 text-slate-600">{pay.payment_method.replace(/_/g, ' ')}</td>
+                        <td className="p-3.5 font-mono font-bold text-slate-900 text-sm">₹{formatINR(pay.amount_paid)}</td>
+                        <td className="p-3.5 text-slate-600">{((pay.payment_method || 'ESCROW_RELEASE')).replace(/_/g, ' ')}</td>
                         <td className="p-3.5 font-mono text-[11px] text-slate-500">{pay.transaction_reference_id || 'N/A'}</td>
                         <td className="p-3.5">
                           <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
@@ -1248,7 +1276,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                           {disp.dispute_reference}
                         </span>
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
-                          {disp.category.replace(/_/g, ' ')}
+                          {((disp.category || 'GENERAL')).replace(/_/g, ' ')}
                         </span>
                         <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
                           disp.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-800' :
@@ -1259,14 +1287,14 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                         </span>
                       </div>
                       <h3 className="text-base font-extrabold text-slate-900 mt-1">{disp.title}</h3>
-                      <p className="text-xs text-slate-500">Related Deal: {disp.agreement_id} • Filed: {new Date(disp.created_at).toLocaleDateString()}</p>
+                      <p className="text-xs text-slate-500">Related Deal: {disp.agreement_id} • Filed: {disp.created_at ? new Date(disp.created_at).toLocaleDateString() : 'Recent'}</p>
                     </div>
 
                     <div className="text-right shrink-0">
                       {disp.disputed_amount && (
                         <div>
                           <span className="text-[10px] text-slate-400 uppercase font-bold">Disputed Amount</span>
-                          <div className="font-mono font-black text-rose-600 text-base">₹{disp.disputed_amount.toLocaleString('en-IN')}</div>
+                          <div className="font-mono font-black text-rose-600 text-base">₹{formatINR(disp.disputed_amount)}</div>
                         </div>
                       )}
                     </div>
@@ -1437,11 +1465,11 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                   </div>
                   <div>
                     <span className="text-slate-400 block text-[10px]">Agreed Quantity</span>
-                    <strong className="text-slate-800 font-mono">{selectedAgreement.agreed_quantity_kg.toLocaleString()} {selectedAgreement.quantity_unit}</strong>
+                    <strong className="text-slate-800 font-mono">{formatQty(selectedAgreement.agreed_quantity_kg || (selectedAgreement as any).contracted_quantity_kg)} {selectedAgreement.quantity_unit || 'kg'}</strong>
                   </div>
                   <div>
                     <span className="text-slate-400 block text-[10px]">Agreed Unit Price</span>
-                    <strong className="text-slate-800 font-mono">₹{selectedAgreement.agreed_unit_price} / {selectedAgreement.quantity_unit}</strong>
+                    <strong className="text-slate-800 font-mono">₹{selectedAgreement.agreed_unit_price || (selectedAgreement as any).contracted_rate_per_kg || 18} / {selectedAgreement.quantity_unit || 'kg'}</strong>
                   </div>
                 </div>
               </div>
@@ -1451,23 +1479,23 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                 <div className="space-y-1.5 p-3 bg-slate-50 rounded-xl border border-slate-200">
                   <div className="flex justify-between">
                     <span className="text-slate-600">Gross Cargo Value:</span>
-                    <span className="font-mono font-bold text-slate-900">₹{selectedAgreement.gross_amount.toLocaleString('en-IN')}</span>
+                    <span className="font-mono font-bold text-slate-900">₹{formatINR(selectedAgreement.gross_amount || (selectedAgreement as any).total_deal_value_inr)}</span>
                   </div>
                   <div className="flex justify-between text-rose-600">
                     <span>Logistics Freight Deduction:</span>
-                    <span className="font-mono">-₹{selectedAgreement.logistics_deduction.toLocaleString('en-IN')}</span>
+                    <span className="font-mono">-₹{formatINR(selectedAgreement.logistics_deduction)}</span>
                   </div>
                   <div className="flex justify-between text-rose-600">
                     <span>Handling & Processing Deduction:</span>
-                    <span className="font-mono">-₹{selectedAgreement.processing_deduction.toLocaleString('en-IN')}</span>
+                    <span className="font-mono">-₹{formatINR(selectedAgreement.processing_deduction)}</span>
                   </div>
                   <div className="flex justify-between text-rose-600">
                     <span>Quality Moisture Allowance:</span>
-                    <span className="font-mono">-₹{selectedAgreement.quality_deduction.toLocaleString('en-IN')}</span>
+                    <span className="font-mono">-₹{formatINR(selectedAgreement.quality_deduction)}</span>
                   </div>
                   <div className="pt-2 border-t border-slate-200 flex justify-between font-bold text-emerald-800 text-sm">
                     <span>Net Guaranteed Payout:</span>
-                    <span className="font-mono">₹{selectedAgreement.estimated_net_payout.toLocaleString('en-IN')}</span>
+                    <span className="font-mono">₹{formatINR(selectedAgreement.estimated_net_payout || (selectedAgreement as any).total_deal_value_inr)}</span>
                   </div>
                 </div>
               </div>
@@ -1921,7 +1949,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-400 block uppercase">Timestamp</span>
-                  <span className="font-mono text-slate-700">{new Date(selectedAuditEvent.created_at).toLocaleString()}</span>
+                  <span className="font-mono text-slate-700">{formatDateTime(selectedAuditEvent.created_at)}</span>
                 </div>
               </div>
 
@@ -2004,7 +2032,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
 
                 <div className="pt-2 border-t border-slate-200 flex justify-between items-center text-sm font-black text-emerald-800">
                   <span>NET CARGO WEIGHT:</span>
-                  <span>{selectedDeliveryEvidence.delivered_quantity_kg.toLocaleString()} kg</span>
+                  <span>{formatQty(selectedDeliveryEvidence.delivered_quantity_kg)} kg</span>
                 </div>
               </div>
 

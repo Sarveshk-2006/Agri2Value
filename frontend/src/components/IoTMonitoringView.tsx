@@ -1186,7 +1186,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
                     analyticsMetric === m ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  {m === 'ALL' ? 'Multi-Axis' : m.replace('_', ' ')}
+                  {m === 'ALL' ? 'Multi-Axis' : (m || '').replace('_', ' ')}
                 </button>
               ))}
             </div>
@@ -1486,7 +1486,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-mono font-bold text-slate-900 uppercase">
-                      {alert.alert_type.replace(/_/g, ' ')}
+                      {(alert.alert_type || (alert as any).type || 'ALERT').replace(/_/g, ' ')}
                     </span>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                       alert.is_resolved

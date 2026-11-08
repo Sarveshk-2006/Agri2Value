@@ -144,7 +144,7 @@ export const ColdStorageMap: React.FC<ColdStorageMapProps> = ({
           <div style="background: #f8fafc; border-radius: 8px; padding: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
               <span style="color: #64748b;">Available Space:</span>
-              <strong style="color: #0f172a;">${(facility.available_capacity_kg / 1000).toLocaleString()} MT</strong>
+              <strong style="color: #0f172a;">${Math.round((facility.available_capacity_kg || 0) / 1000).toLocaleString()} MT</strong>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
               <span style="color: #64748b;">Monthly Rate:</span>

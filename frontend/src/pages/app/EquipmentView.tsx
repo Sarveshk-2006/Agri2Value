@@ -60,7 +60,7 @@ const INITIAL_EQUIPMENT: EquipmentItem[] = [
     ownerPhone: '+91 94220 89123',
     rating: 5.0,
     hpRating: '50 HP • 4WD Heavy Duty',
-    imageUrl: 'https://images.unsplash.com/photo-1592982537447-6f23dbdc7e90?auto=format&fit=crop&w=800&q=75',
+    imageUrl: tractorsImg,
     description: 'High-torque 4WD tractor suitable for deep tillage, heavy trailers, and sugarcane harvesting haulage.',
     isAvailable: true,
     fuelType: 'Diesel'
@@ -129,7 +129,7 @@ const INITIAL_EQUIPMENT: EquipmentItem[] = [
     ownerPhone: '+91 98601 45892',
     rating: 4.9,
     hpRating: '500L Tank • 24ft Hydraulic Boom',
-    imageUrl: 'https://images.unsplash.com/photo-1592982537447-6f23dbdc7e90?auto=format&fit=crop&w=800&q=75',
+    imageUrl: tractorsImg,
     description: 'Precision Italian anti-drift nozzles for grape vineyards and tomato beds. Uniform droplet deposition.',
     isAvailable: true,
     fuelType: 'PTO Driven'
@@ -374,6 +374,9 @@ export const EquipmentView: React.FC = () => {
                 <img
                   src={eq.imageUrl || tractorsImg}
                   alt={eq.name}
+                  onError={(e) => {
+                    e.currentTarget.src = tractorsImg;
+                  }}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
 

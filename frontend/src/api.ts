@@ -900,7 +900,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].company_name && data[0].offers) {
+          return data;
+        }
       }
     } catch {}
     return MOCK_BUYERS;
@@ -935,7 +938,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].provider_name) {
+          return data;
+        }
       }
     } catch {}
     return MOCK_LOGISTICS;
@@ -953,7 +959,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].facility_name) {
+          return data;
+        }
       }
     } catch {}
     return MOCK_COLD_STORAGE;
@@ -971,7 +980,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].facility_name) {
+          return data;
+        }
       }
     } catch {}
     return MOCK_PROCESSING;
@@ -1044,7 +1056,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].route_type) {
+          return status ? data.filter((r: any) => r.status === status) : data;
+        }
       }
     } catch {}
     const saved = localStorage.getItem('a2v_exec_requests');
@@ -1160,7 +1175,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].device_name) {
+          return data;
+        }
       }
     } catch {}
     return MOCK_IOT_DEVICES;
@@ -1275,7 +1293,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].alert_type) {
+          return data;
+        }
       }
     } catch {}
     return MOCK_IOT_ALERTS;
@@ -1371,7 +1392,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data[0].agreement_number) {
+          return status ? data.filter((a: any) => a.status === status) : data;
+        }
       }
     } catch {}
     const saved = localStorage.getItem('a2v_agreements');

@@ -432,47 +432,263 @@ export default function handler(req, res) {
   // ==========================================
   if (url.includes('/execution/buyers')) {
     return res.status(200).json([
-      { id: 'b-1', name: 'Reliance Retail Ltd', type: 'RETAIL_CHAIN', city: 'Nashik', state: 'Maharashtra', verified: true, payment_terms_days: 3, rating: 4.8 },
-      { id: 'b-2', name: 'Sahyadri Farmers Producer Co.', type: 'FPC', city: 'Mohadi', state: 'Maharashtra', verified: true, payment_terms_days: 2, rating: 4.9 },
-      { id: 'b-3', name: 'Kisan Fresh Agro Mandi', type: 'AGGREGATOR', city: 'Pune', state: 'Maharashtra', verified: true, payment_terms_days: 5, rating: 4.6 }
+      {
+        id: 'buyer-sahyadri-1',
+        company_name: 'Sahyadri Agro Processing Co-op',
+        contact_person: 'Vilas Shinde (Procurement Director)',
+        phone: '9822123456',
+        email: 'procurement@sahyadrifarms.com',
+        district: 'Nashik',
+        state: 'Maharashtra',
+        address: 'Post Mohadi, Taluka Dindori, Nashik 422206',
+        buyer_type: 'PROCESSOR',
+        service_radius_km: 120,
+        is_verified: true,
+        verification_badge: 'VERIFIED_COOPERATIVE',
+        rating: 4.9,
+        data_mode: 'demo',
+        offers: [
+          {
+            id: 'offer-sahyadri-tomato-1',
+            buyer_id: 'buyer-sahyadri-1',
+            commodity: 'Tomato',
+            variety: 'Abhinav / Red Pulp Grade',
+            quality_grade: 'A',
+            offered_price_per_kg: 18.00,
+            min_quantity_kg: 2000,
+            max_quantity_kg: 20000,
+            payment_terms_days: 3,
+            delivery_location: 'Sahyadri Food Park, Gate 3, Mohadi',
+          }
+        ]
+      },
+      {
+        id: 'buyer-reliance-2',
+        company_name: 'Reliance Fresh Institutional Sourcing',
+        contact_person: 'Sunil Kulkarni (Zonal Sourcing Manager)',
+        phone: '9890123456',
+        email: 'agro.orders@ril.com',
+        district: 'Mumbai',
+        state: 'Maharashtra',
+        address: 'Sector 19, APMC Vashi Terminal, Navi Mumbai 400703',
+        buyer_type: 'RETAIL_CHAIN',
+        service_radius_km: 250,
+        is_verified: true,
+        verification_badge: 'CORPORATE_ESCROW',
+        rating: 4.8,
+        data_mode: 'demo',
+        offers: [
+          {
+            id: 'offer-reliance-tomato-2',
+            buyer_id: 'buyer-reliance-2',
+            commodity: 'Tomato',
+            variety: 'Table Fresh Firm Red',
+            quality_grade: 'A',
+            offered_price_per_kg: 17.00,
+            min_quantity_kg: 2000,
+            max_quantity_kg: 15000,
+            payment_terms_days: 5,
+            delivery_location: 'Reliance Fresh Central DC, Nashik Highway',
+          }
+        ]
+      }
     ]);
   }
 
   if (url.includes('/execution/buyer-offers')) {
     return res.status(200).json([
-      { id: 'off-1', buyer_id: 'b-2', crop_name: 'Tomato', variety: 'Abhinav', grade: 'A', price_per_kg: 18.00, min_quantity_kg: 2000, max_quantity_kg: 10000, delivery_location: 'Sahyadri Food Park, Mohadi', validity_date: new Date(Date.now() + 86400000).toISOString() }
+      {
+        id: 'offer-sahyadri-tomato-1',
+        buyer_id: 'buyer-sahyadri-1',
+        commodity: 'Tomato',
+        variety: 'Abhinav / Red Pulp Grade',
+        quality_grade: 'A',
+        offered_price_per_kg: 18.00,
+        min_quantity_kg: 2000,
+        max_quantity_kg: 20000,
+        payment_terms_days: 3,
+        delivery_location: 'Sahyadri Food Park, Gate 3, Mohadi',
+      }
     ]);
   }
 
   if (url.includes('/execution/logistics')) {
     return res.status(200).json([
-      { id: 'log-1', provider_name: 'Krishi Cold Chain Express', vehicle_type: 'Reefer Van 2.5 MT', cost_per_km: 18.0, rating: 4.9, available: true },
-      { id: 'log-2', provider_name: 'Nashik Agro Haulers', vehicle_type: 'Open Canopy Pickup 1.5 MT', cost_per_km: 14.0, rating: 4.7, available: true }
+      {
+        id: 'log-reefer-1',
+        provider_name: 'Krishi Cold Chain Express',
+        contact_person: 'Ganesh Shinde',
+        phone: '9822345678',
+        vehicle_type: 'Reefer Van 2.5 MT',
+        registration_number: 'MH-15-EG-4412',
+        max_capacity_kg: 2500,
+        temperature_controlled: true,
+        base_district: 'Nashik',
+        service_districts: 'Nashik, Pune, Mumbai, Ahmednagar',
+        rate_per_km_inr: 18.0,
+        is_available: true,
+        rating: 4.9,
+      },
+      {
+        id: 'log-pickup-2',
+        provider_name: 'Nashik Agro Haulers',
+        contact_person: 'Sachin Patil',
+        phone: '9860123456',
+        vehicle_type: 'Open Canopy Pickup 1.5 MT',
+        registration_number: 'MH-15-AB-9921',
+        max_capacity_kg: 1500,
+        temperature_controlled: false,
+        base_district: 'Nashik',
+        service_districts: 'Nashik, Pimpalgaon, Lasalgaon',
+        rate_per_km_inr: 14.0,
+        is_available: true,
+        rating: 4.7,
+      }
     ]);
   }
 
   if (url.includes('/execution/cold-storage')) {
     return res.status(200).json([
-      { id: 'cs-1', name: 'MSWC Controlled Atmosphere Cold Warehouse', distance_km: 12.4, daily_rate_per_kg: 0.18, available_capacity_mt: 180, temp_range: '4°C - 8°C' },
-      { id: 'cs-2', name: 'Pimpalgaon Agro Cooling Unit', distance_km: 6.2, daily_rate_per_kg: 0.20, available_capacity_mt: 75, temp_range: '5°C - 10°C' }
+      {
+        id: 'cs-krishna',
+        facility_name: 'Shri Krishna Cold Storage',
+        contact_phone: '+91 98765 43210',
+        location_district: 'Pune',
+        location_taluka: 'Shukrawar Peth',
+        compatible_commodities: 'Fruits, Vegetables',
+        total_capacity_kg: 5000000,
+        available_capacity_kg: 1200000,
+        storage_rate_per_kg_per_month: 15,
+        pricing_unit: 'INR/kg/month',
+        min_holding_days: 5,
+        max_holding_days: 60,
+        temperature_range_celsius: '2°C to 8°C',
+        humidity_range_pct: '85% to 92%',
+        availability_status: 'AVAILABLE',
+        data_mode: 'live_synced',
+        created_at: new Date().toISOString(),
+        latitude: 18.5089,
+        longitude: 73.8540,
+        verified: true,
+        distance_km: 2.4,
+      },
+      {
+        id: 'cs-pioneer',
+        facility_name: 'Pioneer Agro Cooling',
+        contact_phone: '+91 88888 77777',
+        location_district: 'Pune',
+        location_taluka: 'Khadki',
+        compatible_commodities: 'Vegetables, Dairy',
+        total_capacity_kg: 3000000,
+        available_capacity_kg: 450000,
+        storage_rate_per_kg_per_month: 12,
+        pricing_unit: 'INR/kg/month',
+        min_holding_days: 3,
+        max_holding_days: 45,
+        temperature_range_celsius: '0°C to 6°C',
+        humidity_range_pct: '88% to 95%',
+        availability_status: 'AVAILABLE',
+        data_mode: 'live_synced',
+        created_at: new Date().toISOString(),
+        latitude: 18.5520,
+        longitude: 73.8340,
+        verified: true,
+        distance_km: 2.4,
+      },
+      {
+        id: 'cs-janta',
+        facility_name: 'Janta Cold House',
+        contact_phone: '+91 77777 66666',
+        location_district: 'Pune',
+        location_taluka: 'Yerawada',
+        compatible_commodities: 'Fruits',
+        total_capacity_kg: 10000000,
+        available_capacity_kg: 0,
+        storage_rate_per_kg_per_month: 18,
+        pricing_unit: 'INR/kg/month',
+        min_holding_days: 7,
+        max_holding_days: 30,
+        temperature_range_celsius: '-2°C to 4°C',
+        humidity_range_pct: '82% to 90%',
+        availability_status: 'FULL',
+        data_mode: 'live_synced',
+        created_at: new Date().toISOString(),
+        latitude: 18.5529,
+        longitude: 73.8828,
+        verified: true,
+        distance_km: 2.4,
+      },
+      {
+        id: 'cs-ecofresh',
+        facility_name: 'Eco-Fresh Solutions',
+        contact_phone: '+91 99999 00000',
+        location_district: 'Pune',
+        location_taluka: 'Erandwane',
+        compatible_commodities: 'Dairy, Fruits, Vegetables',
+        total_capacity_kg: 4500000,
+        available_capacity_kg: 2800000,
+        storage_rate_per_kg_per_month: 14,
+        pricing_unit: 'INR/kg/month',
+        min_holding_days: 5,
+        max_holding_days: 90,
+        temperature_range_celsius: '1°C to 7°C',
+        humidity_range_pct: '90% to 95%',
+        availability_status: 'AVAILABLE',
+        data_mode: 'live_synced',
+        created_at: new Date().toISOString(),
+        latitude: 18.4980,
+        longitude: 73.8290,
+        verified: true,
+        distance_km: 2.4,
+      }
     ]);
   }
 
   if (url.includes('/execution/processing')) {
     return res.status(200).json([
-      { id: 'proc-1', name: 'Sahyadri Puree & Pulp Processing Unit', distance_km: 14.0, processing_cost_per_kg: 1.2, accepted_grades: ['A', 'B'], turnaround_days: 2 }
+      {
+        id: 'proc-sahyadri-1',
+        facility_name: 'Sahyadri Puree & Pulp Processing Unit',
+        operator_name: 'Sahyadri Farmers Producer Co.',
+        phone: '0253-2555000',
+        location_district: 'Nashik',
+        location_taluka: 'Dindori',
+        address: 'Sahyadri Agro Park, Mohadi',
+        accepted_commodities: 'Tomato, Mango, Guava, Grapes',
+        output_product_name: 'Aseptic Tomato Puree & Pulp (28 Brix)',
+        conversion_ratio_pct: 92.5,
+        processing_charge_per_kg: 1.20,
+        min_batch_size_kg: 2000,
+        payment_turnaround_days: 3,
+        rating: 4.9,
+      }
     ]);
   }
 
   if (url.includes('/execution/requests')) {
     const demoReq = {
-      id: 'req-' + Date.now(),
+      id: 'exec-canonical-001',
+      farmer_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
       crop_lot_id: body.crop_lot_id || 'db92a8cd-c22f-4685-9f2e-9df926b88302',
-      pathway_type: body.pathway_type || 'PROCESSING',
+      decision_run_id: 'drun-canonical-001',
+      route_type: body.route_type || body.pathway_type || 'PROCESSING',
       status: 'CONFIRMED',
-      logistics_booking_id: 'lb-9921',
-      counterparty_name: 'Sahyadri Farmers Producer Co.',
-      created_at: new Date().toISOString()
+      target_partner_name: 'Sahyadri Farmers Producer Co.',
+      requested_quantity_kg: body.requested_quantity_kg || 4000,
+      indicative_unit_price: 18.00,
+      indicative_total_value: 72000,
+      indicative_logistics_cost: 1800,
+      indicative_storage_cost: 0,
+      indicative_processing_cost: 200,
+      indicative_net_payout: 70000,
+      pickup_location: 'Patil Krishi Farm, Gate 2, Niphad',
+      delivery_location: 'Sahyadri Food Park, Mohadi, Nashik',
+      scheduled_date: new Date().toISOString(),
+      notes: '4,000 kg Summer Tomato harvest for paste processing',
+      data_mode: 'demo',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      events: []
     };
     if (req.method === 'POST') {
       return res.status(201).json(demoReq);
@@ -503,11 +719,16 @@ export default function handler(req, res) {
   if (url.includes('/iot/devices')) {
     const demoDevice = {
       id: 'iot-sensor-01',
-      name: 'Plot 1 Soil & Microclimate Node',
+      device_name: 'Plot 1 Soil & Microclimate Node',
+      device_code: 'NODE-NSK-NIPHAD-01',
       device_type: 'SOIL_MOISTURE_AND_WEATHER',
+      farm_id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
+      location_description: 'Block 2 Summer Tomato parcel',
+      battery_level_pct: 94,
       battery_pct: 94,
       status: 'ONLINE',
       latest_readings: { soil_moisture_pct: 38.4, soil_temp_c: 24.1, ambient_temp_c: 28.6, humidity_pct: 61.2 },
+      last_sync_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
     if (url.match(/\/iot\/devices\/[a-zA-Z0-9_-]+\/telemetry/)) {
@@ -520,7 +741,20 @@ export default function handler(req, res) {
 
   if (url.includes('/iot/alerts')) {
     return res.status(200).json([
-      { id: 'al-1', device_id: 'iot-sensor-01', type: 'OPTIMAL', message: 'Soil moisture steady at 38% field capacity.', severity: 'INFO', resolved: false, created_at: new Date().toISOString() }
+      {
+        id: 'al-1',
+        device_id: 'iot-sensor-01',
+        device_name: 'Plot 1 Soil Node',
+        alert_type: 'CANOPY_OPTIMAL',
+        severity: 'INFO',
+        metric_name: 'soil_moisture',
+        current_value: 38.4,
+        threshold_value: 35.0,
+        unit: '%',
+        message: 'Soil moisture steady at 38% field capacity.',
+        is_resolved: false,
+        created_at: new Date().toISOString()
+      }
     ]);
   }
 
@@ -572,14 +806,35 @@ export default function handler(req, res) {
   if (url.includes('/protection/agreements')) {
     const demoAgreement = {
       id: 'AGR-2026-0001',
-      buyer_name: 'Reliance Retail Ltd',
+      agreement_number: 'AGR-2026-0001',
+      partner_name: 'Reliance Retail Ltd',
       farmer_name: 'Ramesh Patil',
+      commodity: 'Tomato',
       crop_name: 'Tomato',
+      variety: 'Abhinav Hybrid Red',
+      quality_grade: 'Grade A',
+      agreed_quantity_kg: 4000,
+      contracted_quantity_kg: 4000,
       quantity_kg: 4000,
+      quantity_unit: 'kg',
+      agreed_unit_price: 17.00,
       contracted_rate_per_kg: 17.00,
+      gross_amount: 68000,
+      total_deal_value_inr: 68000,
       total_contract_value_inr: 68000,
+      logistics_deduction: 1800,
+      processing_deduction: 200,
+      quality_deduction: 0,
+      other_deductions: 0,
+      total_deductions: 2000,
+      estimated_net_payout: 66000,
+      escrow_amount_inr: 20000,
       advance_paid_inr: 20000,
+      escrow_status: 'LOCKED',
       status: 'ESCROW_LOCKED',
+      delivery_location: 'Reliance Fresh DC, Nashik Highway',
+      version: 1,
+      delivery_deadline: new Date(Date.now() + 86400000 * 3).toISOString(),
       created_at: new Date().toISOString()
     };
     if (url.match(/\/agreements\/[a-zA-Z0-9_-]+$/)) {

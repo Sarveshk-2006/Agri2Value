@@ -166,21 +166,25 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
   // Dynamic Filtering for Cold Storage (Matches User's Reference Layout)
   const filteredColdStorage = useMemo(() => {
     return coldStorage.filter((item) => {
-      const q = coldSearchQuery.toLowerCase();
+      const q = (coldSearchQuery || '').toLowerCase();
+      const facilityName = (item.facility_name || (item as any).name || '').toLowerCase();
+      const district = (item.location_district || '').toLowerCase();
+      const taluka = (item.location_taluka || '').toLowerCase();
+      const commodities = (item.compatible_commodities || '').toLowerCase();
+
       const matchesSearch =
-        item.facility_name.toLowerCase().includes(q) ||
-        item.location_district.toLowerCase().includes(q) ||
-        item.location_taluka.toLowerCase().includes(q) ||
-        item.compatible_commodities.toLowerCase().includes(q);
+        facilityName.includes(q) ||
+        district.includes(q) ||
+        taluka.includes(q) ||
+        commodities.includes(q);
 
       let matchesCommodity = true;
-      const comm = item.compatible_commodities.toLowerCase();
       if (coldCommodityFilter === 'FRUITS') {
-        matchesCommodity = comm.includes('fruit') || comm.includes('grape') || comm.includes('pomegranate') || comm.includes('tomato');
+        matchesCommodity = commodities.includes('fruit') || commodities.includes('grape') || commodities.includes('pomegranate') || commodities.includes('tomato');
       } else if (coldCommodityFilter === 'VEGETABLES') {
-        matchesCommodity = comm.includes('vegetable') || comm.includes('tomato') || comm.includes('onion');
+        matchesCommodity = commodities.includes('vegetable') || commodities.includes('tomato') || commodities.includes('onion');
       } else if (coldCommodityFilter === 'DAIRY') {
-        matchesCommodity = comm.includes('dairy') || comm.includes('milk');
+        matchesCommodity = commodities.includes('dairy') || commodities.includes('milk');
       }
 
       return matchesSearch && matchesCommodity;
@@ -190,22 +194,28 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
   // Dynamic Filtering for Transport Fleet
   const filteredLogistics = useMemo(() => {
     return logistics.filter((item) => {
-      const q = searchQuery.toLowerCase();
+      const q = (searchQuery || '').toLowerCase();
+      const providerName = (item.provider_name || (item as any).name || '').toLowerCase();
+      const baseDistrict = (item.base_district || '').toLowerCase();
+      const serviceDistricts = (item.service_districts || '').toLowerCase();
+      const vehicleType = (item.vehicle_type || '').toLowerCase();
+      const selDistrict = (selectedDistrict || 'ALL').toLowerCase();
+
       const matchesSearch =
-        item.provider_name.toLowerCase().includes(q) ||
-        item.base_district.toLowerCase().includes(q) ||
-        item.service_districts.toLowerCase().includes(q) ||
-        item.vehicle_type.toLowerCase().includes(q);
+        providerName.includes(q) ||
+        baseDistrict.includes(q) ||
+        serviceDistricts.includes(q) ||
+        vehicleType.includes(q);
 
       const matchesDistrict =
         selectedDistrict === 'ALL' ||
-        item.base_district.toLowerCase() === selectedDistrict.toLowerCase() ||
-        item.service_districts.toLowerCase().includes(selectedDistrict.toLowerCase());
+        baseDistrict === selDistrict ||
+        serviceDistricts.includes(selDistrict);
 
       return matchesSearch && matchesDistrict;
     }).sort((a, b) => {
-      if (sortBy === 'LOWEST_COST') return a.per_km_rate_per_kg - b.per_km_rate_per_kg;
-      if (sortBy === 'HIGHEST_CAPACITY') return b.capacity_kg - a.capacity_kg;
+      if (sortBy === 'LOWEST_COST') return (a.per_km_rate_per_kg || (a as any).rate_per_km_inr || 0) - (b.per_km_rate_per_kg || (b as any).rate_per_km_inr || 0);
+      if (sortBy === 'HIGHEST_CAPACITY') return (b.capacity_kg || (b as any).max_capacity_kg || 0) - (a.capacity_kg || (a as any).max_capacity_kg || 0);
       return 0;
     });
   }, [logistics, searchQuery, selectedDistrict, sortBy]);
@@ -213,16 +223,23 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
   // Dynamic Filtering for Processing Facilities
   const filteredProcessing = useMemo(() => {
     return processing.filter((item) => {
-      const q = searchQuery.toLowerCase();
+      const q = (searchQuery || '').toLowerCase();
+      const facilityName = (item.facility_name || (item as any).name || '').toLowerCase();
+      const district = (item.location_district || '').toLowerCase();
+      const taluka = (item.location_taluka || '').toLowerCase();
+      const accepted = (item.accepted_commodities || '').toLowerCase();
+      const outputProd = (item.output_product_name || '').toLowerCase();
+      const selDistrict = (selectedDistrict || 'ALL').toLowerCase();
+
       const matchesSearch =
-        item.facility_name.toLowerCase().includes(q) ||
-        item.location_district.toLowerCase().includes(q) ||
-        item.location_taluka.toLowerCase().includes(q) ||
-        item.accepted_commodities.toLowerCase().includes(q) ||
-        item.output_product_name.toLowerCase().includes(q);
+        facilityName.includes(q) ||
+        district.includes(q) ||
+        taluka.includes(q) ||
+        accepted.includes(q) ||
+        outputProd.includes(q);
 
       const matchesDistrict =
-        selectedDistrict === 'ALL' || item.location_district.toLowerCase() === selectedDistrict.toLowerCase();
+        selectedDistrict === 'ALL' || district === selDistrict;
 
       return matchesSearch && matchesDistrict;
     });
@@ -426,6 +443,38 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
             <span>Trip &amp; Holding Cost Estimators</span>
           </button>
         </div>
+
+        {/* Quick Regional Stats Counter Bar */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+          <div className="p-3 bg-gray-50/80 rounded-xl border border-gray-100 flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block">Cold Storage Hubs</span>
+              <strong className="text-base font-black text-gray-900 font-mono">{coldStorage.length} Active</strong>
+            </div>
+            <Snowflake className="w-5 h-5 text-blue-500" />
+          </div>
+          <div className="p-3 bg-gray-50/80 rounded-xl border border-gray-100 flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block">Reefer Fleets</span>
+              <strong className="text-base font-black text-gray-900 font-mono">{logistics.length} Synced</strong>
+            </div>
+            <Truck className="w-5 h-5 text-emerald-600" />
+          </div>
+          <div className="p-3 bg-gray-50/80 rounded-xl border border-gray-100 flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block">Processing Hubs</span>
+              <strong className="text-base font-black text-gray-900 font-mono">{processing.length} Facilities</strong>
+            </div>
+            <Factory className="w-5 h-5 text-amber-600" />
+          </div>
+          <div className="p-3 bg-gray-50/80 rounded-xl border border-gray-100 flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block">Transit Protection</span>
+              <strong className="text-base font-black text-emerald-700 font-mono">100% Insured</strong>
+            </div>
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+          </div>
+        </div>
       </div>
 
       {/* ──────────────────────────────────────────────────────────
@@ -463,10 +512,10 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
                 <button
                   key={pill}
                   onClick={() => setColdCommodityFilter(pill)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
+                  className={`px-5 py-2 rounded-xl text-xs font-black tracking-wide transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
                     coldCommodityFilter === pill
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
-                      : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 ring-2 ring-blue-600/20'
+                      : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                   }`}
                 >
                   {pill}
@@ -478,8 +527,8 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
           {/* ─── Split Screen Workspace: List on Left (40%), Map on Right (60%) ─── */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             
-            {/* Left Column: Facility Cards List (5 Cols) */}
-            <div className="lg:col-span-5 space-y-3.5 max-h-[620px] overflow-y-auto pr-1">
+            {/* Left Column: Facility Cards List (5 Cols) with Reference Green Vertical Divider */}
+            <div className="lg:col-span-5 space-y-3.5 max-h-[640px] overflow-y-auto pr-3 lg:border-r-4 lg:border-emerald-500">
               {filteredColdStorage.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center text-gray-400 space-y-2">
                   <Snowflake className="w-8 h-8 text-gray-300 mx-auto" />
@@ -495,15 +544,15 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
                     <div
                       key={facility.id}
                       onClick={() => setSelectedColdFacility(facility)}
-                      className={`relative bg-white rounded-2xl p-4 sm:p-5 border transition-all cursor-pointer shadow-sm hover:shadow-md ${
+                      className={`relative bg-white rounded-2xl p-4 sm:p-5 border transition-all cursor-pointer shadow-xs hover:shadow-md ${
                         isSelected
-                          ? 'border-green-500 ring-2 ring-green-500/20 bg-green-50/20'
+                          ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/15'
                           : 'border-gray-100 hover:border-gray-200'
                       }`}
                     >
                       {/* Active green edge indicator */}
                       {isSelected && (
-                        <div className="absolute left-0 top-3 bottom-3 w-1.5 bg-green-500 rounded-r-full" />
+                        <div className="absolute left-0 top-3 bottom-3 w-1.5 bg-emerald-500 rounded-r-full" />
                       )}
 
                       {/* Header: Title + Verified Checkmark + Distance */}
@@ -514,13 +563,13 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
                               {facility.facility_name}
                             </h3>
                             {facility.verified !== false && (
-                              <CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0 fill-blue-500 text-white" />
+                              <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500 text-white shrink-0" />
                             )}
                           </div>
                           <p className="text-xs text-gray-400 font-medium flex items-center gap-1 mt-0.5">
-                            <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                            <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                             <span>
-                              {facility.distance_km ? `${facility.distance_km} km away` : '2.4 km away'} · {facility.location_taluka}, {facility.location_district}
+                              {facility.distance_km ? `${facility.distance_km} km away` : '2.4 km away'}
                             </span>
                           </p>
                         </div>
@@ -536,9 +585,9 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
                             STATUS
                           </span>
                           <span className={`inline-flex items-center gap-1.5 font-black uppercase text-[11px] ${
-                            isAvailable ? 'text-green-600' : 'text-red-500'
+                            isAvailable ? 'text-emerald-600' : 'text-red-500'
                           }`}>
-                            <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-green-500' : 'bg-red-500'}`} />
+                            <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
                             {facility.availability_status}
                           </span>
                         </div>
@@ -547,8 +596,8 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
                           <span className="text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-0.5">
                             PRICE
                           </span>
-                          <span className="font-black text-gray-900 text-sm sm:text-base font-display">
-                            ₹{facility.storage_rate_per_kg_per_month} / kg
+                          <span className="font-black text-gray-900 text-sm sm:text-base font-display font-mono">
+                            ₹{facility.storage_rate_per_kg_per_month}/kg
                           </span>
                         </div>
                       </div>
@@ -557,8 +606,8 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
                       {isSelected && (
                         <div className="mt-3 pt-3 border-t border-gray-100 space-y-2.5 animate-in fade-in duration-150">
                           <div className="flex items-center justify-between text-[11px] text-gray-500">
-                            <span>Available: <strong className="text-green-700 font-bold">{Math.round(facility.available_capacity_kg / 1000).toLocaleString()} MT</strong></span>
-                            <span>Temp: <strong className="text-blue-600 font-bold">{facility.temperature_range_celsius}</strong></span>
+                            <span>Available: <strong className="text-emerald-700 font-bold">{Math.round((facility.available_capacity_kg || 0) / 1000).toLocaleString()} MT</strong></span>
+                            <span>Chamber Temp: <strong className="text-blue-600 font-bold">{facility.temperature_range_celsius}</strong></span>
                           </div>
                           <div className="flex items-center gap-2">
                             <a

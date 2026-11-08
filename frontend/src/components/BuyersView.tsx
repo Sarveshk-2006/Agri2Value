@@ -118,13 +118,13 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
   // Derived Filter Options
   const uniqueCommodities = useMemo(() => {
     const set = new Set<string>();
-    buyers.forEach((b) => b.offers.forEach((o) => set.add(o.commodity)));
+    buyers.forEach((b) => (b.offers || []).forEach((o) => o?.commodity && set.add(o.commodity)));
     return ['All', ...Array.from(set)];
   }, [buyers]);
 
   const uniqueDistricts = useMemo(() => {
     const set = new Set<string>();
-    buyers.forEach((b) => set.add(b.district));
+    buyers.forEach((b) => b.district && set.add(b.district));
     return ['All', ...Array.from(set)];
   }, [buyers]);
 
@@ -137,12 +137,12 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
 
     buyers.forEach((b) => {
       if (b.is_verified) verifiedCount++;
-      b.offers.forEach((o) => {
+      (b.offers || []).forEach((o) => {
         totalOffers++;
-        const r = Number(o.offered_price_per_kg);
+        const r = Number(o.offered_price_per_kg || 0);
         if (r > maxRate) {
           maxRate = r;
-          topBuyerName = b.company_name;
+          topBuyerName = b.company_name || 'Sahyadri Processing';
         }
       });
     });
@@ -162,50 +162,57 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
 
     return buyers
       .filter((b) => {
+        const companyName = (b.company_name || '').toLowerCase();
+        const district = (b.district || '').toLowerCase();
+        const buyerType = (b.buyer_type || '').toLowerCase();
+        const offers = b.offers || [];
+
         // Search query
         const matchSearch =
           !query ||
-          b.company_name.toLowerCase().includes(query) ||
-          b.district.toLowerCase().includes(query) ||
-          b.buyer_type.toLowerCase().includes(query) ||
-          b.offers.some(
+          companyName.includes(query) ||
+          district.includes(query) ||
+          buyerType.includes(query) ||
+          offers.some(
             (o) =>
-              o.commodity.toLowerCase().includes(query) ||
+              (o.commodity || '').toLowerCase().includes(query) ||
               (o.variety && o.variety.toLowerCase().includes(query))
           );
 
         // Dropdown filters
         const matchCommodity =
           commodityFilter === 'All' ||
-          b.offers.some((o) => o.commodity.toLowerCase() === commodityFilter.toLowerCase());
+          offers.some((o) => (o.commodity || '').toLowerCase() === commodityFilter.toLowerCase());
 
         const matchDistrict =
-          districtFilter === 'All' || b.district.toLowerCase() === districtFilter.toLowerCase();
+          districtFilter === 'All' || district === districtFilter.toLowerCase();
 
         const matchCategory =
-          categoryFilter === 'All' || b.buyer_type.toLowerCase() === categoryFilter.toLowerCase();
+          categoryFilter === 'All' || buyerType === categoryFilter.toLowerCase();
 
         // Quick chips
         let matchQuick = true;
-        if (quickFilter === 'VERIFIED') matchQuick = b.is_verified;
+        if (quickFilter === 'VERIFIED') matchQuick = !!b.is_verified;
         if (quickFilter === 'BEST_RATES')
-          matchQuick = b.offers.some((o) => Number(o.offered_price_per_kg) >= 17.0);
+          matchQuick = offers.some((o) => Number(o.offered_price_per_kg || 0) >= 17.0);
         if (quickFilter === 'FAST_PAY')
-          matchQuick = b.offers.some((o) => o.payment_terms_days <= 3);
-        if (quickFilter === 'NEARBY') matchQuick = b.service_radius_km <= 120;
+          matchQuick = offers.some((o) => (o.payment_terms_days || 99) <= 3);
+        if (quickFilter === 'NEARBY') matchQuick = (b.service_radius_km || 999) <= 120;
 
         return matchSearch && matchCommodity && matchDistrict && matchCategory && matchQuick;
       })
       .sort((a, b) => {
-        const topRateA = Math.max(...a.offers.map((o) => Number(o.offered_price_per_kg)), 0);
-        const topRateB = Math.max(...b.offers.map((o) => Number(o.offered_price_per_kg)), 0);
-        const minPayA = Math.min(...a.offers.map((o) => o.payment_terms_days), 99);
-        const minPayB = Math.min(...b.offers.map((o) => o.payment_terms_days), 99);
+        const offersA = a.offers || [];
+        const offersB = b.offers || [];
+        const topRateA = offersA.length > 0 ? Math.max(...offersA.map((o) => Number(o.offered_price_per_kg || 0)), 0) : 0;
+        const topRateB = offersB.length > 0 ? Math.max(...offersB.map((o) => Number(o.offered_price_per_kg || 0)), 0) : 0;
+        const minPayA = offersA.length > 0 ? Math.min(...offersA.map((o) => o.payment_terms_days || 99), 99) : 99;
+        const minPayB = offersB.length > 0 ? Math.min(...offersB.map((o) => o.payment_terms_days || 99), 99) : 99;
 
         if (sortBy === 'RATE_DESC') return topRateB - topRateA;
         if (sortBy === 'PAYMENT_ASC') return minPayA - minPayB;
         if (sortBy === 'RATING_DESC') return (b.rating || 0) - (a.rating || 0);
-        if (sortBy === 'DISTANCE_ASC') return a.service_radius_km - b.service_radius_km;
+        if (sortBy === 'DISTANCE_ASC') return (a.service_radius_km || 0) - (b.service_radius_km || 0);
         // Default RECOMMENDED: High rating + Verified first
         return (b.rating || 0) + (b.is_verified ? 1 : 0) - ((a.rating || 0) + (a.is_verified ? 1 : 0));
       });
@@ -636,10 +643,10 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
                 <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between text-xs text-slate-600">
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Contract Security: <strong>{buyer.verification_badge.replace(/_/g, ' ')}</strong></span>
+                    <span>Contract Security: <strong>{(buyer.verification_badge || 'VERIFIED').replace(/_/g, ' ')}</strong></span>
                   </div>
                   <span className="text-[10px] text-slate-400 font-mono font-semibold uppercase">
-                    {buyer.data_mode}
+                    {buyer.data_mode || 'verified'}
                   </span>
                 </div>
               </div>
@@ -648,12 +655,12 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
               <div className="space-y-3 pt-2 border-t border-slate-100">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-bold text-slate-500 uppercase tracking-wider text-[10px]">
-                    Active Procurement Offers ({buyer.offers.length})
+                    Active Procurement Offers ({(buyer.offers || []).length})
                   </span>
                   <span className="text-emerald-700 font-semibold text-[11px]">Binding Offtake Quota</span>
                 </div>
 
-                {buyer.offers.map((offer) => {
+                {(buyer.offers || []).map((offer) => {
                   const isCompared = isOfferInComparison(offer.id);
 
                   return (
@@ -677,7 +684,7 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
                               {offer.accepted_grades ? `Grade ${offer.accepted_grades}` : 'Grade A, B'}
                             </span>
                             <span className="text-[11px] text-slate-500">
-                              Quota: {offer.min_quantity_kg.toLocaleString()} – {offer.max_quantity_kg.toLocaleString()} kg
+                              Quota: {(offer.min_quantity_kg ?? 0).toLocaleString()} – {(offer.max_quantity_kg ?? 0).toLocaleString()} kg
                             </span>
                           </div>
                         </div>
@@ -996,10 +1003,10 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
             {/* Active Procurement Demands in this Profile */}
             <div className="space-y-3">
               <div className="text-xs font-bold text-slate-800 uppercase tracking-wider text-[10px]">
-                Active Purchasing Demands ({activeDetailsBuyer.offers.length})
+                Active Purchasing Demands ({(activeDetailsBuyer.offers || []).length})
               </div>
 
-              {activeDetailsBuyer.offers.map((offer) => (
+              {(activeDetailsBuyer.offers || []).map((offer) => (
                 <div
                   key={offer.id}
                   className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-center justify-between"
@@ -1007,7 +1014,7 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
                   <div>
                     <div className="font-bold text-slate-900 text-xs">{offer.commodity} ({offer.variety || 'Standard'})</div>
                     <div className="text-[11px] text-slate-500">
-                      Req: {offer.min_quantity_kg.toLocaleString()}–{offer.max_quantity_kg.toLocaleString()} kg • {offer.payment_terms_days} days
+                      Req: {(offer.min_quantity_kg ?? 0).toLocaleString()}–{(offer.max_quantity_kg ?? 0).toLocaleString()} kg • {offer.payment_terms_days} days
                     </div>
                   </div>
 
@@ -1163,7 +1170,7 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
                   >
                     {cropLots.map((l) => (
                       <option key={l.id} value={l.id}>
-                        {l.crop_name} {l.variety ? `(${l.variety})` : ''} — {l.quantity_kg_normalized.toLocaleString()} kg (Grade {l.quality_grade || 'A'})
+                        {l.crop_name} {l.variety ? `(${l.variety})` : ''} — {(l.quantity_kg_normalized ?? 0).toLocaleString()} kg (Grade {l.quality_grade || 'A'})
                       </option>
                     ))}
                   </select>

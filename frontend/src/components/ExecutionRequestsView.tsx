@@ -169,20 +169,26 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
       }
 
       // Query filter
-      const q = searchQuery.toLowerCase();
+      const q = (searchQuery || '').toLowerCase();
+      const reqId = (req.id || '').toLowerCase();
+      const routeType = (req.route_type || '').toLowerCase();
+      const pickup = (req.pickup_location || '').toLowerCase();
+      const delivery = (req.delivery_location || '').toLowerCase();
+      const notes = (req.notes || '').toLowerCase();
+
       const matchesSearch =
         !q ||
-        req.id.toLowerCase().includes(q) ||
-        req.route_type.toLowerCase().includes(q) ||
-        (req.pickup_location && req.pickup_location.toLowerCase().includes(q)) ||
-        (req.delivery_location && req.delivery_location.toLowerCase().includes(q)) ||
-        (req.notes && req.notes.toLowerCase().includes(q));
+        reqId.includes(q) ||
+        routeType.includes(q) ||
+        pickup.includes(q) ||
+        delivery.includes(q) ||
+        notes.includes(q);
 
       // Crop filter
       let matchesCrop = true;
       if (selectedCropFilter !== 'ALL') {
-        matchesCrop = req.notes?.toLowerCase().includes(selectedCropFilter.toLowerCase()) ||
-          req.delivery_location.toLowerCase().includes(selectedCropFilter.toLowerCase());
+        const cropFilter = selectedCropFilter.toLowerCase();
+        matchesCrop = notes.includes(cropFilter) || delivery.includes(cropFilter);
       }
 
       return matchesStatus && matchesSearch && matchesCrop;
@@ -257,10 +263,11 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
     }
   };
 
-  const getRouteIcon = (route: string) => {
-    if (route.includes('BUYER') || route.includes('COMMERCIAL')) return <UserCheck className="w-5 h-5 text-emerald-600" />;
-    if (route.includes('STORAGE')) return <Warehouse className="w-5 h-5 text-blue-600" />;
-    if (route.includes('PROCESSING')) return <Factory className="w-5 h-5 text-purple-600" />;
+  const getRouteIcon = (route?: string) => {
+    const r = (route || '').toUpperCase();
+    if (r.includes('BUYER') || r.includes('COMMERCIAL')) return <UserCheck className="w-5 h-5 text-emerald-600" />;
+    if (r.includes('STORAGE')) return <Warehouse className="w-5 h-5 text-blue-600" />;
+    if (r.includes('PROCESSING')) return <Factory className="w-5 h-5 text-purple-600" />;
     return <Truck className="w-5 h-5 text-amber-600" />;
   };
 
@@ -630,7 +637,7 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
                       {isTerminated ? (
                         <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2 font-semibold">
                           <AlertCircle className="w-4 h-4 shrink-0" />
-                          <span>This transaction was {req.status.toLowerCase()}. Capacity reservations have been released.</span>
+                          <span>This transaction was {(req.status || '').toLowerCase()}. Capacity reservations have been released.</span>
                         </div>
                       ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-9 gap-2">
