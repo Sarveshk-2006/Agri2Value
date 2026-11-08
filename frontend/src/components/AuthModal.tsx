@@ -19,7 +19,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onSuccess }) => {
   if (!isOpen) return null;
 
   const handleLogin = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+    if (e && e.cancelable) e.preventDefault();
     setLoading(true);
     setError(null);
     try {

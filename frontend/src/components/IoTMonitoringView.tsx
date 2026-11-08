@@ -349,7 +349,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
 
   // Register device handler
   const handleRegisterDevice = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     if (!newDeviceCode || !newDeviceName || !selectedFarmId) return;
 
     try {

@@ -262,7 +262,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
 
   // Handle Submit with validation
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     setFormError(null);
 
     if (!selectedFarmId) {

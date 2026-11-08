@@ -60,3 +60,4 @@ const ARTIFACT_DIR = 'C:\\Users\\Sarvesh Kulkarni\\.gemini\\antigravity\\brain\\
     await browser.close();
   }
 })();
+

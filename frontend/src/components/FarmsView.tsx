@@ -398,7 +398,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
 
   // Submit Edit Form
   const handleSubmitEdit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     if (!editingFarm) return;
     setEditFormError(null);
 
@@ -455,7 +455,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
 
   // Submit Create Form
   const handleSubmitCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     setCreateFormError(null);
 
     if (!createName.trim()) {

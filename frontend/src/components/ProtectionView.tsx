@@ -242,7 +242,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
 
   // Submit Amendment
   const handleAmendSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     if (!selectedAgreement) return;
     setActionLoading(true);
     try {
@@ -267,7 +267,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
 
   // Submit Delivery
   const handleDeliverySubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     setActionLoading(true);
     try {
       await api.recordDelivery({
@@ -305,7 +305,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
 
   // Submit Payment
   const handlePaymentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     setActionLoading(true);
     try {
       await api.recordPayment({
@@ -329,7 +329,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
 
   // File Dispute
   const handleDisputeSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     setActionLoading(true);
     try {
       await api.createDispute({

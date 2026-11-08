@@ -354,7 +354,7 @@ export const FarmerChatbot: React.FC = () => {
           {/* Input Bar */}
           <form
             onSubmit={e => {
-              e.preventDefault();
+              if (e.cancelable) e.preventDefault();
               handleSend();
             }}
             className="p-3 bg-white border-t border-slate-100 flex items-center gap-2"

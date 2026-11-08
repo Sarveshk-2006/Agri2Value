@@ -817,9 +817,27 @@ export const DigitalFarmView: React.FC<DigitalFarmViewProps> = ({
     const resizeObserver = new ResizeObserver(() => handleResize());
     resizeObserver.observe(container);
 
+    // 9. Native non-passive Wheel Zoom Listener (prevents page scroll during 3D zoom without passive violation)
+    const handleNativeWheel = (e: WheelEvent) => {
+      if (e.cancelable) e.preventDefault();
+      const zoomDelta = e.deltaY * 0.03;
+      cameraPolarRef.current.radius = Math.max(
+        16,
+        Math.min(75, cameraPolarRef.current.radius + zoomDelta)
+      );
+      updateCameraPosition();
+    };
+
+    if (canvas) {
+      canvas.addEventListener('wheel', handleNativeWheel, { passive: false });
+    }
+
     return () => {
       isMounted = false;
       window.removeEventListener('resize', handleResize);
+      if (canvas) {
+        canvas.removeEventListener('wheel', handleNativeWheel);
+      }
       resizeObserver.disconnect();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       renderer.dispose();
@@ -857,17 +875,6 @@ export const DigitalFarmView: React.FC<DigitalFarmViewProps> = ({
     } catch {
       // Ignore
     }
-  };
-
-  // Wheel Zoom Handler
-  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
-    const zoomDelta = e.deltaY * 0.03;
-    cameraPolarRef.current.radius = Math.max(
-      16,
-      Math.min(75, cameraPolarRef.current.radius + zoomDelta)
-    );
-    updateCameraPosition();
   };
 
   // Canvas Click Handler: Handles Object Selection OR Boundary Point Placement
@@ -1064,7 +1071,6 @@ export const DigitalFarmView: React.FC<DigitalFarmViewProps> = ({
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
-          onWheel={handleWheel}
           onClick={handleCanvasClick}
         />
       ) : (
