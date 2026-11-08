@@ -246,6 +246,10 @@ class ApiService {
       const res = await fetch(`${API_BASE}/health`);
       const latency = Math.round((typeof performance !== 'undefined' ? performance.now() : Date.now()) - start);
       if (res.ok) {
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          return { status: 'offline', backendOnline: false, latency_ms: latency };
+        }
         const data = await res.json();
         return {
           status: data.status || 'healthy',
@@ -271,8 +275,12 @@ class ApiService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, demo_code: demoCode, full_name: fullName }),
       });
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error('Backend returned non-JSON response');
+      }
       if (!res.ok) {
-        const err = await res.json();
+        const err = await res.json().catch(() => ({}));
         throw new Error(err.message || err.detail || 'Demo login failed');
       }
       const data: AuthTokens = await res.json();
@@ -308,15 +316,16 @@ class ApiService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, full_name: fullName }),
       });
-      const data = await res.json();
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error('Backend returned non-JSON response');
+      }
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         throw new Error(data.detail || data.message || 'Failed to dispatch verification code');
       }
       return data;
     } catch (err: any) {
-      if (err.message && !err.message.includes('fetch') && !err.message.includes('Failed to fetch')) {
-        throw err;
-      }
       console.warn('Backend offline, simulated sendOtp fallback:', err.message);
       return {
         success: true,
@@ -335,15 +344,19 @@ class ApiService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, otp_code: otpCode, full_name: fullName }),
       });
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error('Backend returned non-JSON response');
+      }
       if (!res.ok) {
-        const err = await res.json();
+        const err = await res.json().catch(() => ({}));
         throw new Error(err.detail || err.message || 'OTP verification failed');
       }
       const data: AuthTokens = await res.json();
       this.setToken(data.access_token);
       return data;
     } catch (err: any) {
-      if (err.message && !err.message.includes('fetch') && !err.message.includes('Failed to fetch')) {
+      if (err.message && !err.message.includes('fetch') && !err.message.includes('Failed to fetch') && !err.message.includes('non-JSON') && !err.message.includes('JSON')) {
         throw err;
       }
       return this.demoLogin(phone, otpCode, fullName);
@@ -641,9 +654,12 @@ class ApiService {
       });
 
       if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem('a2v_last_decision', JSON.stringify(data));
-        return data;
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const data = await res.json();
+          localStorage.setItem('a2v_last_decision', JSON.stringify(data));
+          return data;
+        }
       }
     } catch (err: any) {
       console.warn('Backend evaluation unavailable, falling back to local deterministic model:', err.message);
