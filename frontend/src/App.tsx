@@ -462,7 +462,12 @@ const AppContent: React.FC = () => {
 
           <Route
             path="iot"
-            element={<IoTMonitoringView farms={farms} />}
+            element={
+              <IoTMonitoringView
+                farms={farms}
+                onNavigateToRescue={() => navigate('/app/rescue')}
+              />
+            }
           />
 
           <Route
