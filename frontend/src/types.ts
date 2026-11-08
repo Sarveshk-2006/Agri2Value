@@ -383,6 +383,10 @@ export interface LogisticsProvider {
   availability_status: string;
   data_mode: string;
   created_at: string;
+  latitude?: number;
+  longitude?: number;
+  verified?: boolean;
+  distance_km?: number;
 }
 
 export interface ColdStorageFacility {
@@ -403,6 +407,10 @@ export interface ColdStorageFacility {
   availability_status: string;
   data_mode: string;
   created_at: string;
+  latitude?: number;
+  longitude?: number;
+  verified?: boolean;
+  distance_km?: number;
 }
 
 export interface ProcessingFacility {
@@ -423,6 +431,10 @@ export interface ProcessingFacility {
   availability_status: string;
   data_mode: string;
   created_at: string;
+  latitude?: number;
+  longitude?: number;
+  verified?: boolean;
+  distance_km?: number;
 }
 
 export interface ExecutionRequestEvent {
