@@ -33,6 +33,42 @@ class DemoLoginRequest(BaseModel):
     )
 
 
+class SendOTPRequest(BaseModel):
+    phone: str = Field(
+        ...,
+        description="10-digit Indian mobile number or with +91 country prefix.",
+        examples=["9876543210", "+919876543210"],
+        min_length=10,
+        max_length=15,
+    )
+    full_name: str = Field(
+        default="Farmer",
+        description="Full name of the user for greeting or profile setup.",
+        max_length=200,
+    )
+
+
+class VerifyOTPRequest(BaseModel):
+    phone: str = Field(
+        ...,
+        description="10-digit Indian mobile number.",
+        min_length=10,
+        max_length=15,
+    )
+    otp_code: str = Field(
+        ...,
+        description="6-digit verification code delivered via MSG91 SMS.",
+        min_length=6,
+        max_length=6,
+        examples=["123456"],
+    )
+    full_name: str = Field(
+        default="Farmer",
+        description="Full name for profile creation if first-time user.",
+        max_length=200,
+    )
+
+
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str

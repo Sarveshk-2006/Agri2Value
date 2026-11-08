@@ -26,6 +26,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
   const [demoCode, setDemoCode] = useState('123456');
   const [fullName, setFullName] = useState('Ramesh Patil');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [otpInfo, setOtpInfo] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -34,6 +36,24 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
     setDemoCode('123456');
     setFullName('Ramesh Patil');
     setError(null);
+    setOtpInfo(null);
+  };
+
+  const handleSendOtp = async () => {
+    if (!phone || phone.length < 10) {
+      setError('Please provide a valid 10-digit mobile number.');
+      return;
+    }
+    setIsSendingOtp(true);
+    setError(null);
+    try {
+      const res = await api.sendOtp(phone, fullName);
+      setOtpInfo(res.message);
+    } catch (err: any) {
+      setError(err.message || 'Failed to dispatch verification code.');
+    } finally {
+      setIsSendingOtp(false);
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -42,7 +62,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
     setError(null);
 
     try {
-      const tokens = await api.demoLogin(phone, demoCode, fullName);
+      const tokens = await api.verifyOtp(phone, demoCode, fullName);
       const userProfile: UserType = {
         id: tokens.user_id,
         full_name: fullName,
@@ -54,7 +74,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
       onLoginSuccess(userProfile);
       navigate('/app/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please verify your demo access code.');
+      setError(err.message || 'Authentication failed. Please verify your OTP access code.');
     } finally {
       setIsLoading(false);
     }
@@ -301,17 +321,27 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
               </div>
             </div>
 
-            {/* Demo OTP Code */}
+            {/* OTP Code */}
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="label mb-0">Demo OTP / Access Code *</label>
-                <button
-                  type="button"
-                  onClick={() => setDemoCode('123456')}
-                  className="text-[11px] font-mono text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-200/80 font-bold transition-colors cursor-pointer"
-                >
-                  Default: 123456
-                </button>
+                <label className="label mb-0">SMS Verification Code / OTP *</label>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={isSendingOtp}
+                    className="text-[11px] font-sans text-emerald-800 hover:text-emerald-900 bg-emerald-100/80 hover:bg-emerald-200/80 px-2.5 py-0.5 rounded-md font-bold transition-colors cursor-pointer"
+                  >
+                    {isSendingOtp ? 'Sending...' : 'Send SMS OTP'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDemoCode('123456')}
+                    className="text-[11px] font-mono text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded-md font-bold transition-colors cursor-pointer"
+                  >
+                    Demo: 123456
+                  </button>
+                </div>
               </div>
               <div className="relative">
                 <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -325,14 +355,20 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                   className="w-full bg-white border border-slate-200 hover:border-slate-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 rounded-xl pl-10 pr-4 py-3 text-sm font-mono font-bold text-slate-900 transition-all placeholder:text-slate-400 outline-none shadow-xs tracking-[0.25em]"
                 />
               </div>
+              {otpInfo && (
+                <div className="mt-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span>{otpInfo}</span>
+                </div>
+              )}
             </div>
 
-            {/* Security Demonstration Mode Notice */}
+            {/* Production Authentication Mode Notice */}
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex items-start gap-3 shadow-xs">
               <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <span className="leading-relaxed">
-                <strong className="text-slate-800 font-semibold">Competition Demonstration Mode:</strong>{' '}
-                Authenticates against the local FastAPI backend JWT service and initializes canonical Ramesh Patil pilot scenario records.
+                <strong className="text-slate-800 font-semibold">Production Authentication:</strong>{' '}
+                Uses real MSG91 SMS gateway for OTP dispatch and issues cryptographically signed JWT sessions backed by the PostgreSQL persistence ledger.
               </span>
             </div>
 

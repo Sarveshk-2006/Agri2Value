@@ -20,12 +20,10 @@ import app.database.models  # noqa: F401, E402 — registers all models with Bas
 # Alembic config object
 config = context.config
 
-# Override the sqlalchemy.url from the environment
-DATABASE_URL_SYNC = os.getenv("DATABASE_URL_SYNC", "")
-if not DATABASE_URL_SYNC:
-    # Fall back: convert asyncpg URL to psycopg2
-    async_url = os.getenv("DATABASE_URL", "")
-    DATABASE_URL_SYNC = async_url.replace("postgresql+asyncpg://", "postgresql+psycopg2://")
+# Override the sqlalchemy.url from the environment or settings helper
+from app.core.config import get_settings
+settings = get_settings()
+DATABASE_URL_SYNC = settings.sync_database_url
 
 if DATABASE_URL_SYNC:
     config.set_main_option("sqlalchemy.url", DATABASE_URL_SYNC)

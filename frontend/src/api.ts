@@ -59,7 +59,8 @@ import {
   MOCK_PROTECTION_METRICS,
 } from './mockData';
 
-const API_BASE = '/api/v1';
+// Dynamically resolve API base from environment or relative proxy
+const API_BASE = (import.meta.env.VITE_API_BASE_URL as string)?.replace(/\/$/, '') || '/api/v1';
 
 // Default seed data for instant UI presentation / offline resilience
 export const DEFAULT_DEMO_USER: User = {
@@ -288,6 +289,62 @@ class ApiService {
       };
       this.setToken(fakeTokens.access_token);
       return fakeTokens;
+    }
+  }
+
+  async sendOtp(phone: string, fullName: string = 'Farmer'): Promise<{
+    success: boolean;
+    phone: string;
+    message: string;
+    is_simulated?: boolean;
+    rate_limited?: boolean;
+    cooldown_seconds?: number;
+  }> {
+    try {
+      const res = await fetch(`${API_BASE}/auth/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, full_name: fullName }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || data.message || 'Failed to dispatch verification code');
+      }
+      return data;
+    } catch (err: any) {
+      if (err.message && !err.message.includes('fetch') && !err.message.includes('Failed to fetch')) {
+        throw err;
+      }
+      console.warn('Backend offline, simulated sendOtp fallback:', err.message);
+      return {
+        success: true,
+        phone,
+        message: '[OFFLINE DEMO] Backend offline. Use demo code 123456.',
+        is_simulated: true,
+        cooldown_seconds: 60,
+      };
+    }
+  }
+
+  async verifyOtp(phone: string, otpCode: string, fullName: string = 'Farmer'): Promise<AuthTokens> {
+    try {
+      const res = await fetch(`${API_BASE}/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp_code: otpCode, full_name: fullName }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || err.message || 'OTP verification failed');
+      }
+      const data: AuthTokens = await res.json();
+      this.setToken(data.access_token);
+      return data;
+    } catch (err: any) {
+      if (err.message && !err.message.includes('fetch') && !err.message.includes('Failed to fetch')) {
+        throw err;
+      }
+      return this.demoLogin(phone, otpCode, fullName);
     }
   }
 

@@ -31,15 +31,27 @@ class Base(DeclarativeBase):
 
 # Async engine for application use
 engine_kwargs = {"echo": settings.DEBUG}
-if "sqlite" not in settings.DATABASE_URL:
+db_url = settings.async_database_url
+
+if "sqlite" not in db_url:
     engine_kwargs.update({
         "pool_pre_ping": True,
         "pool_size": 10,
         "max_overflow": 20,
+        "pool_recycle": 300,
+        "pool_timeout": 30,
     })
+    # If connecting to Neon or cloud PostgreSQL with SSL requirement
+    if "sslmode=require" in db_url or "neon.tech" in db_url:
+        # Normalize asyncpg URL by moving sslmode to connect_args
+        if "?" in db_url:
+            base_url, query = db_url.split("?", 1)
+            params = [p for p in query.split("&") if not p.startswith("sslmode=")]
+            db_url = base_url + ("?" + "&".join(params) if params else "")
+        engine_kwargs["connect_args"] = {"ssl": "require"}
 
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    db_url,
     **engine_kwargs
 )
 
