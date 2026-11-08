@@ -505,6 +505,10 @@ const AppContent: React.FC = () => {
               <ProfileView
                 user={user}
                 farms={farms}
+                cropLots={cropLots}
+                onSelectTab={handleSelectTab}
+                onOpenCreateFarm={() => setIsCreateFarmOpen(true)}
+                onOpenCreateLot={() => setIsCreateLotOpen(true)}
                 onResetDemoData={handleResetDemoData}
                 onLogout={handleLogout}
               />

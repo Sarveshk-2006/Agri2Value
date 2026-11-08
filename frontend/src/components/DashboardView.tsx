@@ -531,7 +531,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <ScanLine className="w-5 h-5" />
               </div>
               <span className="badge-blue text-[10px]">
-                COMPUTER VISION AI
+                PATHOLOGY & BRIX DIAGNOSTIC
               </span>
             </div>
             <div>

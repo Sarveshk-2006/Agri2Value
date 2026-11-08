@@ -16,7 +16,7 @@ export interface LocalizedAIContent {
 
 export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
   en: {
-    welcome: 'Namaste! I am your Agri2Value AI Post-Harvest Advisor 🌾. Ask me about mandi prices, profitable buyer routes, cold storage, or payment protection!',
+    welcome: 'Namaste! I am your Agri2Value Krishi Advisory Post-Harvest Advisor 🌾. Ask me about mandi prices, profitable buyer routes, cold storage, or payment protection!',
     suggestions: [
       'Tomato mandi price in Nashik today?',
       'Which selling route gives the most profit?',
@@ -53,7 +53,7 @@ export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
     }
   },
   mr: {
-    welcome: 'नमस्कार! मी तुमचा Agri2Value AI सल्लागार 🌾. बाजारभाव, नफा देणारे खरेदीदार, शीतगृह, किंवा पेमेंट सुरक्षेबद्दल काहीही विचारा!',
+    welcome: 'नमस्कार! मी तुमचा Agri2Value Krishi Advisory सल्लागार 🌾. बाजारभाव, नफा देणारे खरेदीदार, शीतगृह, किंवा पेमेंट सुरक्षेबद्दल काहीही विचारा!',
     suggestions: [
       'नाशिकमध्ये आज टोमॅटोचा बाजारभाव काय आहे?',
       'कोणत्या विक्री मार्गाने सर्वाधिक नफा मिळतो?',
@@ -90,7 +90,7 @@ export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
     }
   },
   hi: {
-    welcome: 'नमस्ते! मैं आपका Agri2Value AI सलाहकार हूँ 🌾. मंडी भाव, लाभदायक खरीदार, कोल्ड स्टोरेज या भुगतान सुरक्षा के बारे में कुछ भी पूछें!',
+    welcome: 'नमस्ते! मैं आपका Agri2Value Krishi Advisory सलाहकार हूँ 🌾. मंडी भाव, लाभदायक खरीदार, कोल्ड स्टोरेज या भुगतान सुरक्षा के बारे में कुछ भी पूछें!',
     suggestions: [
       'नासिक में आज टमाटर का मंडी भाव क्या है?',
       'किस बिक्री विकल्प से सबसे ज्यादा मुनाफा मिलेगा?',
@@ -127,7 +127,7 @@ export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
     }
   },
   te: {
-    welcome: 'నమస్కారం! నేను మీ Agri2Value AI సలహాదారుని 🌾. మార్కెట్ ధరలు, లాభదాయకమైన కొనుగోలుదారులు లేదా చెల్లింపు భద్రత గురించి ఏదైనా అడగండి!',
+    welcome: 'నమస్కారం! నేను మీ Agri2Value Krishi Advisory సలహాదారుని 🌾. మార్కెట్ ధరలు, లాభదాయకమైన కొనుగోలుదారులు లేదా చెల్లింపు భద్రత గురించి ఏదైనా అడగండి!',
     suggestions: [
       'ఈరోజు టమోటా మార్కెట్ ధర ఎంత?',
       'ఏ మార్గంలో విక్రయిస్తే ఎక్కువ లాభం వస్తుంది?',
@@ -164,7 +164,7 @@ export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
     }
   },
   ta: {
-    welcome: 'வணக்கம்! நான் உங்கள் Agri2Value AI ஆலோசகர் 🌾. சந்தை விலைகள், அதிக லாபம் தரும் வாங்குவோர் அல்லது கட்டணப் பாதுகாப்பு பற்றி எது வேண்டுமானாலும் கேளுங்கள்!',
+    welcome: 'வணக்கம்! நான் உங்கள் Agri2Value Krishi Advisory ஆலோசகர் 🌾. சந்தை விலைகள், அதிக லாபம் தரும் வாங்குவோர் அல்லது கட்டணப் பாதுகாப்பு பற்றி எது வேண்டுமானாலும் கேளுங்கள்!',
     suggestions: [
       'இன்றைய தக்காளி சந்தை விலை என்ன?',
       'எந்த வழியில் விற்றால் அதிக லாபம் கிடைக்கும்?',
@@ -201,7 +201,7 @@ export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
     }
   },
   kn: {
-    welcome: 'ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ Agri2Value AI ಕೃಷಿ ಸಲಹೆಗಾರ 🌾. ಮಾರುಕಟ್ಟೆ ದರಗಳು, ಲಾಭದಾಯಕ ಖರೀದಿದಾರರು, ಕೋಲ್ಡ್ ಸ್ಟೋರೇಜ್ ಅಥವಾ ಪಾವತಿ ರಕ್ಷಣೆಯ ಬಗ್ಗೆ ಏನನ್ನಾದರೂ ಕೇಳಿ!',
+    welcome: 'ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ Agri2Value Krishi Advisory ಕೃಷಿ ಸಲಹೆಗಾರ 🌾. ಮಾರುಕಟ್ಟೆ ದರಗಳು, ಲಾಭದಾಯಕ ಖರೀದಿದಾರರು, ಕೋಲ್ಡ್ ಸ್ಟೋರೇಜ್ ಅಥವಾ ಪಾವತಿ ರಕ್ಷಣೆಯ ಬಗ್ಗೆ ಏನನ್ನಾದರೂ ಕೇಳಿ!',
     suggestions: [
       'ಇಂದಿನ ಟೊಮೆಟೊ ಮಾರುಕಟ್ಟೆ ದರ ಎಷ್ಟು?',
       'ಯಾವ ಮಾರ್ಗದಲ್ಲಿ ಮಾರಾಟ ಮಾಡಿದರೆ ಹೆಚ್ಚು ಲಾಭ?',
@@ -238,7 +238,7 @@ export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
     }
   },
   gu: {
-    welcome: 'નમસ્તે! હું તમારો Agri2Value AI સલાહકાર છું 🌾. માર્કેટ યાર્ડ ભાવ, નફાકારક ખરીદદારો અથવા પેમેન્ટ સુરક્ષા વિશે કંઈપણ પૂછો!',
+    welcome: 'નમસ્તે! હું તમારો Agri2Value Krishi Advisory સલાહકાર છું 🌾. માર્કેટ યાર્ડ ભાવ, નફાકારક ખરીદદારો અથવા પેમેન્ટ સુરક્ષા વિશે કંઈપણ પૂછો!',
     suggestions: [
       'આજે ટામેટાંનો માર્કેટ યાર્ડ ભાવ શું છે?',
       'કયા વિકલ્પથી સૌથી વધુ નફો મળશે?',
@@ -275,7 +275,7 @@ export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
     }
   },
   pa: {
-    welcome: 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡਾ Agri2Value AI ਸਲਾਹਕਾਰ ਹਾਂ 🌾. ਮੰਡੀ ਭਾਅ, ਫਾਇਦੇਮੰਦ ਖਰੀਦਦਾਰ, ਕੋਲਡ ਸਟੋਰੇਜ ਜਾਂ ਭੁਗਤਾਨ ਸੁਰੱਖਿਆ ਬਾਰੇ ਕੁਝ ਵੀ ਪੁੱਛੋ!',
+    welcome: 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡਾ Agri2Value Krishi Advisory ਸਲਾਹਕਾਰ ਹਾਂ 🌾. ਮੰਡੀ ਭਾਅ, ਫਾਇਦੇਮੰਦ ਖਰੀਦਦਾਰ, ਕੋਲਡ ਸਟੋਰੇਜ ਜਾਂ ਭੁਗਤਾਨ ਸੁਰੱਖਿਆ ਬਾਰੇ ਕੁਝ ਵੀ ਪੁੱਛੋ!',
     suggestions: [
       'ਅੱਜ ਟਮਾਟਰ ਦਾ ਮੰਡੀ ਭਾਅ ਕੀ ਹੈ?',
       'ਕਿਹੜੇ ਤਰੀਕੇ ਨਾਲ ਵੇਚਣ ਤੇ ਸਭ ਤੋਂ ਵੱਧ ਮੁਨਾਫ਼ਾ ਹੋਵੇਗਾ?',
@@ -312,7 +312,7 @@ export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
     }
   },
   bn: {
-    welcome: 'নমস্কার! আমি আপনার Agri2Value AI উপদেষ্টা 🌾. বাজার দর, লাভজনক ক্রেতা, হিমাগার বা পেমেন্ট সুরক্ষা সম্পর্কে নির্দ্বিধায় জিজ্ঞাসা করুন!',
+    welcome: 'নমস্কার! আমি আপনার Agri2Value Krishi Advisory উপদেষ্টা 🌾. বাজার দর, লাভজনক ক্রেতা, হিমাগার বা পেমেন্ট সুরক্ষা সম্পর্কে নির্দ্বিধায় জিজ্ঞাসা করুন!',
     suggestions: [
       'আজ টমেটোর মান্ডি দর কত?',
       'কোন উপায়ে বিক্রি করলে সবচেয়ে বেশি লাভ হবে?',
@@ -349,7 +349,7 @@ export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
     }
   },
   ml: {
-    welcome: 'നമസ്കാരം! ഞാൻ നിങ്ങളുടെ Agri2Value AI ഉപദേശകനാണ് 🌾. ചന്ത വിലകൾ, കൂടുതൽ ലാഭം തരുന്ന വാങ്ങുന്നവർ, അല്ലെങ്കിൽ പേയ്മെന്റ് സുരക്ഷയെക്കുറിച്ച് എന്തും ചോദിക്കാം!',
+    welcome: 'നമസ്കാരം! ഞാൻ നിങ്ങളുടെ Agri2Value Krishi Advisory ഉപദേശകനാണ് 🌾. ചന്ത വിലകൾ, കൂടുതൽ ലാഭം തരുന്ന വാങ്ങുന്നവർ, അല്ലെങ്കിൽ പേയ്മെന്റ് സുരക്ഷയെക്കുറിച്ച് എന്തും ചോദിക്കാം!',
     suggestions: [
       'ഇന്നത്തെ തക്കാളി ചന്ത വില എത്രയാണ്?',
       'ഏത് രീതിയിൽ വിറ്റാലാണ് കൂടുതൽ ലാഭം കിട്ടുക?',

@@ -99,9 +99,9 @@ export const CropDamageScannerModal: React.FC<{
             </div>
             <div>
               <h3 className="text-xl font-black font-display flex items-center gap-2">
-                <span>AI Crop Quality & Disease Scanner 🔬</span>
+                <span>Crop Pathology & Quality Diagnostic Scanner 🔬</span>
                 <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-400/40 text-emerald-200">
-                  CV Vision 2.0
+                  Field Pathology Standard
                 </span>
               </h3>
               <p className="text-xs text-emerald-100/90 mt-0.5">

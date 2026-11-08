@@ -3,11 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   X,
+  Sprout,
   Send,
   Mic,
   MicOff,
   Sparkles,
-  Bot,
   User as UserIcon,
   ChevronRight
 } from 'lucide-react';
@@ -235,17 +235,17 @@ export const FarmerChatbot: React.FC = () => {
         <button
           onClick={() => setIsOpen(true)}
           className="group relative flex items-center gap-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-full shadow-green-lg hover:-translate-y-1.5 animate-float transition-all duration-300 cursor-pointer"
-          aria-label="Open Agri AI Advisor"
+          aria-label="Open Krishi Advisory"
         >
           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-            <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-white animate-bounce" />
+            <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-white animate-bounce" />
           </div>
           <div className="text-left hidden sm:block">
             <div className="text-xs font-black tracking-tight flex items-center gap-1.5 font-display">
-              <span>Agri2Value AI</span>
+              <span>Krishi Advisory 🌾</span>
               <span className="w-2 h-2 rounded-full bg-emerald-300 animate-ping" />
             </div>
-            <div className="text-[10px] text-green-100 font-medium">Ask Post-Harvest Advisor</div>
+            <div className="text-[10px] text-green-100 font-medium">Post-Harvest & Mandi Guide</div>
           </div>
         </button>
       )}
@@ -258,18 +258,18 @@ export const FarmerChatbot: React.FC = () => {
           <div className="bg-gradient-to-r from-green-700 via-emerald-700 to-teal-800 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20">
-                <Bot className="w-6 h-6 text-emerald-200" />
+                <Sprout className="w-6 h-6 text-emerald-200" />
               </div>
               <div>
                 <h3 className="font-extrabold text-sm font-display flex items-center gap-1.5">
-                  <span>Agri2Value Assistant</span>
+                  <span>Krishi Advisory Desk 🌾</span>
                   <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-500/30 border border-green-400/40 text-emerald-200">
-                    AI Advisor
+                    Agri Expert
                   </span>
                 </h3>
                 <p className="text-[11px] text-emerald-100/90 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>Real-time post-harvest intelligence</span>
+                  <span>Real-time mandi rates & agronomic guidance</span>
                 </p>
               </div>
             </div>
@@ -337,7 +337,7 @@ export const FarmerChatbot: React.FC = () => {
             {isTyping && (
               <div className="flex items-center gap-2 text-slate-400 text-xs pl-9">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                <span>Thinking & calculating...</span>
+                <span>Checking mandi rates & advice...</span>
               </div>
             )}
 
