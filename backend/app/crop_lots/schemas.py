@@ -59,8 +59,16 @@ class CropLotCreate(BaseModel):
     quantity_unit: str = Field(..., description=f"One of: {', '.join(sorted(VALID_QUANTITY_UNITS))}")
     harvest_date: Optional[datetime] = None
     quality_grade: Optional[str] = Field(None, examples=["A"])
+    status: Optional[str] = Field(None, description="Initial status. Defaults to DRAFT if omitted.")
     notes: Optional[str] = Field(None, max_length=2000)
     data_mode: str = Field("real", description="'real' or 'demo'.")
+
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v not in VALID_STATUSES:
+            raise ValueError(f"status must be one of: {', '.join(sorted(VALID_STATUSES))}")
+        return v
 
     @field_validator("quantity_unit")
     @classmethod
@@ -80,6 +88,15 @@ class CropLotCreate(BaseModel):
             )
         return v
 
+    @field_validator("status")
+    @classmethod
+    def validate_status_update(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v not in VALID_STATUSES:
+            raise ValueError(
+                f"status must be one of: {', '.join(sorted(VALID_STATUSES))}"
+            )
+        return v
+
     @field_validator("data_mode")
     @classmethod
     def validate_data_mode(cls, v: str) -> str:
@@ -95,6 +112,7 @@ class CropLotUpdate(BaseModel):
     quantity_unit: Optional[str] = None
     harvest_date: Optional[datetime] = None
     quality_grade: Optional[str] = None
+    status: Optional[str] = None
     notes: Optional[str] = Field(None, max_length=2000)
 
     @field_validator("quantity_unit")
@@ -112,6 +130,15 @@ class CropLotUpdate(BaseModel):
         if v is not None and v not in VALID_QUALITY_GRADES:
             raise ValueError(
                 f"quality_grade must be one of: {', '.join(sorted(VALID_QUALITY_GRADES))}"
+            )
+        return v
+
+    @field_validator("status")
+    @classmethod
+    def validate_status_update(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v not in VALID_STATUSES:
+            raise ValueError(
+                f"status must be one of: {', '.join(sorted(VALID_STATUSES))}"
             )
         return v
 

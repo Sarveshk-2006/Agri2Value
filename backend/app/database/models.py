@@ -215,7 +215,11 @@ class CropLot(Base):
     farm: Mapped["Farm"] = relationship("Farm", back_populates="crop_lots")
     owner: Mapped["User"] = relationship("User", back_populates="crop_lots")
     events: Mapped[List["CropLotEvent"]] = relationship(
-        "CropLotEvent", back_populates="crop_lot", order_by="CropLotEvent.created_at", lazy="selectin"
+        "CropLotEvent",
+        back_populates="crop_lot",
+        order_by="CropLotEvent.created_at",
+        lazy="selectin",
+        cascade="all, delete-orphan",
     )
     decision_runs: Mapped[List["DecisionRun"]] = relationship(
         "DecisionRun", back_populates="crop_lot", order_by="DecisionRun.created_at.desc()", lazy="selectin"

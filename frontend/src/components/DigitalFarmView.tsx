@@ -139,7 +139,7 @@ export const DigitalFarmView: React.FC<DigitalFarmViewProps> = ({
 
   // Associated crop lot for this farm
   const activeCropLot = cropLots.find(
-    (lot) => lot.farm_id === farm.id || lot.farm_id === '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9'
+    (lot) => lot.farm_id === farm.id || lot.farm_id === 'd57a5758-a0f9-4e71-8203-315981944e1f'
   );
 
   // Initialize boundary coords from farm profile

@@ -87,3 +87,18 @@ async def update_farm(
 ) -> FarmResponse:
     farm = await farm_service.update_farm(db, farm_id, update_data, current_user.id)
     return FarmResponse.model_validate(farm)
+
+
+@router.delete(
+    "/{farm_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete Farm",
+    description="Soft-deletes / deactivates a farm profile. Only the owner can delete.",
+)
+async def delete_farm(
+    farm_id: str,
+    current_user: User = Depends(get_current_active_farmer),
+    db: AsyncSession = Depends(get_db),
+):
+    await farm_service.delete_farm(db, farm_id, current_user.id)
+    return None

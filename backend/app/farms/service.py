@@ -127,3 +127,15 @@ async def update_farm(
     await db.refresh(farm)
     logger.info("Farm updated", farm_id=farm_id, fields=list(update_fields.keys()))
     return farm
+
+
+async def delete_farm(
+    db: AsyncSession,
+    farm_id: str,
+    user_id: str,
+) -> None:
+    """Soft-delete farm by marking is_active=False."""
+    farm = await get_farm_by_id(db, farm_id, user_id)
+    farm.is_active = False
+    await db.flush()
+    logger.info("Farm deactivated", farm_id=farm_id, user_id=user_id)

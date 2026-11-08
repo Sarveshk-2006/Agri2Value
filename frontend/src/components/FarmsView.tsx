@@ -89,7 +89,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
     if (!activeFarm) return null;
     return (
       cropLots.find((lot) => lot.farm_id === activeFarm.id) ||
-      cropLots.find((lot) => lot.farm_id === '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9') ||
+      cropLots.find((lot) => lot.farm_id === 'd57a5758-a0f9-4e71-8203-315981944e1f') ||
       cropLots[0] ||
       null
     );

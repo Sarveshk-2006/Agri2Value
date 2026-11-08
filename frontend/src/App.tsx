@@ -227,6 +227,15 @@ const AppContent: React.FC = () => {
     const health = await api.checkHealth();
     setBackendOnline(health.backendOnline);
 
+    if (api.hasToken()) {
+      try {
+        const me = await api.getMe();
+        if (me && me.id) {
+          setUser(me);
+        }
+      } catch {}
+    }
+
     const [fetchedFarms, fetchedLots] = await Promise.all([
       api.getFarms(),
       api.getCropLots(),
@@ -276,6 +285,18 @@ const AppContent: React.FC = () => {
     const newLot = await api.createCropLot(farmId, lotData);
     setCropLots([newLot, ...cropLots]);
     showToast(`Harvest lot '${newLot.crop_name}' registered (${newLot.quantity_kg_normalized} kg)`);
+  };
+
+  const handleDeleteFarm = async (farmId: string) => {
+    await api.deleteFarm(farmId);
+    setFarms(farms.filter((f) => f.id !== farmId));
+    showToast('Farm parcel deactivated');
+  };
+
+  const handleDeleteLot = async (lotId: string) => {
+    await api.deleteCropLot(lotId);
+    setCropLots(cropLots.filter((l) => l.id !== lotId));
+    showToast('Harvest produce lot removed');
   };
 
   const handleResetDemoData = () => {

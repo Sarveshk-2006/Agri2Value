@@ -74,7 +74,7 @@ export const DEFAULT_DEMO_USER: User = {
 };
 
 export const DEFAULT_DEMO_FARM: Farm = {
-  id: '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9',
+  id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
   owner_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
   farm_name: 'Patil Krishi Farm',
   state: 'Maharashtra',
@@ -97,7 +97,7 @@ export const DEFAULT_DEMO_FARM: Farm = {
   is_active: true,
   resources: [
     {
-      id: 'res-1',
+      id: '3bf623c7-4852-4433-b806-2a96e6cc7514',
       resource_type: 'storage',
       name: 'Shaded On-farm Shed (2 MT capacity)',
       quantity: 2000,
@@ -105,7 +105,7 @@ export const DEFAULT_DEMO_FARM: Farm = {
       availability_status: 'available',
     },
     {
-      id: 'res-2',
+      id: '68ce498c-d712-49f6-844d-c60855d73a2a',
       resource_type: 'equipment',
       name: 'Plastic Harvesting Crates (20 kg each)',
       quantity: 80,
@@ -113,7 +113,7 @@ export const DEFAULT_DEMO_FARM: Farm = {
       availability_status: 'available',
     },
     {
-      id: 'res-3',
+      id: '06432bd2-f7ba-4c57-9e00-6f36a6ac76c7',
       resource_type: 'labour',
       name: 'Family + 2 Seasonal Labourers',
       quantity: 3,
@@ -173,8 +173,8 @@ export const DEFAULT_DEMO_FARMS: Farm[] = [
 ];
 
 export const DEFAULT_DEMO_LOT: CropLot = {
-  id: '862b8403-0889-43f4-9402-a2e1da4c0032',
-  farm_id: '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9',
+  id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
+  farm_id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
   owner_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
   crop_name: 'Tomato',
   variety: 'Abhinav (Fresh Table & Processing)',
@@ -188,8 +188,8 @@ export const DEFAULT_DEMO_LOT: CropLot = {
   notes: '[DEMO_SEED] 4,000 kg Summer Tomato harvest ready for decision analysis. Grade A firm red tomatoes.',
   events: [
     {
-      id: 'evt-1',
-      crop_lot_id: '862b8403-0889-43f4-9402-a2e1da4c0032',
+      id: '0cdb94ca-d32b-4076-9cc3-69d5b513ee81',
+      crop_lot_id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
       event_type: 'CREATED',
       description: '[DEMO_SEED] Initial demo crop lot seeded for Phase 1 demonstration.',
       created_at: new Date().toISOString(),
@@ -388,8 +388,13 @@ class ApiService {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.farms && data.farms.length > 0) {
-          return data.farms;
+        if (data.farms && Array.isArray(data.farms)) {
+          if (data.farms.length > 0) {
+            localStorage.setItem('a2v_farms', JSON.stringify(data.farms));
+            return data.farms;
+          } else if (this.hasToken()) {
+            return [];
+          }
         }
       }
     } catch {
@@ -414,10 +419,18 @@ class ApiService {
         body: JSON.stringify(farmData),
       });
       if (res.ok) {
-        return await res.json();
+        const newFarm = await res.json();
+        const farms = await this.getFarms();
+        localStorage.setItem('a2v_farms', JSON.stringify([newFarm, ...farms.filter((f) => f.id !== newFarm.id)]));
+        return newFarm;
       }
-    } catch {
-      // Fallback
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || err.message || `Server error ${res.status}`);
+    } catch (err: any) {
+      if (err.message && !err.message.includes('fetch') && !err.message.includes('Failed to fetch')) {
+        throw err;
+      }
+      console.warn('Backend API unreachable, saving farm locally:', err.message);
     }
 
     // Local persistence fallback
@@ -461,8 +474,12 @@ class ApiService {
         }
         return updated;
       }
-    } catch {
-      // Fallback
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || err.message || `Server error ${res.status}`);
+    } catch (err: any) {
+      if (err.message && !err.message.includes('fetch') && !err.message.includes('Failed to fetch')) {
+        throw err;
+      }
     }
 
     // Local persistence fallback
@@ -480,14 +497,36 @@ class ApiService {
     throw new Error('Farm not found');
   }
 
+  async deleteFarm(farmId: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_BASE}/farms/${farmId}`, {
+        method: 'DELETE',
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        const farms = await this.getFarms();
+        localStorage.setItem('a2v_farms', JSON.stringify(farms.filter((f) => f.id !== farmId)));
+        return true;
+      }
+    } catch {}
+    const farms = await this.getFarms();
+    localStorage.setItem('a2v_farms', JSON.stringify(farms.filter((f) => f.id !== farmId)));
+    return true;
+  }
+
   async getCropLots(farmId?: string): Promise<CropLot[]> {
     try {
       const url = farmId ? `${API_BASE}/crop-lots?farm_id=${farmId}` : `${API_BASE}/crop-lots`;
       const res = await fetch(url, { headers: this.getHeaders() });
       if (res.ok) {
         const data = await res.json();
-        if (data.crop_lots && data.crop_lots.length > 0) {
-          return data.crop_lots;
+        if (data.crop_lots && Array.isArray(data.crop_lots)) {
+          if (data.crop_lots.length > 0) {
+            localStorage.setItem('a2v_crop_lots', JSON.stringify(data.crop_lots));
+            return data.crop_lots;
+          } else if (this.hasToken()) {
+            return [];
+          }
         }
       }
     } catch {
@@ -506,10 +545,18 @@ class ApiService {
         body: JSON.stringify({ ...lotData, farm_id: farmId }),
       });
       if (res.ok) {
-        return await res.json();
+        const newLot = await res.json();
+        const lots = await this.getCropLots();
+        localStorage.setItem('a2v_crop_lots', JSON.stringify([newLot, ...lots.filter((l) => l.id !== newLot.id)]));
+        return newLot;
       }
-    } catch {
-      // Fallback
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || err.message || `Server error ${res.status}`);
+    } catch (err: any) {
+      if (err.message && !err.message.includes('fetch') && !err.message.includes('Failed to fetch')) {
+        throw err;
+      }
+      console.warn('Backend API unreachable, saving crop lot locally:', err.message);
     }
 
     const qty = Number(lotData.quantity) || 1000;
@@ -534,7 +581,7 @@ class ApiService {
       quantity_kg_normalized: normKg,
       harvest_date: lotData.harvest_date || new Date().toISOString(),
       quality_grade: lotData.quality_grade || 'A',
-      status: 'READY_FOR_ANALYSIS',
+      status: lotData.status || 'READY_FOR_ANALYSIS',
       data_mode: (lotData.data_mode as 'real' | 'demo') || 'demo',
       notes: lotData.notes,
       events: [
@@ -554,6 +601,23 @@ class ApiService {
     lots.unshift(newLot);
     localStorage.setItem('a2v_crop_lots', JSON.stringify(lots));
     return newLot;
+  }
+
+  async deleteCropLot(lotId: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_BASE}/crop-lots/${lotId}`, {
+        method: 'DELETE',
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        const lots = await this.getCropLots();
+        localStorage.setItem('a2v_crop_lots', JSON.stringify(lots.filter((l) => l.id !== lotId)));
+        return true;
+      }
+    } catch {}
+    const lots = await this.getCropLots();
+    localStorage.setItem('a2v_crop_lots', JSON.stringify(lots.filter((l) => l.id !== lotId)));
+    return true;
   }
 
   // ---- Phase 2: Profit Decision Engine Endpoints ------------------

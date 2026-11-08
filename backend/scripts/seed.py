@@ -103,6 +103,7 @@ async def seed_data(reset: bool = False):
 
         if not farmer:
             farmer = User(
+                id="07db312f-99dc-4d16-a176-bbaf2a33ca94",
                 full_name="Ramesh Patil",
                 phone=phone,
                 role="FARMER",
@@ -123,6 +124,7 @@ async def seed_data(reset: bool = False):
 
         if not farm:
             farm = Farm(
+                id="d57a5758-a0f9-4e71-8203-315981944e1f",
                 owner_user_id=farmer.id,
                 farm_name="Patil Krishi Farm",
                 state="Maharashtra",
@@ -186,6 +188,7 @@ async def seed_data(reset: bool = False):
             qty_norm = normalize_to_kg(qty, qty_unit)
 
             lot = CropLot(
+                id="db92a8cd-c22f-4685-9f2e-9df926b88302",
                 farm_id=farm.id,
                 owner_user_id=farmer.id,
                 crop_name="Tomato",

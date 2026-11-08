@@ -97,3 +97,18 @@ async def update_crop_lot(
 ) -> CropLotResponse:
     lot = await lot_service.update_crop_lot(db, lot_id, update_data, current_user.id)
     return CropLotResponse.model_validate(lot)
+
+
+@crop_lots_router.delete(
+    "/{lot_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete Crop Lot",
+    description="Delete a crop lot owned by current farmer.",
+)
+async def delete_crop_lot(
+    lot_id: str,
+    current_user: User = Depends(get_current_active_farmer),
+    db: AsyncSession = Depends(get_db),
+):
+    await lot_service.delete_crop_lot(db, lot_id, current_user.id)
+    return None

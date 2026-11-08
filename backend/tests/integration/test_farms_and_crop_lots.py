@@ -167,3 +167,62 @@ async def test_update_farm_with_boundary_and_resources(client: AsyncClient, auth
     res_names = [r["name"] for r in updated_data["resources"]]
     assert "Solar Cold Shed" in res_names
     assert "Drip Irrigation Controller" in res_names
+
+
+@pytest.mark.asyncio
+async def test_delete_farm_and_crop_lot(client: AsyncClient, auth_headers: dict):
+    # 1. Create Farm
+    farm_resp = await client.post(
+        "/api/v1/farms",
+        json={
+            "farm_name": "Temporary Test Farm",
+            "state": "Maharashtra",
+            "district": "Pune",
+            "village": "Manchar",
+        },
+        headers=auth_headers,
+    )
+    assert farm_resp.status_code == 201
+    farm_id = farm_resp.json()["id"]
+
+    # 2. Register Crop Lot with READY_FOR_ANALYSIS
+    lot_resp = await client.post(
+        f"/api/v1/farms/{farm_id}/crop-lots",
+        json={
+            "farm_id": farm_id,
+            "crop_name": "Capsicum",
+            "quantity": "1500",
+            "quantity_unit": "kg",
+            "quality_grade": "A",
+            "status": "READY_FOR_ANALYSIS",
+        },
+        headers=auth_headers,
+    )
+    assert lot_resp.status_code == 201
+    lot_id = lot_resp.json()["id"]
+    assert lot_resp.json()["status"] == "READY_FOR_ANALYSIS"
+
+    # 3. Update status to OPTION_SELECTED
+    patch_lot = await client.patch(
+        f"/api/v1/crop-lots/{lot_id}",
+        json={"status": "OPTION_SELECTED"},
+        headers=auth_headers,
+    )
+    assert patch_lot.status_code == 200
+    assert patch_lot.json()["status"] == "OPTION_SELECTED"
+
+    # 4. Delete Crop Lot
+    del_lot = await client.delete(f"/api/v1/crop-lots/{lot_id}", headers=auth_headers)
+    assert del_lot.status_code == 204
+
+    # Verify Crop Lot is gone
+    get_lot = await client.get(f"/api/v1/crop-lots/{lot_id}", headers=auth_headers)
+    assert get_lot.status_code == 404
+
+    # 5. Delete Farm (soft-delete / deactivate)
+    del_farm = await client.delete(f"/api/v1/farms/{farm_id}", headers=auth_headers)
+    assert del_farm.status_code == 204
+
+    # Verify Farm is inactive / not found
+    get_farm = await client.get(f"/api/v1/farms/{farm_id}", headers=auth_headers)
+    assert get_farm.status_code == 404

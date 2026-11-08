@@ -282,7 +282,7 @@ export const MOCK_DECISION_OPTIONS: DecisionOption[] = [
 
 export const MOCK_DECISION_RUN: DecisionRun = {
   id: 'drun-canonical-001',
-  crop_lot_id: '862b8403-0889-43f4-9402-a2e1da4c0032',
+  crop_lot_id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
   owner_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
   algorithm_version: 'v2.4-deterministic-profit-engine',
   status: 'COMPLETED',
@@ -292,7 +292,7 @@ export const MOCK_DECISION_RUN: DecisionRun = {
   baseline_net_profit: 51800,
   additional_profit_vs_baseline: 16600,
   input_snapshot: {
-    lot_id: '862b8403-0889-43f4-9402-a2e1da4c0032',
+    lot_id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
     crop_name: 'Tomato',
     variety: 'Abhinav (Hybrid Red)',
     quantity_kg: 4000,
@@ -359,7 +359,7 @@ export const MOCK_OUTCOME_COMPARISON: OutcomeComparison = {
   has_actual_outcome: true,
   status: 'RECONCILED',
   decision_run_id: 'drun-canonical-001',
-  crop_lot_id: '862b8403-0889-43f4-9402-a2e1da4c0032',
+  crop_lot_id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
   recommended_route: 'PROCESSING',
   expected_quantity_kg: 4000,
   expected_unit_price: 18.00,
@@ -850,7 +850,7 @@ export const MOCK_EXECUTION_REQUESTS: ExecutionRequest[] = [
   {
     id: 'exec-canonical-001',
     farmer_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
-    crop_lot_id: '862b8403-0889-43f4-9402-a2e1da4c0032',
+    crop_lot_id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
     decision_run_id: 'drun-canonical-001',
     route_type: 'PROCESSING',
     status: 'CONFIRMED',
@@ -902,7 +902,7 @@ export const MOCK_EXECUTION_REQUESTS: ExecutionRequest[] = [
   {
     id: 'exec-canonical-002',
     farmer_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
-    crop_lot_id: '862b8403-0889-43f4-9402-a2e1da4c0032',
+    crop_lot_id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
     decision_run_id: 'drun-canonical-002',
     route_type: 'COMMERCIAL_OFFTAKE',
     status: 'IN_EXECUTION',
@@ -959,7 +959,7 @@ export const MOCK_EXECUTION_REQUESTS: ExecutionRequest[] = [
   {
     id: 'exec-canonical-003',
     farmer_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
-    crop_lot_id: '862b8403-0889-43f4-9402-a2e1da4c0032',
+    crop_lot_id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
     decision_run_id: 'drun-canonical-003',
     route_type: 'DIRECT_DELIVERY',
     status: 'COMPLETED',
@@ -1024,7 +1024,7 @@ export const MOCK_EXECUTION_REQUESTS: ExecutionRequest[] = [
 ];
 
 export const MOCK_CROP_RESCUE: CropRescueAssessment = {
-  crop_lot_id: '862b8403-0889-43f4-9402-a2e1da4c0032',
+  crop_lot_id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
   crop_name: 'Tomato',
   variety: 'Abhinav Hybrid Red',
   quantity_kg: 4000,
@@ -1149,7 +1149,7 @@ export const MOCK_IOT_DEVICES: IoTDevice[] = [
     id: 'iot-dev-1',
     device_code: 'NODE-NSK-NIPHAD-01',
     device_name: 'Tomato Canopy & Soil Telemetry Station #1',
-    farm_id: '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9',
+    farm_id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
     farmer_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
     device_type: 'SOIL_MICROCLIMATE_STATION',
     firmware_version: 'v2.1.0-esp32-solar',
@@ -1164,7 +1164,7 @@ export const MOCK_IOT_DEVICES: IoTDevice[] = [
     id: 'iot-dev-2',
     device_code: 'NODE-NSK-NIPHAD-02',
     device_name: 'Cold Storage Ambient Temperature Watchdog #2',
-    farm_id: '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9',
+    farm_id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
     farmer_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
     device_type: 'STORAGE_THERMAL_PROBE',
     firmware_version: 'v1.8.4-zigbee',
@@ -1181,7 +1181,7 @@ export const MOCK_IOT_READINGS: IoTTelemetryReading[] = [
   {
     id: 'reading-1',
     device_id: 'iot-dev-1',
-    farm_id: '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9',
+    farm_id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
     reading_id: 'read-001',
     sensor_type: 'SOIL_MOISTURE',
     value: 38.5,
@@ -1194,7 +1194,7 @@ export const MOCK_IOT_READINGS: IoTTelemetryReading[] = [
   {
     id: 'reading-2',
     device_id: 'iot-dev-1',
-    farm_id: '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9',
+    farm_id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
     reading_id: 'read-002',
     sensor_type: 'AIR_TEMP',
     value: 28.2,
@@ -1210,7 +1210,7 @@ export const MOCK_IOT_ALERTS: IoTAlert[] = [
   {
     id: 'alert-1',
     device_id: 'iot-dev-1',
-    farm_id: '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9',
+    farm_id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
     alert_type: 'OPTIMAL_HARVEST_MATURITY',
     severity: 'INFO',
     threshold_used: 'Maturity index > 85%',
@@ -1226,8 +1226,8 @@ export const MOCK_AGREEMENTS: DealAgreement[] = [
     id: 'agr-canonical-001',
     agreement_number: 'AGR-A2V-2026-0814',
     farmer_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
-    farm_id: '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9',
-    crop_lot_id: '862b8403-0889-43f4-9402-a2e1da4c0032',
+    farm_id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
+    crop_lot_id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
     partner_type: 'PROCESSOR',
     partner_id: 'buyer-sahyadri-1',
     partner_name: 'Sahyadri Agro Processing Co-op',
@@ -1265,7 +1265,7 @@ export const MOCK_AGREEMENTS: DealAgreement[] = [
     id: 'agr-canonical-002',
     agreement_number: 'AGR-A2V-2026-0792',
     farmer_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
-    farm_id: '1a30d9c6-3e7f-409e-8a5b-ea4a7065c4a9',
+    farm_id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
     crop_lot_id: 'lot-prev-tomato-001',
     partner_type: 'BUYER',
     partner_id: 'buyer-reliance-1',

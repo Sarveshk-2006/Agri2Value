@@ -6,7 +6,7 @@ Ownership checks are enforced here — the farm must belong to the user.
 from decimal import Decimal
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
 
 from app.core.errors import NotFoundError, AuthorizationError, ValidationError
@@ -59,7 +59,7 @@ async def create_crop_lot(
         quantity_kg_normalized=qty_kg,
         harvest_date=lot_data.harvest_date,
         quality_grade=lot_data.quality_grade,
-        status="DRAFT",
+        status=lot_data.status or "DRAFT",
         data_mode=lot_data.data_mode,
         notes=lot_data.notes,
         events=[event],
@@ -155,3 +155,15 @@ async def update_crop_lot(
 
     logger.info("CropLot updated", lot_id=lot_id)
     return lot
+
+
+async def delete_crop_lot(
+    db: AsyncSession,
+    lot_id: str,
+    user_id: str,
+) -> None:
+    """Delete a crop lot with ownership check."""
+    lot = await get_crop_lot_by_id(db, lot_id, user_id)
+    await db.delete(lot)
+    await db.flush()
+    logger.info("CropLot deleted", lot_id=lot_id, user_id=user_id)
