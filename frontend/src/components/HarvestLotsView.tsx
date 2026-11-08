@@ -331,7 +331,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
           className="btn-primary self-start sm:self-auto flex items-center gap-2 shadow-sm cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>{t('harvest.registerLot')}</span>
+          <span>{t('harvest.registerHarvest')}</span>
         </button>
       </div>
 
@@ -342,7 +342,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
         {/* Metric 1: Total Lots */}
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            {t('harvest.activeLots')}
+            {t('harvest.totalLots')}
           </span>
           <div className="mt-2 flex items-baseline gap-1.5">
             <span className="text-xl sm:text-2xl font-black text-slate-900 font-mono">

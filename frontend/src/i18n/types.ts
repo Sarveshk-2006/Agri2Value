@@ -129,7 +129,9 @@ export interface TranslationSchema {
     title: string;
     subtitle: string;
     registerHarvest: string;
+    registerLot?: string;
     totalLots: string;
+    activeLots?: string;
     totalVolume: string;
     readyAnalysis: string;
     inProgress: string;

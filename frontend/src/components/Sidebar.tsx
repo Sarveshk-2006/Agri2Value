@@ -292,9 +292,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </aside>
 
-      {/* ─── DESKTOP SIDEBAR ─── */}
+      {/* ─── DESKTOP SIDEBAR (Permanently Fixed in Place) ─── */}
       <aside
-        className={`hidden md:flex flex-col bg-white border-r border-slate-200/80 transition-all duration-300 ease-in-out shrink-0 select-none ${
+        className={`hidden md:flex flex-col bg-white border-r border-slate-200/80 transition-all duration-300 ease-in-out shrink-0 select-none h-full z-20 ${
           isCollapsed ? 'w-20' : 'w-64'
         }`}
       >

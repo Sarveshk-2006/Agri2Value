@@ -390,3 +390,4 @@ export const AI_LOCALIZATION: Record<string, LocalizedAIContent> = {
 export const getAIContent = (lang: string = 'en'): LocalizedAIContent => {
   return AI_LOCALIZATION[lang] || AI_LOCALIZATION.en;
 };
+

@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   const { t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <header className="shrink-0 sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
         
         {/* Left Side: Brand & Mobile Menu Hamburger */}

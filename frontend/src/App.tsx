@@ -140,9 +140,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-600 selection:text-white">
+    <div className="h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-emerald-600 selection:text-white overflow-hidden">
       
-      {/* Top Header */}
+      {/* Top Header - Always fixed at top of screen, never scrolls away */}
       <Header
         user={user}
         backendOnline={backendOnline}
@@ -153,8 +153,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         isMobileMenuOpen={isMobileMenuOpen}
       />
 
-      {/* Main Layout with Sidebar */}
-      <div className="flex-1 flex w-full">
+      {/* Main Layout with Fixed Sidebar & Scrollable Main Content */}
+      <div className="flex-1 flex overflow-hidden w-full relative">
         <Sidebar
           activeTab={activeTab}
           onSelectTab={handleSelectTab}
@@ -165,33 +165,35 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           onCloseMobile={() => setIsMobileMenuOpen(false)}
         />
 
-        {/* Content Area */}
-        <main className="flex-1 min-w-0 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 md:pb-8">
-          <Outlet />
+        {/* Content Area - Independent Scroll Container, Sidebar stays 100% Fixed on the left */}
+        <main className="flex-1 overflow-y-auto min-w-0 flex flex-col justify-between">
+          <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 md:pb-8 flex-1">
+            <Outlet />
+          </div>
+
+          {/* Footer / Application Control Bar */}
+          <footer className="border-t border-slate-200 bg-white py-4 text-xs text-slate-500 mt-auto">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-slate-700 font-medium">© 2026 Agri2Value (कृषि-मूल्य) — Agricultural Intelligence & Execution Platform</span>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={onResetDemoData}
+                  className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-700 transition-colors cursor-pointer font-semibold"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Reset Demo Data</span>
+                </button>
+                <span className="text-slate-300">•</span>
+                <span className="text-[11px] text-slate-400 font-medium">Enterprise Edition</span>
+              </div>
+            </div>
+          </footer>
         </main>
       </div>
-
-      {/* Footer / Application Control Bar */}
-      <footer className="border-t border-slate-200 bg-white py-4 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-slate-700 font-medium">© 2026 Agri2Value (कृषि-मूल्य) — Agricultural Intelligence & Execution Platform</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <button
-              onClick={onResetDemoData}
-              className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-700 transition-colors cursor-pointer font-semibold"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Demo Data</span>
-            </button>
-            <span className="text-slate-300">•</span>
-            <span className="text-[11px] text-slate-400 font-medium">Enterprise Edition</span>
-          </div>
-        </div>
-      </footer>
 
       {/* Mobile Bottom Navigation Bar (JSPM Narhe Winners Inspired) */}
       <MobileNav activeTab={activeTab} onSelectTab={handleSelectTab} />

@@ -68,3 +68,4 @@ export const formatDate = (date: string | Date, langCode: string = 'en'): string
     return d.toLocaleDateString('en-IN');
   }
 };
+
