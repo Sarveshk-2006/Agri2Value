@@ -1,4 +1,4 @@
-// Catch-all serverless fallback for all /api/* routes on Vercel deployment
+// Consolidated single-function serverless API router for Agri2Value on Vercel
 export default function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,8 +10,11 @@ export default function handler(req, res) {
   }
 
   const url = req.url ? req.url.split('?')[0] : '';
+  const body = req.body || {};
 
-  // 1. Health
+  // ==========================================
+  // 1. HEALTH CHECK
+  // ==========================================
   if (url.includes('/health')) {
     return res.status(200).json({
       status: 'healthy',
@@ -20,10 +23,13 @@ export default function handler(req, res) {
       environment: 'production',
       database: 'connected',
       demo_mode: true,
+      timestamp: new Date().toISOString(),
     });
   }
 
-  // 1b. Weather
+  // ==========================================
+  // 2. WEATHER ADVISORY
+  // ==========================================
   if (url.includes('/weather')) {
     return res.status(200).json({
       latitude: 20.0768,
@@ -60,7 +66,9 @@ export default function handler(req, res) {
     });
   }
 
-  // 2. Auth / User
+  // ==========================================
+  // 3. AUTH & USER PROFILE
+  // ==========================================
   if (url.includes('/auth/me')) {
     return res.status(200).json({
       id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
@@ -74,7 +82,6 @@ export default function handler(req, res) {
   }
 
   if (url.includes('/auth/demo-login') || url.includes('/auth/verify-otp')) {
-    const body = req.body || {};
     return res.status(200).json({
       access_token: 'demo-jwt-token-' + Date.now(),
       refresh_token: 'demo-refresh-token-' + Date.now(),
@@ -89,15 +96,20 @@ export default function handler(req, res) {
   if (url.includes('/auth/send-otp')) {
     return res.status(200).json({
       success: true,
-      phone: req.body?.phone || '9876543210',
+      phone: body.phone || '9876543210',
       message: 'OTP sent successfully. Demo code: 123456',
       is_simulated: true,
       cooldown_seconds: 60,
     });
   }
 
-  // 3. Notifications
+  // ==========================================
+  // 4. NOTIFICATIONS
+  // ==========================================
   if (url.includes('/notifications')) {
+    if (url.includes('/mark-all-read') || url.includes('/read')) {
+      return res.status(200).json({ success: true });
+    }
     return res.status(200).json({
       items: [
         {
@@ -139,7 +151,9 @@ export default function handler(req, res) {
     });
   }
 
-  // 4. Farms
+  // ==========================================
+  // 5. FARMS & RESOURCES
+  // ==========================================
   if (url.includes('/farms') && !url.includes('/crop-lots')) {
     const demoFarm = {
       id: 'd57a5758-a0f9-4e71-8203-315981944e1f',
@@ -193,12 +207,17 @@ export default function handler(req, res) {
       updated_at: new Date().toISOString(),
     };
     if (req.method === 'POST') {
-      return res.status(201).json({ ...demoFarm, ...req.body, id: 'farm-' + Date.now() });
+      return res.status(201).json({ ...demoFarm, ...body, id: 'farm-' + Date.now() });
+    }
+    if (url.match(/\/farms\/[a-zA-Z0-9_-]+$/)) {
+      return res.status(200).json(demoFarm);
     }
     return res.status(200).json({ farms: [demoFarm], total: 1 });
   }
 
-  // 5. Crop Lots
+  // ==========================================
+  // 6. CROP LOTS
+  // ==========================================
   if (url.includes('/crop-lots')) {
     const demoLot = {
       id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
@@ -219,12 +238,396 @@ export default function handler(req, res) {
       updated_at: new Date().toISOString(),
     };
     if (req.method === 'POST') {
-      return res.status(201).json({ ...demoLot, ...req.body, id: 'lot-' + Date.now() });
+      return res.status(201).json({ ...demoLot, ...body, id: 'lot-' + Date.now() });
+    }
+    if (url.match(/\/crop-lots\/[a-zA-Z0-9_-]+$/)) {
+      return res.status(200).json(demoLot);
     }
     return res.status(200).json({ crop_lots: [demoLot], total: 1 });
   }
 
-  // 6. Generic catch-all for any other /api/* request
+  // ==========================================
+  // 7. DECISION ENGINE
+  // ==========================================
+  const MOCK_ASSUMPTIONS = [
+    { key: "transit_per_km_ton", category: "logistics", description: "Standard diesel 1-ton reefer transport cost per km", value: 18.0, unit: "INR/km-MT", source: "Verified Transport Union Tariff 2026", editable: true },
+    { key: "loading_unloading_labor", category: "labor", description: "Farm gate and terminal handling per quintal", value: 45.0, unit: "INR/quintal", source: "APMC Pimpalgaon By-laws", editable: true },
+    { key: "cold_storage_daily_rate", category: "storage", description: "CA cold chain storage per kg daily tariff", value: 0.18, unit: "INR/kg/day", source: "Maharashtra State Warehousing Corp", editable: true },
+    { key: "mandi_commission_cess", category: "statutory", description: "APMC market fee & cess percentage on gross value", value: 1.05, unit: "percent", source: "Maharashtra APMC Act Schedule", editable: false },
+    { key: "packaging_crate_amortization", category: "packaging", description: "Reusable plastic crate lease and sanitization per kg", value: 0.10, unit: "INR/kg", source: "Sahyadri FPC Standard Benchmark", editable: true }
+  ];
+
+  const buildDecisionRun = (runId = 'drun-' + Date.now(), lotId = 'db92a8cd-c22f-4685-9f2e-9df926b88302') => ({
+    id: runId,
+    crop_lot_id: lotId,
+    owner_user_id: '07db312f-99dc-4d16-a176-bbaf2a33ca94',
+    algorithm_version: 'v2.4-deterministic-profit-engine',
+    status: 'COMPLETED',
+    recommended_option_id: 'opt-proc-1',
+    recommended_route_type: 'PROCESSING',
+    recommended_net_profit: 68400,
+    baseline_net_profit: 51800,
+    additional_profit_vs_baseline: 16600,
+    input_snapshot: {
+      lot_id: lotId,
+      crop_name: 'Tomato',
+      variety: 'Abhinav (Hybrid Red)',
+      quantity_kg: 4000,
+      quality_grade: 'A',
+      harvest_date: new Date().toISOString(),
+      farm_district: 'Nashik',
+      farm_village: 'Niphad',
+      data_source_mode: 'live_curated_verified',
+      data_mode: 'demo',
+      mandi_name: 'Pimpalgaon APMC',
+      assumptions_disclosed: MOCK_ASSUMPTIONS,
+    },
+    disclaimer: 'Deterministic 4-pathway calculation with verified freight and deduction models.',
+    options: [
+      {
+        id: 'opt-proc-1',
+        decision_run_id: runId,
+        route_type: 'PROCESSING',
+        route_name: 'Sahyadri Food Processing Co-op (Tomato Puree & Pulp)',
+        feasibility_status: 'FEASIBLE',
+        rank: 1,
+        is_recommended: true,
+        saleable_quantity: 4000,
+        saleable_quantity_unit: 'kg',
+        gross_revenue: 72000,
+        total_costs: 3600,
+        net_profit: 68400,
+        net_profit_per_kg: 17.10,
+        effective_realization_per_kg: 18.00,
+        additional_profit_vs_baseline: 16600,
+        time_to_payment_days: 3,
+        cost_breakdown: { transport: 1800, labour: 1200, packaging: 400, commission_and_fees: 0, processing: 200, storage: 0, wastage_loss: 0 },
+        risk_score: 1.2,
+        counterparty_name: 'Sahyadri Farmers Producer Co.',
+      },
+      {
+        id: 'opt-buyer-1',
+        decision_run_id: runId,
+        route_type: 'DIRECT_BUYER',
+        route_name: 'Reliance Fresh Central DC (Direct Institutional Purchase)',
+        feasibility_status: 'FEASIBLE',
+        rank: 2,
+        is_recommended: false,
+        saleable_quantity: 4000,
+        saleable_quantity_unit: 'kg',
+        gross_revenue: 68000,
+        total_costs: 4200,
+        net_profit: 63800,
+        net_profit_per_kg: 15.95,
+        effective_realization_per_kg: 17.00,
+        additional_profit_vs_baseline: 12000,
+        time_to_payment_days: 5,
+        cost_breakdown: { transport: 2200, labour: 1200, packaging: 600, commission_and_fees: 0, processing: 0, storage: 0, wastage_loss: 200 },
+        risk_score: 1.5,
+        counterparty_name: 'Reliance Retail Ltd - Nashik DC',
+      },
+      {
+        id: 'opt-mandi-1',
+        decision_run_id: runId,
+        route_type: 'APMC_MANDI',
+        route_name: 'Pimpalgaon Baswant APMC (Auction Floor Baseline)',
+        feasibility_status: 'FEASIBLE',
+        rank: 3,
+        is_recommended: false,
+        saleable_quantity: 4000,
+        saleable_quantity_unit: 'kg',
+        gross_revenue: 58000,
+        total_costs: 6200,
+        net_profit: 51800,
+        net_profit_per_kg: 12.95,
+        effective_realization_per_kg: 14.50,
+        additional_profit_vs_baseline: 0,
+        time_to_payment_days: 1,
+        cost_breakdown: { transport: 1400, labour: 1800, packaging: 800, commission_and_fees: 1600, processing: 0, storage: 0, wastage_loss: 600 },
+        risk_score: 2.8,
+        counterparty_name: 'Pimpalgaon APMC Commission Agents',
+      },
+      {
+        id: 'opt-storage-1',
+        decision_run_id: runId,
+        route_type: 'COLD_STORAGE',
+        route_name: 'MSWC Controlled Atmosphere Cold Warehouse (21-Day Hold)',
+        feasibility_status: 'FEASIBLE',
+        rank: 4,
+        is_recommended: false,
+        saleable_quantity: 3880,
+        saleable_quantity_unit: 'kg',
+        gross_revenue: 81480,
+        total_costs: 18400,
+        net_profit: 63080,
+        net_profit_per_kg: 15.77,
+        effective_realization_per_kg: 21.00,
+        additional_profit_vs_baseline: 11280,
+        time_to_payment_days: 24,
+        cost_breakdown: { transport: 2400, labour: 1600, packaging: 600, commission_and_fees: 0, processing: 0, storage: 11280, wastage_loss: 2520 },
+        risk_score: 3.4,
+        counterparty_name: 'Maharashtra State Warehousing Corp Unit 4',
+      }
+    ],
+    assumptions_disclosed: MOCK_ASSUMPTIONS,
+  });
+
+  if (url.includes('/decision-engine/assumptions-config')) {
+    return res.status(200).json(MOCK_ASSUMPTIONS);
+  }
+
+  if (url.includes('/decision-engine/outcome-comparison')) {
+    const parts = url.split('/');
+    const decisionId = parts[parts.length - 1] || 'drun-canonical-001';
+    return res.status(200).json({
+      decision_run_id: decisionId,
+      pathways: [
+        { route_type: 'PROCESSING', route_name: 'Sahyadri Puree Processing', projected_net_profit: 68400, realization_per_kg: 18.00, risk_score: 1.2, is_recommended: true },
+        { route_type: 'DIRECT_BUYER', route_name: 'Reliance Fresh Institutional DC', projected_net_profit: 63800, realization_per_kg: 17.00, risk_score: 1.5, is_recommended: false },
+        { route_type: 'COLD_STORAGE', route_name: 'MSWC CA Storage Hold', projected_net_profit: 63080, realization_per_kg: 21.00, risk_score: 3.4, is_recommended: false },
+        { route_type: 'APMC_MANDI', route_name: 'Pimpalgaon Baswant APMC', projected_net_profit: 51800, realization_per_kg: 14.50, risk_score: 2.8, is_recommended: false },
+      ],
+      selected_pathway_id: 'opt-proc-1',
+      recommended_pathway_id: 'opt-proc-1',
+      comparison_metrics: {
+        max_profit_delta_inr: 16600,
+        max_profit_delta_pct: 32.0,
+        recommended_route: 'PROCESSING',
+        baseline_route: 'APMC_MANDI'
+      }
+    });
+  }
+
+  if (url.includes('/decision-engine/sensitivity')) {
+    return res.status(200).json({
+      scenarios: [
+        { name: 'Bearish Market (-15% Price Drop)', description: 'Modal price drops by 15% due to local arrivals surge', projected_gross_revenue: 61200, projected_total_costs: 3600, projected_net_profit: 57600, projected_net_profit_per_kg: 14.40, recommended_route: 'PROCESSING', net_profit_variance_inr: -10800, net_profit_variance_pct: -15.8 },
+        { name: 'Baseline Operational Model', description: 'Current verified contract and transit tariffs', projected_gross_revenue: 72000, projected_total_costs: 3600, projected_net_profit: 68400, projected_net_profit_per_kg: 17.10, recommended_route: 'PROCESSING', net_profit_variance_inr: 0, net_profit_variance_pct: 0.0 },
+        { name: 'High Transport (+20% Freight Surge)', description: 'Peak diesel fuel tariff or reefer shortage', projected_gross_revenue: 72000, projected_total_costs: 3960, projected_net_profit: 68040, projected_net_profit_per_kg: 17.01, recommended_route: 'PROCESSING', net_profit_variance_inr: -360, net_profit_variance_pct: -0.5 },
+        { name: 'Bullish Demand (+10% Premium)', description: 'Festive retail or processing order surge', projected_gross_revenue: 79200, projected_total_costs: 3600, projected_net_profit: 75600, projected_net_profit_per_kg: 18.90, recommended_route: 'PROCESSING', net_profit_variance_inr: 7200, net_profit_variance_pct: 10.5 }
+      ],
+      break_even_mandi_price_inr: 13.90,
+      stability_score: 'ROBUST',
+    });
+  }
+
+  if (url.includes('/decision-engine/evaluate')) {
+    const lotId = body.crop_lot_id || 'db92a8cd-c22f-4685-9f2e-9df926b88302';
+    const runId = 'drun-' + Date.now();
+    return res.status(200).json(buildDecisionRun(runId, lotId));
+  }
+
+  if (url.includes('/decision-engine/lots/')) {
+    return res.status(200).json([buildDecisionRun('drun-canonical-001')]);
+  }
+
+  if (url.includes('/decision-engine/decisions/')) {
+    const parts = url.split('/');
+    const decisionId = parts[parts.length - 1] || 'drun-canonical-001';
+    return res.status(200).json(buildDecisionRun(decisionId));
+  }
+
+  // ==========================================
+  // 8. EXECUTION MODULE
+  // ==========================================
+  if (url.includes('/execution/buyers')) {
+    return res.status(200).json([
+      { id: 'b-1', name: 'Reliance Retail Ltd', type: 'RETAIL_CHAIN', city: 'Nashik', state: 'Maharashtra', verified: true, payment_terms_days: 3, rating: 4.8 },
+      { id: 'b-2', name: 'Sahyadri Farmers Producer Co.', type: 'FPC', city: 'Mohadi', state: 'Maharashtra', verified: true, payment_terms_days: 2, rating: 4.9 },
+      { id: 'b-3', name: 'Kisan Fresh Agro Mandi', type: 'AGGREGATOR', city: 'Pune', state: 'Maharashtra', verified: true, payment_terms_days: 5, rating: 4.6 }
+    ]);
+  }
+
+  if (url.includes('/execution/buyer-offers')) {
+    return res.status(200).json([
+      { id: 'off-1', buyer_id: 'b-2', crop_name: 'Tomato', variety: 'Abhinav', grade: 'A', price_per_kg: 18.00, min_quantity_kg: 2000, max_quantity_kg: 10000, delivery_location: 'Sahyadri Food Park, Mohadi', validity_date: new Date(Date.now() + 86400000).toISOString() }
+    ]);
+  }
+
+  if (url.includes('/execution/logistics')) {
+    return res.status(200).json([
+      { id: 'log-1', provider_name: 'Krishi Cold Chain Express', vehicle_type: 'Reefer Van 2.5 MT', cost_per_km: 18.0, rating: 4.9, available: true },
+      { id: 'log-2', provider_name: 'Nashik Agro Haulers', vehicle_type: 'Open Canopy Pickup 1.5 MT', cost_per_km: 14.0, rating: 4.7, available: true }
+    ]);
+  }
+
+  if (url.includes('/execution/cold-storage')) {
+    return res.status(200).json([
+      { id: 'cs-1', name: 'MSWC Controlled Atmosphere Cold Warehouse', distance_km: 12.4, daily_rate_per_kg: 0.18, available_capacity_mt: 180, temp_range: '4°C - 8°C' },
+      { id: 'cs-2', name: 'Pimpalgaon Agro Cooling Unit', distance_km: 6.2, daily_rate_per_kg: 0.20, available_capacity_mt: 75, temp_range: '5°C - 10°C' }
+    ]);
+  }
+
+  if (url.includes('/execution/processing')) {
+    return res.status(200).json([
+      { id: 'proc-1', name: 'Sahyadri Puree & Pulp Processing Unit', distance_km: 14.0, processing_cost_per_kg: 1.2, accepted_grades: ['A', 'B'], turnaround_days: 2 }
+    ]);
+  }
+
+  if (url.includes('/execution/requests')) {
+    const demoReq = {
+      id: 'req-' + Date.now(),
+      crop_lot_id: body.crop_lot_id || 'db92a8cd-c22f-4685-9f2e-9df926b88302',
+      pathway_type: body.pathway_type || 'PROCESSING',
+      status: 'CONFIRMED',
+      logistics_booking_id: 'lb-9921',
+      counterparty_name: 'Sahyadri Farmers Producer Co.',
+      created_at: new Date().toISOString()
+    };
+    if (req.method === 'POST') {
+      return res.status(201).json(demoReq);
+    }
+    return res.status(200).json([demoReq]);
+  }
+
+  // ==========================================
+  // 9. CROP RESCUE
+  // ==========================================
+  if (url.includes('/crop-rescue')) {
+    return res.status(200).json({
+      lot_id: 'db92a8cd-c22f-4685-9f2e-9df926b88302',
+      risk_level: 'LOW',
+      quality_score: 92,
+      spoilage_hazard_hours: 96,
+      recommended_action: 'DIRECT_DISPATCH_TO_PROCESSING',
+      recommendations: [
+        { action: 'Immediate cold storage hold or direct pulp delivery within 48h to prevent post-harvest softening.', priority: 'HIGH' },
+        { action: 'Use ventilated plastic crates instead of jute bags to lower decay by 6%.', priority: 'MEDIUM' }
+      ]
+    });
+  }
+
+  // ==========================================
+  // 10. IOT MONITORING
+  // ==========================================
+  if (url.includes('/iot/devices')) {
+    const demoDevice = {
+      id: 'iot-sensor-01',
+      name: 'Plot 1 Soil & Microclimate Node',
+      device_type: 'SOIL_MOISTURE_AND_WEATHER',
+      battery_pct: 94,
+      status: 'ONLINE',
+      latest_readings: { soil_moisture_pct: 38.4, soil_temp_c: 24.1, ambient_temp_c: 28.6, humidity_pct: 61.2 },
+      updated_at: new Date().toISOString()
+    };
+    if (url.match(/\/iot\/devices\/[a-zA-Z0-9_-]+\/telemetry/)) {
+      return res.status(200).json([
+        { timestamp: new Date().toISOString(), soil_moisture_pct: 38.4, ambient_temp_c: 28.6, humidity_pct: 61.2 }
+      ]);
+    }
+    return res.status(200).json([demoDevice]);
+  }
+
+  if (url.includes('/iot/alerts')) {
+    return res.status(200).json([
+      { id: 'al-1', device_id: 'iot-sensor-01', type: 'OPTIMAL', message: 'Soil moisture steady at 38% field capacity.', severity: 'INFO', resolved: false, created_at: new Date().toISOString() }
+    ]);
+  }
+
+  if (url.includes('/iot/simulator')) {
+    return res.status(200).json({
+      status: 'success',
+      scenario: 'OPTIMAL_IRRIGATION',
+      generated_points: 12
+    });
+  }
+
+  // ==========================================
+  // 11. MANDI REAL-TIME PRICES & QUOTES
+  // ==========================================
+  if (url.includes('/mandi/prices')) {
+    return res.status(200).json([
+      { mandi_name: 'Pimpalgaon APMC', commodity: 'Tomato', min_price: 1300, modal_price: 1450, max_price: 1750, arrivals_tonnes: 140, updated_at: new Date().toISOString() },
+      { mandi_name: 'Nashik APMC', commodity: 'Tomato', min_price: 1250, modal_price: 1400, max_price: 1680, arrivals_tonnes: 210, updated_at: new Date().toISOString() },
+      { mandi_name: 'Lasalgaon APMC', commodity: 'Tomato', min_price: 1350, modal_price: 1500, max_price: 1800, arrivals_tonnes: 95, updated_at: new Date().toISOString() }
+    ]);
+  }
+
+  if (url.includes('/mandi/quote')) {
+    return res.status(200).json({
+      mandi_name: 'Pimpalgaon APMC',
+      commodity: 'Tomato',
+      modal_price_per_quintal: 1450,
+      price_per_kg: 14.50,
+      gross_estimate_inr: 58000,
+      deductions_inr: 6200,
+      net_expected_inr: 51800,
+      confidence: 'HIGH'
+    });
+  }
+
+  // ==========================================
+  // 12. PROTECTION FUND & SMART AGREEMENTS
+  // ==========================================
+  if (url.includes('/protection/dashboard')) {
+    return res.status(200).json({
+      trust_index_pct: 100,
+      active_agreements_count: 2,
+      protected_capital_inr: 140000,
+      claims_settled_count: 0,
+      reconciliation_health: 'OPTIMAL'
+    });
+  }
+
+  if (url.includes('/protection/agreements')) {
+    const demoAgreement = {
+      id: 'AGR-2026-0001',
+      buyer_name: 'Reliance Retail Ltd',
+      farmer_name: 'Ramesh Patil',
+      crop_name: 'Tomato',
+      quantity_kg: 4000,
+      contracted_rate_per_kg: 17.00,
+      total_contract_value_inr: 68000,
+      advance_paid_inr: 20000,
+      status: 'ESCROW_LOCKED',
+      created_at: new Date().toISOString()
+    };
+    if (url.match(/\/agreements\/[a-zA-Z0-9_-]+$/)) {
+      return res.status(200).json(demoAgreement);
+    }
+    return res.status(200).json([demoAgreement]);
+  }
+
+  if (url.includes('/protection/deliveries')) {
+    return res.status(200).json([
+      { id: 'del-1', agreement_id: 'AGR-2026-0001', status: 'IN_TRANSIT', dispatched_weight_kg: 4000, vehicle_number: 'MH-15-EG-4412', driver_contact: '9822019283' }
+    ]);
+  }
+
+  if (url.includes('/protection/payments')) {
+    return res.status(200).json([
+      { id: 'pay-1', agreement_id: 'AGR-2026-0001', amount_inr: 20000, type: 'ADVANCE_ESCROW', status: 'SETTLED', transaction_ref: 'TXN-99214' }
+    ]);
+  }
+
+  if (url.includes('/protection/disputes')) {
+    return res.status(200).json([]);
+  }
+
+  if (url.includes('/protection/risk-alerts')) {
+    return res.status(200).json([]);
+  }
+
+  if (url.includes('/protection/audit-events')) {
+    return res.status(200).json([
+      { id: 'aud-1', event_name: 'CONTRACT_CREATED', details: 'Contract AGR-2026-0001 generated with 4,000 kg Tomato.', timestamp: new Date().toISOString() }
+    ]);
+  }
+
+  // ==========================================
+  // 13. AI ADVISOR
+  // ==========================================
+  if (url.includes('/ai-advisor/chat')) {
+    return res.status(200).json({
+      reply: 'Based on verified real-time rates at Pimpalgaon APMC (₹14.50/kg) and current Sahyadri processing contract bids (₹18.00/kg), routing your 4,000 kg Tomato lot to processing generates ₹16,600 (+32%) higher net profit while eliminating APMC commission cess.',
+      recommended_action: '/app/decision',
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  // ==========================================
+  // 14. CATCH-ALL FOR ALL OTHER /api/* CALLS
+  // ==========================================
   return res.status(200).json({
     status: 'ok',
     url,
@@ -232,4 +635,3 @@ export default function handler(req, res) {
     demo_mode: true,
   });
 }
-

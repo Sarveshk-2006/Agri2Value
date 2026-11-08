@@ -684,6 +684,17 @@ class ApiService {
     scenarioPreset?: string,
     customParams?: Record<string, any>
   ): Promise<DecisionRun> {
+    if (this.backendOnlineState === false) {
+      const fallback: DecisionRun = {
+        ...MOCK_DECISION_RUN,
+        id: 'drun-' + Date.now(),
+        crop_lot_id: cropLotId,
+        created_at: new Date().toISOString(),
+      };
+      localStorage.setItem('a2v_last_decision', JSON.stringify(fallback));
+      return fallback;
+    }
+
     try {
       const payload: Record<string, any> = { crop_lot_id: cropLotId };
       if (scenarioPreset) payload.scenario_preset = scenarioPreset;
@@ -699,8 +710,10 @@ class ApiService {
         const contentType = res.headers.get('content-type') || '';
         if (contentType.includes('application/json')) {
           const data = await res.json();
-          localStorage.setItem('a2v_last_decision', JSON.stringify(data));
-          return data;
+          if (data && data.options && data.options.length > 0) {
+            localStorage.setItem('a2v_last_decision', JSON.stringify(data));
+            return data;
+          }
         }
       }
     } catch (err: any) {
@@ -718,12 +731,17 @@ class ApiService {
   }
 
   async getDecision(decisionId: string): Promise<DecisionRun> {
+    if (this.backendOnlineState === false) {
+      const saved = localStorage.getItem('a2v_last_decision');
+      return saved ? JSON.parse(saved) : MOCK_DECISION_RUN;
+    }
     try {
       const res = await fetch(`${API_BASE}/decision-engine/decisions/${decisionId}`, {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (data && data.options) return data;
       }
     } catch {}
 
@@ -732,12 +750,17 @@ class ApiService {
   }
 
   async getLotDecisions(lotId: string): Promise<DecisionRun[]> {
+    if (this.backendOnlineState === false) {
+      const saved = localStorage.getItem('a2v_last_decision');
+      return saved ? [JSON.parse(saved)] : [MOCK_DECISION_RUN];
+    }
     try {
       const res = await fetch(`${API_BASE}/decision-engine/lots/${lotId}/decisions`, {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
       }
     } catch {}
 
@@ -746,11 +769,17 @@ class ApiService {
   }
 
   async getBenchmarkAssumptions(): Promise<AssumptionItem[]> {
+    if (this.backendOnlineState === false) {
+      return MOCK_ASSUMPTIONS;
+    }
     try {
       const res = await fetch(`${API_BASE}/decision-engine/assumptions-config`, {
         headers: this.getHeaders(),
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+      }
     } catch {}
     return MOCK_ASSUMPTIONS;
   }
@@ -764,6 +793,9 @@ class ApiService {
       holding_days_shift?: number;
     }
   ): Promise<SensitivityAnalysisResult> {
+    if (this.backendOnlineState === false) {
+      return MOCK_SENSITIVITY_RESULT;
+    }
     try {
       const res = await fetch(`${API_BASE}/decision-engine/sensitivity/${lotId}`, {
         method: 'POST',
@@ -771,19 +803,24 @@ class ApiService {
         body: JSON.stringify(params || {}),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (data && data.scenarios) return data;
       }
     } catch {}
     return MOCK_SENSITIVITY_RESULT;
   }
 
   async getDecisionOutcomeComparison(decisionId: string): Promise<OutcomeComparison> {
+    if (this.backendOnlineState === false) {
+      return { ...MOCK_OUTCOME_COMPARISON, decision_run_id: decisionId };
+    }
     try {
       const res = await fetch(`${API_BASE}/decision-engine/outcome-comparison/${decisionId}`, {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (data && data.pathways) return data;
       }
     } catch {}
     return { ...MOCK_OUTCOME_COMPARISON, decision_run_id: decisionId };

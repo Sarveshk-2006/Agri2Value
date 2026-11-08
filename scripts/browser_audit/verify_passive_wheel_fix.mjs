@@ -83,3 +83,4 @@ const PROD_URL = 'https://agri2value.vercel.app';
     await browser.close();
   }
 })();
+

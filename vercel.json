@@ -5,6 +5,10 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
+      "source": "/api/:match*",
+      "destination": "/api/[...slug]"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
