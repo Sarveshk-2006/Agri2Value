@@ -104,3 +104,5 @@ postgres_data/
 
 # ---- Reference Audit Projects (External Clones) --------------
 reference-projects/
+
+.vercel
