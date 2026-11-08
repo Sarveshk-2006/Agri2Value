@@ -348,7 +348,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
             <span className="text-xl sm:text-2xl font-black text-slate-900 font-mono">
               {overviewMetrics.totalLots}
             </span>
-            <span className="text-xs text-slate-500 font-medium">Lots Registered</span>
+            <span className="text-xs text-slate-500 font-medium">{t('harvest.lotsRegistered', 'Lots Registered')}</span>
           </div>
         </div>
 
@@ -362,7 +362,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
               {overviewMetrics.totalKg.toLocaleString(i18n.language === 'en' ? 'en-IN' : `${i18n.language}-IN`)}
             </span>
             <span className="text-xs text-emerald-700 font-bold font-mono">
-              kg ({overviewMetrics.totalTonnes} MT)
+              {t('common.kg', 'kg')} ({overviewMetrics.totalTonnes} {t('common.tonnes', 'MT')})
             </span>
           </div>
         </div>
@@ -370,26 +370,26 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
         {/* Metric 3: Ready for Analysis */}
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            Ready for Analysis
+            {t('harvest.readyAnalysis', 'Ready for Analysis')}
           </span>
           <div className="mt-2 flex items-baseline gap-1.5">
             <span className="text-xl sm:text-2xl font-black text-emerald-700 font-mono">
               {overviewMetrics.readyForAnalysis}
             </span>
-            <span className="text-xs text-slate-500 font-medium">Pending Decision</span>
+            <span className="text-xs text-slate-500 font-medium">{t('harvest.pendingDecision', 'Pending Decision')}</span>
           </div>
         </div>
 
         {/* Metric 4: Active Decisions / Attention */}
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            In Analysis / Active
+            {t('harvest.inProgress', 'In Analysis / Active')}
           </span>
           <div className="mt-2 flex items-baseline gap-1.5">
             <span className="text-xl sm:text-2xl font-black text-indigo-700 font-mono">
               {overviewMetrics.inAnalysisOrExecution}
             </span>
-            <span className="text-xs text-slate-500 font-medium">Active Decisions</span>
+            <span className="text-xs text-slate-500 font-medium">{t('harvest.activeDecisions', 'Active Decisions')}</span>
           </div>
         </div>
       </div>
@@ -405,7 +405,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Search by crop, variety, or farm name..."
+                placeholder={t('harvest.searchPlaceholder', 'Search by crop, variety, or farm name...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none transition-all"
@@ -429,7 +429,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                   onChange={(e) => setSelectedFarmFilter(e.target.value)}
                   className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 font-medium cursor-pointer"
                 >
-                  <option value="ALL">All Farms</option>
+                  <option value="ALL">{t('harvest.allFarms', 'All Farms')}</option>
                   {farms.map((f) => (
                     <option key={f.id} value={f.id}>
                       {f.farm_name}
@@ -444,10 +444,10 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                 onChange={(e) => setSelectedGradeFilter(e.target.value)}
                 className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 font-medium cursor-pointer"
               >
-                <option value="ALL">All Grades</option>
-                <option value="A">Grade A</option>
-                <option value="B">Grade B</option>
-                <option value="C">Grade C</option>
+                <option value="ALL">{t('harvest.allGrades', 'All Grades')}</option>
+                <option value="A">{t('common.grade', 'Grade')} A</option>
+                <option value="B">{t('common.grade', 'Grade')} B</option>
+                <option value="C">{t('common.grade', 'Grade')} C</option>
               </select>
 
               {/* Status Filter */}
@@ -456,8 +456,8 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                 onChange={(e) => setSelectedStatusFilter(e.target.value)}
                 className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 font-medium cursor-pointer"
               >
-                <option value="ALL">All Statuses</option>
-                <option value="READY_FOR_ANALYSIS">Ready for Analysis</option>
+                <option value="ALL">{t('harvest.allStatuses', 'All Statuses')}</option>
+                <option value="READY_FOR_ANALYSIS">{t('harvest.readyAnalysis', 'Ready for Analysis')}</option>
                 <option value="DRAFT">Draft</option>
                 <option value="ANALYZED">Analysis Ready</option>
                 <option value="IN_PROGRESS">In Transit</option>
@@ -470,10 +470,10 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                 onChange={(e) => setSortBy(e.target.value as any)}
                 className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 font-medium cursor-pointer"
               >
-                <option value="date_desc">Latest Harvest</option>
-                <option value="date_asc">Oldest Harvest</option>
-                <option value="qty_desc">Quantity (High to Low)</option>
-                <option value="qty_asc">Quantity (Low to High)</option>
+                <option value="date_desc">{t('harvest.latestHarvest', 'Latest Harvest')}</option>
+                <option value="date_asc">{t('harvest.oldestHarvest', 'Oldest Harvest')}</option>
+                <option value="qty_desc">{t('harvest.qtyHighToLow', 'Quantity (High to Low)')}</option>
+                <option value="qty_asc">{t('harvest.qtyLowToHigh', 'Quantity (Low to High)')}</option>
               </select>
 
               {/* Reset Filters */}
@@ -488,7 +488,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                   className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  <span>Reset</span>
+                  <span>{t('harvest.reset', 'Reset')}</span>
                 </button>
               )}
             </div>
@@ -548,26 +548,26 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                     {lot.data_mode === 'demo' ? (
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-bold">
                         <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                        <span>Demo Seed Record</span>
+                        <span>{t('harvest.demoSeedRecord', 'Demo Seed Record')}</span>
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                        <span>Live Farm Record</span>
+                        <span>{t('harvest.liveFarmRecord', 'Live Farm Record')}</span>
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* 2. Quantity & Conversion Section (Bug Fix: Eliminates Redundant Conversion Display) */}
+                {/* 2. Quantity & Conversion Section */}
                 <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                      Registered Harvest Quantity
+                      {t('harvest.registeredQty', 'Registered Harvest Quantity')}
                     </span>
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
-                        {Number(lot.quantity).toLocaleString('en-IN')}
+                        {Number(lot.quantity).toLocaleString(i18n.language === 'en' ? 'en-IN' : `${i18n.language}-IN`)}
                       </span>
                       <span className="text-sm font-bold text-slate-600 font-mono">
                         {lot.quantity_unit}
@@ -575,7 +575,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                     </div>
                     {isKgUnit && (
                       <span className="text-[11px] text-slate-400 block mt-0.5">
-                        Standard base unit (kg)
+                        {t('harvest.standardKg', 'Standard base unit (kg)')}
                       </span>
                     )}
                   </div>
@@ -594,7 +594,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                     <div className="sm:text-right">
                       <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200 inline-flex items-center gap-1">
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Decision Ready</span>
+                        <span>{t('harvest.decisionReady', 'Decision Ready')}</span>
                       </span>
                     </div>
                   )}
@@ -605,12 +605,12 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                   {/* Quality Grade */}
                   <div className="p-3 rounded-xl bg-slate-50/60 border border-slate-100 flex flex-col justify-between">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                      Quality Grade
+                      {t('harvest.qualityGrade', 'Quality Grade')}
                     </span>
                     <div className="mt-1.5 flex items-center gap-1.5">
                       <Award className="w-4 h-4 text-emerald-600" />
                       <span className="font-extrabold text-slate-900 text-sm">
-                        Grade {lot.quality_grade || 'Ungraded'}
+                        {t('common.grade', 'Grade')} {lot.quality_grade || 'Ungraded'}
                       </span>
                     </div>
                     <span className="text-[10px] text-slate-400 mt-0.5">
@@ -622,10 +622,10 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                     </span>
                   </div>
 
-                  {/* Status (Human-Friendly Fix) */}
+                  {/* Status */}
                   <div className="p-3 rounded-xl bg-slate-50/60 border border-slate-100 flex flex-col justify-between">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                      Lifecycle Status
+                      {t('harvest.lifecycleStatus', 'Lifecycle Status')}
                     </span>
                     <div className="mt-1.5">
                       <span
@@ -637,10 +637,10 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Harvest Date (Unambiguous Date Fix) */}
+                  {/* Harvest Date */}
                   <div className="p-3 rounded-xl bg-slate-50/60 border border-slate-100 flex flex-col justify-between">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                      Harvest Date
+                      {t('harvest.harvestDate', 'Harvest Date')}
                     </span>
                     <div className="mt-1.5 flex items-center gap-1.5">
                       <Calendar className="w-4 h-4 text-slate-500" />
@@ -648,7 +648,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                         {formatHarvestDate(lot.harvest_date)}
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-400 mt-0.5">Local Harvest Time</span>
+                    <span className="text-[10px] text-slate-400 mt-0.5">{t('harvest.localTime', 'Local Harvest Time')}</span>
                   </div>
                 </div>
 
@@ -736,7 +736,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                       className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-98"
                     >
                       <Flame className="w-4 h-4 text-rose-600" />
-                      <span>Crop Rescue</span>
+                      <span>{t('harvest.rescueCrop', 'Crop Rescue')}</span>
                     </button>
                   )}
 
@@ -747,7 +747,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
                     className="btn-primary text-xs py-2.5 px-4.5 shadow-sm justify-center flex items-center gap-2 cursor-pointer active:scale-98"
                   >
                     <Sparkles className="w-4 h-4 text-emerald-200" />
-                    <span>Analyze Profit Options</span>
+                    <span>{t('harvest.evaluateProfit', 'Analyze Profit Options')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>

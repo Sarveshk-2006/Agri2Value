@@ -141,6 +141,24 @@ export interface TranslationSchema {
     harvestDate: string;
     evaluateProfit: string;
     rescueCrop: string;
+    allFarms?: string;
+    allGrades?: string;
+    allStatuses?: string;
+    latestHarvest?: string;
+    oldestHarvest?: string;
+    qtyHighToLow?: string;
+    qtyLowToHigh?: string;
+    searchPlaceholder?: string;
+    demoSeedRecord?: string;
+    liveFarmRecord?: string;
+    registeredQty?: string;
+    standardKg?: string;
+    decisionReady?: string;
+    localTime?: string;
+    pendingDecision?: string;
+    activeDecisions?: string;
+    reset?: string;
+    lotsRegistered?: string;
   };
   profit: {
     title: string;
@@ -149,6 +167,8 @@ export interface TranslationSchema {
     step2: string;
     step3: string;
     runEngine: string;
+    calculate?: string;
+    calculating?: string;
     rankedPathways: string;
     grossRevenue: string;
     deductions: string;
@@ -254,6 +274,8 @@ export interface TranslationSchema {
     phone: string;
     role: string;
     preferredLang: string;
+    preferredLanguage?: string;
+    activeSession?: string;
     security: string;
     demoControls: string;
   };

@@ -140,6 +140,27 @@ export const ta: TranslationSchema = {
     harvestDate: 'அறுவடை தேதி',
     evaluateProfit: 'லாபத்தை கணக்கிடு',
     rescueCrop: 'பயிரை மீட்கவும்',
+  
+    registerLot: 'புதிய அறுவடையை பதிவு செய்',
+    activeLots: 'மொத்த அறுவடை குவியல்கள்',
+    allFarms: 'அனைத்து பண்ணைகளும்',
+    allGrades: 'அனைத்து தரங்களும்',
+    allStatuses: 'அனைத்து நிலைகளும்',
+    latestHarvest: 'சமீபத்திய அறுவடை',
+    oldestHarvest: 'முந்தைய அறுவடை',
+    qtyHighToLow: 'அளவு (அதிகத்திலிருந்து குறைவு)',
+    qtyLowToHigh: 'அளவு (குறைவிலிருந்து அதிகம்)',
+    searchPlaceholder: 'பயிர், ரகம் அல்லது பண்ணை பெயர் கொண்டு தேடவும்...',
+    demoSeedRecord: 'டெமோ பதிவு',
+    liveFarmRecord: 'நேரடி பண்ணை பதிவு',
+    registeredQty: 'பதிவு செய்யப்பட்ட அறுவடை அளவு',
+    standardKg: 'நிலையான அடிப்படை அலகு (கிலோ)',
+    decisionReady: 'முடிவெடுக்க தயார்',
+    localTime: 'உள்ளூர் அறுவடை நேரம்',
+    pendingDecision: 'முடிவு நிலுவையில்',
+    activeDecisions: 'செயலில் உள்ள முடிவுகள்',
+    reset: 'மீட்டமை',
+    lotsRegistered: 'பதிவு செய்யப்பட்ட குவியல்கள்',
   },
   profit: {
     title: 'லாப முடிவு இயந்திரம்',
@@ -157,6 +178,9 @@ export const ta: TranslationSchema = {
     advantage: 'கூடுதல் நிகர லாபம்',
     initiateBooking: 'விற்பனையை தொடங்குங்கள்',
     integratedSettlement: 'நேரடி வங்கி கணக்கு தீர்வு',
+  
+    calculate: 'சிறந்த வழியைக் கணக்கிடுங்கள்',
+    calculating: 'கணக்கிடப்படுகிறது...',
   },
   market: {
     title: 'சந்தை விலைகள் & வானிலை நுண்ணறிவு',
@@ -255,6 +279,9 @@ export const ta: TranslationSchema = {
     preferredLang: 'விருப்பமான மொழி',
     security: 'பாதுகாப்பு & கடவுச்சொல்',
     demoControls: 'டெமோ தரவு கட்டுப்பாடுகள்',
+  
+    preferredLanguage: 'விருப்பமான மொழி',
+    activeSession: 'செயலில் உள்ள அமர்வு',
   },
   chatbot: {
     title: 'Agri2Value உதவியாளர்',

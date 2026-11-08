@@ -140,6 +140,27 @@ export const te: TranslationSchema = {
     harvestDate: 'కోత తేదీ',
     evaluateProfit: 'లాభాన్ని అంచనా వేయండి',
     rescueCrop: 'పంటను రక్షించండి',
+  
+    registerLot: 'కొత్త పంటను నమోదు చేయండి',
+    activeLots: 'మొత్తం పంట లాట్లు',
+    allFarms: 'అన్ని పొలాలు',
+    allGrades: 'అన్ని గ్రేడులు',
+    allStatuses: 'అన్ని స్థితులు',
+    latestHarvest: 'తాజా కోత',
+    oldestHarvest: 'పాత కోత',
+    qtyHighToLow: 'పరిమాణం (ఎక్కువ నుండి తక్కువ)',
+    qtyLowToHigh: 'పరిమాణం (తక్కువ నుండి ఎక్కువ)',
+    searchPlaceholder: 'పంట, రకం లేదా పొలం పేరుతో శోధించండి...',
+    demoSeedRecord: 'డెమో రికార్డ్',
+    liveFarmRecord: 'లైవ్ ఫార్మ్ రికార్డ్',
+    registeredQty: 'నమోదిత పంట పరిమాణం',
+    standardKg: 'ప్రామాణిక బేస్ యూనిట్ (కిలో)',
+    decisionReady: 'నిర్ణయానికి సిద్ధం',
+    localTime: 'స్థానిక కోత సమయం',
+    pendingDecision: 'నిర్ణయం పెండింగ్‌లో ఉంది',
+    activeDecisions: 'క్రియాశీల నిర్ణయాలు',
+    reset: 'రీసెట్',
+    lotsRegistered: 'నమోదిత లాట్లు',
   },
   profit: {
     title: 'లాభ నిర్ణయ ఇంజిన్',
@@ -157,6 +178,9 @@ export const te: TranslationSchema = {
     advantage: 'అదనపు నికర ప్రయోజనం',
     initiateBooking: 'డీల్ ప్రారంభించండి',
     integratedSettlement: 'ఖాతాలో జమ పరిష్కారం',
+  
+    calculate: 'సరైన మార్గాన్ని లెక్కించండి',
+    calculating: 'లెక్కిస్తోంది...',
   },
   market: {
     title: 'మార్కెట్ ధరలు & వాతావరణ విశ్లేషణ',
@@ -255,6 +279,9 @@ export const te: TranslationSchema = {
     preferredLang: 'ప్రాధాన్యత భాష',
     security: 'భద్రత & సెషన్',
     demoControls: 'డెమో డేటా నియంత్రణలు',
+  
+    preferredLanguage: 'ప్రాధాన్య భాష',
+    activeSession: 'క్రియాశీల సెషన్',
   },
   chatbot: {
     title: 'Agri2Value సహాయకుడు',

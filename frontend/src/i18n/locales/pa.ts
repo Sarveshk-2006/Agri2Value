@@ -140,6 +140,27 @@ export const pa: TranslationSchema = {
     harvestDate: 'ਵਾਢੀ ਦੀ ਮਿਤੀ',
     evaluateProfit: 'ਮੁਨਾਫ਼ਾ ਦੇਖੋ',
     rescueCrop: 'ਫਸਲ ਬਚਾਓ',
+  
+    registerLot: 'ਨਵੀਂ ਫ਼ਸਲ ਦਰਜ ਕਰੋ',
+    activeLots: 'ਕੁੱਲ ਫ਼ਸਲ ਲਾਟ',
+    allFarms: 'ਸਾਰੇ ਖੇਤ',
+    allGrades: 'ਸਾਰੇ ਗ੍ਰੇਡ',
+    allStatuses: 'ਸਾਰੀਆਂ ਸਥਿਤੀਆਂ',
+    latestHarvest: 'ਤਾਜ਼ਾ ਵਾਢੀ',
+    oldestHarvest: 'ਪੁਰਾਣੀ ਵਾਢੀ',
+    qtyHighToLow: 'ਮਾਤਰਾ (ਵੱਧ ਤੋਂ ਘੱਟ)',
+    qtyLowToHigh: 'ਮਾਤਰਾ (ਘੱਟ ਤੋਂ ਵੱਧ)',
+    searchPlaceholder: 'ਫ਼ਸਲ, ਕਿਸਮ ਜਾਂ ਖੇਤ ਦੇ ਨਾਮ ਨਾਲ ਖੋਜੋ...',
+    demoSeedRecord: 'ਡੈਮੋ ਰਿਕਾਰਡ',
+    liveFarmRecord: 'ਲਾਈਵ ਖੇਤ ਰਿਕਾਰਡ',
+    registeredQty: 'ਦਰਜ ਕੀਤੀ ਵਾਢੀ ਮਾਤਰਾ',
+    standardKg: 'ਮਿਆਰੀ ਮੂਲ ਇਕਾਈ (ਕਿਲੋ)',
+    decisionReady: 'ਫੈਸਲੇ ਲਈ ਤਿਆਰ',
+    localTime: 'ਸਥਾਨਕ ਵਾਢੀ ਦਾ ਸਮਾਂ',
+    pendingDecision: 'ਫੈਸਲਾ ਬਕਾਇਆ',
+    activeDecisions: 'ਸਰਗਰਮ ਫੈਸਲੇ',
+    reset: 'ਰੀਸੈਟ',
+    lotsRegistered: 'ਦਰਜ ਕੀਤੇ ਲਾਟ',
   },
   profit: {
     title: 'ਮੁਨਾਫ਼ਾ ਫੈਸਲਾ ਇੰਜਣ',
@@ -157,6 +178,9 @@ export const pa: TranslationSchema = {
     advantage: 'ਵਾਧੂ ਸ਼ੁੱਧ ਮੁਨਾਫ਼ਾ',
     initiateBooking: 'ਬੁਕਿੰਗ ਸ਼ੁਰੂ ਕਰੋ',
     integratedSettlement: 'ਸਿੱਧਾ ਬੈਂਕ ਭੁਗਤਾਨ ਹੱਲ',
+  
+    calculate: 'ਸਭ ਤੋਂ ਵਧੀਆ ਵਿਕਰੀ ਮਾਰਗ ਦੀ ਗਣਨਾ ਕਰੋ',
+    calculating: 'ਗਣਨਾ ਜਾਰੀ ਹੈ...',
   },
   market: {
     title: 'ਮੰਡੀ ਭਾਅ ਅਤੇ ਮੌਸਮ ਜਾਣਕਾਰੀ',
@@ -255,6 +279,9 @@ export const pa: TranslationSchema = {
     preferredLang: 'ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ',
     security: 'ਸੁਰੱਖਿਆ ਅਤੇ ਪਾਸਵਰਡ',
     demoControls: 'ਡੈਮੋ ਡੇਟਾ ਕੰਟਰੋਲ',
+  
+    preferredLanguage: 'ਤਰਜੀਹੀ ਭਾਸ਼ਾ',
+    activeSession: 'ਸਰਗਰਮ ਸੈਸ਼ਨ',
   },
   chatbot: {
     title: 'Agri2Value ਸਹਾਇਕ',

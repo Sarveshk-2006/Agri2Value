@@ -140,6 +140,27 @@ export const mr: TranslationSchema = {
     harvestDate: 'काढणीची तारीख',
     evaluateProfit: 'नफ्याचे मूल्यांकन करा',
     rescueCrop: 'पीक वाचवा',
+  
+    registerLot: 'नवीन पीक नोंदवा',
+    activeLots: 'एकूण पीक लॉट्स',
+    allFarms: 'सर्व शेतजमिनी',
+    allGrades: 'सर्व ग्रेड',
+    allStatuses: 'सर्व स्थिती',
+    latestHarvest: 'ताजी कापणी',
+    oldestHarvest: 'जुनी कापणी',
+    qtyHighToLow: 'प्रमाण (जास्त ते कमी)',
+    qtyLowToHigh: 'प्रमाण (कमी ते जास्त)',
+    searchPlaceholder: 'पीक, वाण किंवा शेताच्या नावाने शोधा...',
+    demoSeedRecord: 'डेमो नोंद',
+    liveFarmRecord: 'थेट शेत नोंद',
+    registeredQty: 'नोंदणीकृत पीक प्रमाण',
+    standardKg: 'प्रमाणित आधार युनिट (किलो)',
+    decisionReady: 'निर्णयासाठी सज्ज',
+    localTime: 'स्थानिक कापणी वेळ',
+    pendingDecision: 'निर्णय प्रलंबित',
+    activeDecisions: 'सक्रिय निर्णय',
+    reset: 'पूर्ववत करा',
+    lotsRegistered: 'नोंदणीकृत लॉट्स',
   },
   profit: {
     title: 'नफा निर्णय इंजिन',
@@ -157,6 +178,9 @@ export const mr: TranslationSchema = {
     advantage: 'अतिरिक्त निव्वळ फायदा',
     initiateBooking: 'करार निश्चित करा',
     integratedSettlement: 'थेट बँक जमा समाधान',
+  
+    calculate: 'सर्वोत्तम विक्री मार्गाची गणना करा',
+    calculating: 'गणना सुरू आहे...',
   },
   market: {
     title: 'बाजारभाव आणि हवामान विश्लेषण',
@@ -255,6 +279,9 @@ export const mr: TranslationSchema = {
     preferredLang: 'पसंतीची भाषा',
     security: 'सुरक्षा आणि पासवर्ड',
     demoControls: 'डेमो डेटा पर्याय',
+  
+    preferredLanguage: 'पसंतीची भाषा',
+    activeSession: 'सक्रिय सत्र',
   },
   chatbot: {
     title: 'Agri2Value मदतनीस',

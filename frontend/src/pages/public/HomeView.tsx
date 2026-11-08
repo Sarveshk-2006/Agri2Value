@@ -44,7 +44,7 @@ import {
 } from 'lucide-react';
 import tractorsImg from '../../assets/TRACTORS.jpg';
 
-// Specialized Motion Design System Components
+// Specialized Motion & Interactive Components
 import { ScrollProgressBar } from '../../components/public/motion/ScrollProgressBar';
 import { SmoothScrollProvider } from '../../components/public/motion/SmoothScrollProvider';
 import { AnimatedCounter } from '../../components/public/motion/AnimatedCounter';
@@ -58,171 +58,147 @@ export const HomeView: React.FC = () => {
   const { t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
 
-  // ─── INTERACTIVE STATE ───
+  // Interactive Tab State: '3D_FARM' | 'PROFIT' | 'RESCUE' | 'PROTECTION'
+  const [activeStudioTab, setActiveStudioTab] = useState<'3D_FARM' | 'PROFIT' | 'RESCUE' | 'PROTECTION'>('3D_FARM');
   // Walkthrough Stage: 1 to 5
   const [activeStage, setActiveStage] = useState<number>(1);
-  // Why Agri2Value Solution Tab: 'PROFIT' | 'IOT' | 'PROTECTION' | 'RESCUE'
-  const [activeSolution, setActiveSolution] = useState<'PROFIT' | 'IOT' | 'PROTECTION' | 'RESCUE'>('PROFIT');
-  // Intelligence Showcase Tab: 'PROFIT' | 'MARKET' | 'RESCUE'
-  const [activeIntelTab, setActiveIntelTab] = useState<'PROFIT' | 'MARKET' | 'RESCUE'>('PROFIT');
   // Ecosystem Hover Node
   const [hoveredNode, setHoveredNode] = useState<number | null>(null);
 
-  // ─── 8 ENTERPRISE AGRI-SERVICE MODULES ───
+  // ─── 8 ENTERPRISE AGRI-SERVICE MODULES (CLEAN MINIMAL TAGLINES) ───
   const AGRI_MODULES = [
     {
       id: 'farms',
       title: 'Farms & Land Holdings',
-      desc: 'Digital twin, GPS cadastral mapping, 3D boundary visualization, on-farm shaded sheds, and equipment inventory.',
+      desc: 'GPS cadastral mapping, 3D boundary parcels, and on-farm storage asset tracking.',
       icon: MapPin,
       tag: '3D Digital Twin',
       path: '/app/farms',
-      color: 'emerald',
     },
     {
       id: 'harvest',
-      title: 'Harvest Intelligence',
-      desc: 'Standardized kilogram batches, Brix sweetness scoring, Grade A/B/C classification, and batch dispatch readiness.',
+      title: 'Harvest Produce Lots',
+      desc: 'Standardized weights, Brix sugar scoring, and Grade A/B/C classification.',
       icon: Wheat,
       tag: 'Quality Grading',
       path: '/app/lots',
-      color: 'green',
     },
     {
       id: 'profit',
       title: 'Profit Decision Engine',
-      desc: 'Deterministic mathematical optimization without AI hallucinations. Compares 4 channels with itemized cost deductions.',
+      desc: '4-way deterministic algebra comparing gross off-take, freight, and net payouts.',
       icon: Cpu,
       tag: 'Deterministic Math',
       path: '/app/decision',
-      color: 'teal',
     },
     {
       id: 'buyers',
-      title: 'Commercial Buyer Network',
-      desc: 'Pre-qualified procurement tenders with Sahyadri Co-op, Reliance Fresh, and BigBasket with guaranteed floor prices.',
+      title: 'Buyer Network',
+      desc: 'Pre-qualified procurement tenders with corporate processors and retail chains.',
       icon: ShoppingBag,
-      tag: 'Pre-Qualified Off-Take',
+      tag: 'Verified Contracts',
       path: '/app/buyers',
-      color: 'sky',
     },
     {
       id: 'logistics',
-      title: 'Logistics & Cold Storage',
-      desc: 'Refrigerated reefer vans, local tempos, pre-cooling centers, and distance-mileage transparent freight schedules.',
+      title: 'Logistics & Storage',
+      desc: 'Refrigerated reefer fleets, cold room booking, and transparent mileage freight.',
       icon: Truck,
-      tag: 'Transparent Freight',
+      tag: 'Cold Chain',
       path: '/app/infra',
-      color: 'blue',
     },
     {
       id: 'market',
       title: 'Market & Weather Intel',
-      desc: 'Real-time Agmarknet APMC daily yard auctions, Open-Meteo 7-day microclimate forecasts, and safe spray windows.',
+      desc: 'Real-time APMC Mandi rates and hyper-local agronomic weather forecasts.',
       icon: CloudSun,
-      tag: 'Live Mandi & Weather',
+      tag: 'Live Mandi Feeds',
       path: '/app/market',
-      color: 'indigo',
     },
     {
       id: 'protection',
       title: 'Farmer Protection & Trust',
-      desc: 'Cryptographically versioned commercial contracts, weighbridge tare confirmation, escrow payouts, and formal dispute center.',
+      desc: 'Tripartite legal contracts, digital weighbridge receipts, and escrow payout safety.',
       icon: ShieldCheck,
-      tag: 'SHA-256 Ledger',
+      tag: 'Escrow Security',
       path: '/app/protection',
-      color: 'purple',
     },
     {
       id: 'rescue',
       title: 'Crop Rescue Mode',
-      desc: 'Automated distress watchdog monitoring rainfall washout and shelf-life horizons to trigger emergency salvage within 24 hours.',
+      desc: '24-hour distress triage algorithm routing perishable crops before weather loss.',
       icon: Flame,
       tag: 'Emergency Triage',
       path: '/app/rescue',
-      color: 'rose',
     },
   ];
 
-  // ─── 5-STAGE OPERATING MODEL DATA ───
-  const WALKTHROUGH_STAGES = [
+  // ─── 5-STAGE WORKFLOW (STRUCTURED MINIMAL DATA) ───
+  const WORKFLOW_STAGES = [
     {
       stage: 1,
       name: 'Farm Registration',
-      subtitle: 'Understand Land & Resources',
-      badge: 'Step 01: Digital Twin',
-      desc: 'Farmer records agricultural parcels with latitude/longitude (Niphad, Nashik), cultivated acreage, on-farm shaded storage, plastic harvesting crates, and available family labor.',
-      challengeSolved: 'Eliminates unrecorded land data; enables precise logistics vehicle routing and on-farm capacity verification.',
-      mockupData: {
-        farmName: 'Patil Krishi Farm',
-        location: 'Niphad, Nashik, Maharashtra (20.08°N, 74.04°E)',
-        area: '3.50 Acres (1.42 Ha • 140 Guntha)',
-        resources: ['Shaded On-farm Shed (2 MT)', '80 Harvesting Crates (20 kg)', 'Family + 2 Seasonal Laborers'],
-        status: 'Active Holding Verified',
-      },
+      subtitle: 'Land & Resources',
+      badge: 'Step 01',
+      desc: 'Onboard agricultural parcels with verified GPS coordinates, on-farm shaded storage, and equipment inventory.',
+      result: 'Patil Krishi Farm • 3.50 Acres Registered • Niphad, Nashik',
+      metrics: [
+        { label: 'GPS Geolocation', val: '20.08°N, 74.04°E' },
+        { label: 'Storage Shed', val: '2 MT Capacity' },
+        { label: 'Harvest Crates', val: '80 Plastic Units' },
+      ],
     },
     {
       stage: 2,
-      name: 'Harvest Management',
-      subtitle: 'Batch Normalization & Grading',
-      badge: 'Step 02: Harvest Intake',
-      desc: 'Harvested produce is registered with normalized metric weights, quality grade evaluation (Grade A/B/C), Brix sugar level, and estimated harvest date.',
-      challengeSolved: 'Prevents weight arbitrary disputes at delivery by creating an immutable benchmark timestamp before dispatch.',
-      mockupData: {
-        lotCrop: 'Tomato (Hybrid Abhinav)',
-        quantity: '4,000 kg (4.00 MT • 200 Crates)',
-        grade: 'Grade A (Table & Puree Grade)',
-        brix: 'Brix 5.2 • Firm Ripe Red',
-        harvestDate: 'Today (Local Nashik Harvest)',
-        status: 'Ready for Profit Evaluation',
-      },
+      name: 'Harvest Intake',
+      subtitle: 'Grading & Volume',
+      badge: 'Step 02',
+      desc: 'Produce weight, moisture, and quality parameters are recorded before dispatch to establish a benchmark.',
+      result: '4,000 kg Tomato • Abhinav Grade A • Brix 5.2',
+      metrics: [
+        { label: 'Standard Base', val: '4,000 kg (4 MT)' },
+        { label: 'Quality Class', val: 'Grade A (Table / Puree)' },
+        { label: 'Dispute Safety', val: 'Pre-Dispatch Benchmark' },
+      ],
     },
     {
       stage: 3,
-      name: 'Intelligent Profit Decisions',
-      subtitle: '4-Way Deterministic Algebra',
-      badge: 'Step 03: Decision Engine',
-      desc: 'The deterministic calculation engine evaluates four marketing pathways simultaneously: Direct Corporate Off-Take, Wholesale APMC Mandi, Cold Chain Holding, and Agro-Processing.',
-      challengeSolved: 'No AI hallucinations. Itemizes exact transport freight, handling fees, and storage tariffs, showing verified net farmer proceeds.',
-      mockupData: {
-        buyerOffer: { name: 'Sahyadri Agro Processing', gross: '₹28.00/kg', net: '₹23.80/kg', totalNet: '₹95,200', win: true },
-        mandiYard: { name: 'APMC Pimpalgaon Yard', gross: '₹16.00/kg', net: '₹13.40/kg', totalNet: '₹53,600', baseline: true },
-        coldStorage: { name: 'Niphad Pre-Cooling Hub', gross: '₹24.00/kg (30d)', net: '₹17.20/kg', totalNet: '₹68,800' },
-        processing: { name: 'Puree & Paste Line', gross: '₹18.00/kg', net: '₹14.50/kg', totalNet: '₹58,000' },
-        uplift: '+₹41,600 (+77% vs APMC Yard)',
-      },
+      name: 'Profit Engine',
+      subtitle: 'Deterministic Math',
+      badge: 'Step 03',
+      desc: 'Evaluates Corporate Off-Take, Mandi Auction, Cold Chain, and Processing with transparent cost deductions.',
+      result: 'Sahyadri Agro Processing Wins • ₹23.80/kg Net • +77% Uplift',
+      metrics: [
+        { label: 'Gross Revenue', val: '₹1,12,000' },
+        { label: 'Transport Deduction', val: '-₹7,200 (42 km)' },
+        { label: 'Net Farmer Gain', val: '+₹41,600 over Mandi' },
+      ],
     },
     {
       stage: 4,
-      name: 'Buyer & Logistics Connection',
-      subtitle: 'Fleet Reservation & Contracts',
-      badge: 'Step 04: Execution Dispatch',
-      desc: '1-click contract execution locks agreed terms with pre-qualified buyers and reserves rural transport fleets (Tempo 3T or Reefer Van) with transparent mileage rates.',
-      challengeSolved: 'Bypasses predatory middlemen; guarantees backhaul transportation and locks accepted unit price before produce leaves farm gate.',
-      mockupData: {
-        contractNo: 'AGR-A2V-2026-0814 (Version 1.0 Locked)',
-        partner: 'Sahyadri Mega Food Park • Mohadi, Dindori',
-        agreedRate: '₹18.00 / kg Guaranteed Floor',
-        vehicle: 'Tempo 3T (MH-15-EG-4412)',
-        driver: 'Dnyaneshwar Shinde (+91 94231 55210)',
-        transitDistance: '42 km • Reefer Pre-Cooling Active',
-      },
+      name: 'Buyer & Logistics',
+      subtitle: 'Dispatch & Contract',
+      badge: 'Step 04',
+      desc: '1-click contract locks agreed terms with verified buyers and dispatches dedicated transport vehicles.',
+      result: 'Agreement Locked • Tempo 3T (MH-15) Dispatched',
+      metrics: [
+        { label: 'Guaranteed Floor', val: '₹18.00–₹24.50/kg' },
+        { label: 'Assigned Vehicle', val: 'Tempo 3T Reefer' },
+        { label: 'Transit SLA', val: '42 km Direct Delivery' },
+      ],
     },
     {
       stage: 5,
-      name: 'Execution & Settlement',
-      subtitle: 'Weighbridge & Escrow Payout',
-      badge: 'Step 05: Verified Payout',
-      desc: 'Receiving weighbridge digitally confirms tare weight, accepted tonnage, and quality sign-off. Escrow dispatches milestone tranches directly to the farmer bank account.',
-      challengeSolved: 'Prevents unauthorized deductions, weighbridge tampering, and delayed payments with an immutable SHA-256 audit digest.',
-      mockupData: {
-        deliveredQty: '4,000 kg (Weighbridge Tare Verified)',
-        acceptedQty: '4,000 kg (Zero Rejection)',
-        tranche1: '₹45,000 Disbursed (Bank UTR: UPI-RBI-20260309-8812)',
-        tranche2: '₹23,400 Scheduled upon delivery reconciliation',
-        auditDigest: 'SHA-256: 8f9b2c3a...d9e4a1b7 (Tamper-Proof)',
-        status: 'Settlement Complete & Ledger Reconciled',
-      },
+      name: 'Escrow Settlement',
+      subtitle: 'Weighbridge & Payout',
+      badge: 'Step 05',
+      desc: 'Digital scale weighbridge tare confirmation triggers automated escrow release to the farmer bank account.',
+      result: 'Delivered 4,000 kg • Zero Rejection • Tranche Disbursed',
+      metrics: [
+        { label: 'Disbursed Net', val: '₹89,840.00 Settled' },
+        { label: 'Payment Terms', val: 'Statutory T+3 Days' },
+        { label: 'Dispute Safety', val: '1-Click Escrow Lock' },
+      ],
     },
   ];
 
@@ -231,33 +207,26 @@ export const HomeView: React.FC = () => {
       {/* Precision Scroll Progress Indicator */}
       <ScrollProgressBar />
 
-      <div className="overflow-x-hidden font-sans space-y-24 pb-24 text-slate-900 bg-slate-50 selection:bg-emerald-600 selection:text-white">
+      <div className="overflow-x-hidden font-sans space-y-20 pb-20 text-slate-900 bg-slate-50 selection:bg-emerald-600 selection:text-white">
 
         {/* ──────────────────────────────────────────────────────────
-            SECTION 1 — HERO SECTION (CINEMATIC PARALLAX + SAAS COCKPIT)
+            SECTION 1 — HERO SECTION (EXACT EARLIER VERSION MATCHING SCREENSHOT)
             ────────────────────────────────────────────────────────── */}
-        <section className="relative min-h-[94vh] flex items-center justify-center overflow-hidden pt-24 pb-20">
-          {/* Background Image with Cinematic Slow Zoom */}
-          <motion.img
+        <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden pt-24 pb-20">
+          {/* Background Image with Parallax Vibe */}
+          <img
             src={tractorsImg}
             alt="Modern Agricultural Farm and Tractors"
-            initial={shouldReduceMotion ? { scale: 1 } : { scale: 1.12 }}
-            animate={shouldReduceMotion ? { scale: 1 } : { scale: 1.03 }}
-            transition={{ duration: 10, ease: 'easeOut' }}
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            className="absolute inset-0 w-full h-full object-cover object-center scale-105"
           />
 
-          {/* Sophisticated Dark Overlays for Contrast & Legibility */}
+          {/* Sophisticated Dark Overlays for Extreme Contrast & Professionalism */}
           <div className="absolute inset-0 bg-slate-950/75" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-emerald-950/80 to-slate-950/90" />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50" />
 
-          {/* Subtle Breathing Ambient Emerald Light Glow */}
-          <motion.div
-            animate={shouldReduceMotion ? {} : { opacity: [0.2, 0.4, 0.2] }}
-            transition={{ repeat: Infinity, duration: 8, ease: 'easeInOut' }}
-            className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/20 blur-[140px] rounded-full pointer-events-none"
-          />
+          {/* Subtle Ambient Emerald Lighting */}
+          <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/15 blur-[130px] rounded-full pointer-events-none" />
 
           {/* Main Content Container (2-Column Desktop Grid) */}
           <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -267,12 +236,7 @@ export const HomeView: React.FC = () => {
               <div className="lg:col-span-7 space-y-7 text-left">
                 
                 {/* Product Badge */}
-                <motion.div
-                  initial={shouldReduceMotion ? {} : { opacity: 0, y: -12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, ease: 'easeOut' }}
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-xs font-bold tracking-wide backdrop-blur-md shadow-xs"
-                >
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-xs font-bold tracking-wide backdrop-blur-md shadow-xs animate-in fade-in duration-300">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
@@ -280,92 +244,53 @@ export const HomeView: React.FC = () => {
                   <span>{t('landing.heroBadge', 'Next-Generation AgriTech Platform')}</span>
                   <span className="text-emerald-400/60">•</span>
                   <span className="text-emerald-200 font-medium font-sans">कृषि-मूल्य • Farm-to-Profit Intelligence</span>
-                </motion.div>
+                </div>
 
-                {/* Staggered Display Headline */}
+                {/* Display Headline */}
                 <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.10] font-display tracking-tight drop-shadow-lg">
-                  <motion.span
-                    initial={shouldReduceMotion ? {} : { opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.1, ease: 'easeOut' }}
-                    className="block sm:inline"
-                  >
-                    {t('landing.heroHeadline1', 'AGRICULTURE. CONNECTED.')}{' '}
-                  </motion.span>
-                  <motion.span
-                    initial={shouldReduceMotion ? {} : { opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.25, ease: 'easeOut' }}
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-300 to-teal-200 block sm:inline"
-                  >
+                  <span>{t('landing.heroHeadline1', 'AGRICULTURE. CONNECTED.')}</span>{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-300 to-teal-200 block sm:inline">
                     {t('landing.heroHeadline2', 'INTELLIGENT. PROFITABLE.')}
-                  </motion.span>
+                  </span>
                 </h1>
 
-                {/* Subheading Reveal */}
-                <motion.p
-                  initial={shouldReduceMotion ? {} : { opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.35, ease: 'easeOut' }}
-                  className="text-sm sm:text-base lg:text-lg text-slate-200 leading-relaxed font-normal max-w-2xl drop-shadow"
-                >
+                {/* Subheading */}
+                <p className="text-sm sm:text-base lg:text-lg text-slate-200 leading-relaxed font-normal max-w-2xl drop-shadow">
                   {t(
                     'landing.heroSubtitle',
                     'One intelligent platform connecting farm management, profit decisions, market opportunities, logistics, and farmer protection.'
                   )}
-                </motion.p>
+                </p>
 
-                {/* Interactive CTAs with Tap/Hover Motion */}
-                <motion.div
-                  initial={shouldReduceMotion ? {} : { opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.45, ease: 'easeOut' }}
-                  className="flex flex-col sm:flex-row gap-3.5 pt-2"
-                >
-                  <motion.a
+                {/* Two Clear Primary CTAs */}
+                <div className="flex flex-col sm:flex-row gap-3.5 pt-2">
+                  <a
                     href="#modules"
-                    whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -2 }}
-                    whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
-                    className="px-6 py-3.5 bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                    className="px-6 py-3.5 bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-98"
                   >
                     <Compass className="w-4 h-4 text-emerald-600" />
                     <span>{t('landing.explorePlatform', 'Explore Agri2Value')}</span>
-                  </motion.a>
+                  </a>
 
-                  <motion.div
-                    whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -2 }}
-                    whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+                  <Link
+                    to="/app/dashboard"
+                    className="px-6 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-700/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-98"
                   >
-                    <Link
-                      to="/app/dashboard"
-                      className="px-6 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-700/25 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
-                    >
-                      <span>{t('landing.openConsole', 'Open Farmer Console')}</span>
-                      <ArrowRight className="w-4 h-4 text-white" />
-                    </Link>
-                  </motion.div>
+                    <span>{t('landing.openConsole', 'Open Farmer Console')}</span>
+                    <ArrowRight className="w-4 h-4 text-white" />
+                  </Link>
 
-                  <motion.div
-                    whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
-                    whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+                  <Link
+                    to="/login"
+                    className="px-5 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-xs sm:text-sm rounded-xl backdrop-blur-xs transition-all flex items-center justify-center gap-2"
                   >
-                    <Link
-                      to="/login"
-                      className="px-5 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-xs sm:text-sm rounded-xl backdrop-blur-xs transition-all flex items-center justify-center gap-2"
-                    >
-                      <PlayCircle className="w-4 h-4 text-emerald-300" />
-                      <span>{t('landing.signInDemo', 'Sign In / Demo Access')}</span>
-                    </Link>
-                  </motion.div>
-                </motion.div>
+                    <PlayCircle className="w-4 h-4 text-emerald-300" />
+                    <span>{t('landing.signInDemo', 'Sign In / Demo Access')}</span>
+                  </Link>
+                </div>
 
                 {/* Trust Value Props Strip */}
-                <motion.div
-                  initial={shouldReduceMotion ? {} : { opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.8, delay: 0.6 }}
-                  className="pt-3 border-t border-white/10 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-slate-300"
-                >
+                <div className="pt-3 border-t border-white/10 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-slate-300">
                   <div className="flex items-center gap-1.5 font-medium">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                     <span>4 Selling Pathways</span>
@@ -382,22 +307,13 @@ export const HomeView: React.FC = () => {
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                     <span>Zero Middleman Loss</span>
                   </div>
-                </motion.div>
+                </div>
 
               </div>
 
               {/* Right Column: Live Enterprise SaaS Product Cockpit Preview (5 Cols) */}
-              <motion.div
-                initial={shouldReduceMotion ? {} : { opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-                className="lg:col-span-5 relative"
-              >
-                <motion.div
-                  animate={shouldReduceMotion ? {} : { y: [0, -6, 0] }}
-                  transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
-                  className="bg-slate-900/90 border border-emerald-500/30 rounded-3xl p-5 sm:p-6 backdrop-blur-xl shadow-2xl space-y-4 text-white text-xs"
-                >
+              <div className="lg:col-span-5 relative">
+                <div className="bg-slate-900/90 border border-emerald-500/30 rounded-3xl p-5 sm:p-6 backdrop-blur-xl shadow-2xl space-y-4 text-white text-xs">
                   
                   {/* Cockpit Card Header */}
                   <div className="flex items-center justify-between pb-3 border-b border-slate-800">
@@ -478,8 +394,8 @@ export const HomeView: React.FC = () => {
                     </div>
                   </div>
 
-                </motion.div>
-              </motion.div>
+                </div>
+              </div>
 
             </div>
           </div>
@@ -492,490 +408,204 @@ export const HomeView: React.FC = () => {
         </section>
 
         {/* ──────────────────────────────────────────────────────────
-            SECTION 2 — PRODUCT IMPACT METRICS (WITH ANIMATED COUNTERS)
+            SECTION 2 — COMPACT PRODUCT IMPACT STRIP (4 METRICS)
             ────────────────────────────────────────────────────────── */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             
-            {/* Metric 1: Selling Pathways */}
-            <StaggerItem>
-              <HoverCard className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all space-y-2 h-full flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Selling Pathways</span>
-                    <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
-                      <TrendingUp className="w-4 h-4" />
-                    </div>
-                  </div>
-                  <div className="text-3xl font-black text-slate-900 font-display mt-1">
-                    <AnimatedCounter value={4} suffix=" Options" />
-                  </div>
-                  <p className="text-xs text-slate-500 leading-relaxed mt-1">
-                    Direct Corporate Off-Take, Mandi Auction Yard, Cold Chain Buffer, and Agro-Processing.
-                  </p>
-                </div>
-                <div className="pt-2 border-t border-slate-100 text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                  <span>Multi-Channel Optimization</span>
-                </div>
-              </HoverCard>
-            </StaggerItem>
+            {/* Metric 1 */}
+            <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Selling Pathways</span>
+                <TrendingUp className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display mt-2">
+                <AnimatedCounter value={4} suffix=" Options" />
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Corporate, Mandi, Cold Storage &amp; Processing.
+              </p>
+            </div>
 
-            {/* Metric 2: Net Profit Realization */}
-            <StaggerItem>
-              <HoverCard className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all space-y-2 h-full flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Net Realization</span>
-                    <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center border border-teal-100">
-                      <Sparkles className="w-4 h-4" />
-                    </div>
-                  </div>
-                  <div className="text-3xl font-black text-emerald-700 font-display mt-1">
-                    +35% to <AnimatedCounter value={77} prefix="+" suffix="%" />
-                  </div>
-                  <p className="text-xs text-slate-500 leading-relaxed mt-1">
-                    Realized net payout uplift verified against wholesale APMC baseline via itemized deductions.
-                  </p>
-                </div>
-                <div className="pt-2 border-t border-slate-100 text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                  <span>Deterministic Net Payout</span>
-                </div>
-              </HoverCard>
-            </StaggerItem>
+            {/* Metric 2 */}
+            <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Net Realization</span>
+                <Sparkles className="w-4 h-4 text-teal-600" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-emerald-700 font-display mt-2">
+                +35% to <AnimatedCounter value={77} prefix="+" suffix="%" />
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Verified uplift over distress spot auction rate.
+              </p>
+            </div>
 
-            {/* Metric 3: End-to-End Execution */}
-            <StaggerItem>
-              <HoverCard className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all space-y-2 h-full flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Execution Pipeline</span>
-                    <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-100">
-                      <Layers className="w-4 h-4" />
-                    </div>
-                  </div>
-                  <div className="text-3xl font-black text-slate-900 font-display mt-1">
-                    <AnimatedCounter value={5} suffix=" Stages" />
-                  </div>
-                  <p className="text-xs text-slate-500 leading-relaxed mt-1">
-                    From Farm Digital Twin and Quality Grading to Fleet Booking and Verified Escrow Settlement.
-                  </p>
-                </div>
-                <div className="pt-2 border-t border-slate-100 text-[10px] text-blue-700 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-blue-600" />
-                  <span>Full Lifecycle Continuity</span>
-                </div>
-              </HoverCard>
-            </StaggerItem>
+            {/* Metric 3 */}
+            <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Execution Pipeline</span>
+                <Layers className="w-4 h-4 text-blue-600" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display mt-2">
+                <AnimatedCounter value={5} suffix=" Stages" />
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">
+                From 3D farm profile to bank settlement.
+              </p>
+            </div>
 
-            {/* Metric 4: Crop Rescue Capabilities */}
-            <StaggerItem>
-              <HoverCard className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all space-y-2 h-full flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Emergency Rescue</span>
-                    <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center border border-rose-100">
-                      <Flame className="w-4 h-4" />
-                    </div>
-                  </div>
-                  <div className="text-3xl font-black text-rose-700 font-display mt-1">
-                    &lt;<AnimatedCounter value={24} suffix="h Triage" />
-                  </div>
-                  <p className="text-xs text-slate-500 leading-relaxed mt-1">
-                    Automated weather spike alerts and distress triage routing perishable crops before spoilage.
-                  </p>
-                </div>
-                <div className="pt-2 border-t border-slate-100 text-[10px] text-rose-700 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-rose-600" />
-                  <span>Shelf-Life Salvage Watchdog</span>
-                </div>
-              </HoverCard>
-            </StaggerItem>
+            {/* Metric 4 */}
+            <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200/80 hover:border-emerald-300 transition-all flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Emergency Rescue</span>
+                <Flame className="w-4 h-4 text-rose-600" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-rose-700 font-display mt-2">
+                &lt;<AnimatedCounter value={24} suffix="h Triage" />
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Automated weather alerts &amp; salvage routing.
+              </p>
+            </div>
 
-          </StaggerContainer>
-
-          {/* Provenance Disclosure Note */}
-          <div className="mt-3 text-center text-[11px] text-slate-400">
-            * Verified benchmarks derived from real Nashik Horticultural Pilot (4,000 kg Tomato Lot, Niphad Cluster) with zero fabricated statistics.
           </div>
         </section>
 
         {/* ──────────────────────────────────────────────────────────
-            SECTION 3 — AGRI-SERVICE MODULES (ANIMATED ENTERPRISE GRID)
+            SECTION 3 — CORE PRODUCT MODULES (MINIMAL, UNCLUTTERED GRID)
             ────────────────────────────────────────────────────────── */}
-        <section id="modules" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-24">
-          <FadeIn className="text-center space-y-2 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-              <span>CORE APPLICATION PLATFORM</span>
-            </div>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 font-display">
-              Browse by Agri-Service &amp; Pathway
+        <section id="modules" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 scroll-mt-24">
+          <div className="text-center space-y-1.5 max-w-2xl mx-auto">
+            <span className="text-[11px] font-bold tracking-wider uppercase text-emerald-800">
+              Core Platform Suite
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
+              8 Integrated AgriTech Services
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-              A cohesive suite of agricultural SaaS modules designed to eliminate post-harvest leakage, verify transactions, and connect smallholders to profitable off-take opportunities.
+            <p className="text-xs sm:text-sm text-slate-500">
+              Select any service to access specialized decision tools and execution workflows.
             </p>
-          </FadeIn>
+          </div>
 
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
             {AGRI_MODULES.map((mod) => {
               const Icon = mod.icon;
               return (
-                <StaggerItem key={mod.id}>
-                  <HoverCard hoverY={-6}>
-                    <Link
-                      to={mod.path}
-                      className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:border-emerald-500 hover:shadow-lg transition-all flex flex-col justify-between group space-y-4 h-full"
-                    >
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="w-10 h-10 rounded-xl bg-slate-50 group-hover:bg-emerald-50 text-slate-700 group-hover:text-emerald-700 flex items-center justify-center border border-slate-100 group-hover:border-emerald-200 transition-colors group-hover:scale-105">
-                            <Icon className="w-5 h-5 transition-transform group-hover:rotate-3" />
-                          </div>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 group-hover:bg-emerald-100 text-slate-600 group-hover:text-emerald-800 border border-slate-200 group-hover:border-emerald-200 transition-colors">
-                            {mod.tag}
-                          </span>
-                        </div>
-
-                        <div>
-                          <h3 className="font-extrabold text-base text-slate-900 group-hover:text-emerald-800 transition-colors font-display">
-                            {mod.title}
-                          </h3>
-                          <p className="text-xs text-slate-500 leading-relaxed mt-1">
-                            {mod.desc}
-                          </p>
-                        </div>
+                <Link
+                  key={mod.id}
+                  to={mod.path}
+                  className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-2xs hover:border-emerald-500 hover:shadow-md transition-all flex flex-col justify-between group space-y-3"
+                >
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                        <Icon className="w-4 h-4" />
                       </div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 group-hover:bg-emerald-100 text-slate-600 group-hover:text-emerald-800 border border-slate-200 group-hover:border-emerald-200 transition-colors">
+                        {mod.tag}
+                      </span>
+                    </div>
 
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700 group-hover:text-emerald-700">
-                        <span>Launch Module</span>
-                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform" />
-                      </div>
-                    </Link>
-                  </HoverCard>
-                </StaggerItem>
+                    <div>
+                      <h3 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-emerald-800 transition-colors font-display">
+                        {mod.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 leading-relaxed mt-1 line-clamp-2">
+                        {mod.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700 group-hover:text-emerald-700">
+                    <span>Launch</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
               );
             })}
-          </StaggerContainer>
+          </div>
         </section>
 
         {/* ──────────────────────────────────────────────────────────
-            SECTION 4 — INTERACTIVE 3D FARM DIGITAL TWIN (REACT THREE FIBER)
+            SECTION 4 — UNIFIED INTERACTIVE STUDIO (CLEAN TABBED CENTER)
             ────────────────────────────────────────────────────────── */}
-        <section id="farm-3d" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 scroll-mt-24">
-          <FadeIn>
-            <Interactive3DFarmSection />
-          </FadeIn>
-        </section>
-
-        {/* ──────────────────────────────────────────────────────────
-            SECTION 5 — INTERACTIVE PROFIT ENGINE STORYTELLING
-            ────────────────────────────────────────────────────────── */}
-        <section id="profit-engine" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 scroll-mt-24">
-          <FadeIn>
-            <InteractiveProfitEngineStory />
-          </FadeIn>
-        </section>
-
-        {/* ──────────────────────────────────────────────────────────
-            SECTION 6 — WHY AGRI2VALUE (SPLIT CHALLENGES VS SOLUTIONS)
-            ────────────────────────────────────────────────────────── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <FadeIn>
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-10 shadow-xs space-y-8">
-              
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-slate-100">
-                <div className="space-y-1">
-                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
-                    Ground Reality vs Digital Precision
-                  </span>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
-                    Why Farmers &amp; FPOs Trust Agri2Value
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 max-w-2xl">
-                    Addressing the systemic bottlenecks of Indian agriculture with reproducible mathematics and transparent commercial safeguards.
-                  </p>
-                </div>
-
-                {/* Solution Switcher Pills */}
-                <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold">
-                  {[
-                    { key: 'PROFIT', label: 'Profit Engine' },
-                    { key: 'IOT', label: 'IoT Telematics' },
-                    { key: 'PROTECTION', label: 'Farmer Trust' },
-                    { key: 'RESCUE', label: 'Crop Rescue' },
-                  ].map((tab) => (
-                    <button
-                      key={tab.key}
-                      onClick={() => setActiveSolution(tab.key as any)}
-                      className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                        activeSolution === tab.key
-                          ? 'bg-white text-emerald-800 shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Split Layout: Challenges (Left) vs Interactive Solution Preview (Right) */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-                
-                {/* Left Column: The 4 Ground Challenges (5 cols) */}
-                <div className="lg:col-span-5 space-y-3.5">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Actual Challenges in Indian Agriculture
-                  </h3>
-
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                    <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-                      <Scale className="w-4 h-4 text-amber-600" />
-                      <span>Mandi Price Uncertainty &amp; Yard Gluts</span>
-                    </div>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Daily yard auction price crashes and unrecorded commission cuts reduce smallholder net realizations by 20% to 40%.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                    <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-                      <Truck className="w-4 h-4 text-blue-600" />
-                      <span>Fragmented Cold Chain &amp; Arbitrary Freight</span>
-                    </div>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Smallholders lack access to dedicated refrigerated transport, resulting in transit spoilage and opaque per-km freight tariffs.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                    <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-                      <Flame className="w-4 h-4 text-rose-600" />
-                      <span>Unseasonal Weather &amp; Perishability Spikes</span>
-                    </div>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Excess rain or moisture causes rapid bacterial deterioration, forcing emergency distress sales at salvage throwaway rates.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                    <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-                      <ShieldCheck className="w-4 h-4 text-purple-600" />
-                      <span>Unrecorded Weighbridges &amp; Payment Delays</span>
-                    </div>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Verbal commitments and lack of weighbridge receipts leave farmers vulnerable to unauthorized quality and weight cuts.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right Column: Live Solution Component Preview (7 cols) */}
-                <div className="lg:col-span-7 bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 shadow-md flex flex-col justify-between space-y-4">
-                  
-                  {activeSolution === 'PROFIT' && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <div>
-                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Solution 01</span>
-                          <h4 className="text-base font-extrabold text-white">Deterministic Profit Decision Engine</h4>
-                        </div>
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                          Zero Hallucinations
-                        </span>
-                      </div>
-
-                      <p className="text-xs text-slate-300 leading-relaxed">
-                        Algebraic evaluation compares gross procurement rates, route mileage tariffs, and statutory market cess to ensure guaranteed net proceeds.
-                      </p>
-
-                      <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700/60 font-mono text-xs space-y-2">
-                        <div className="text-slate-400"># Canonical Profit Calculation (Tomato Lot: 4,000 kg)</div>
-                        <div className="flex justify-between text-slate-200">
-                          <span>Gross Revenue (4,000 kg × ₹28.00):</span>
-                          <span className="text-white font-bold">₹1,12,000.00</span>
-                        </div>
-                        <div className="flex justify-between text-rose-400">
-                          <span>Logistics Freight Tariff (42 km Tempo):</span>
-                          <span>-₹7,200.00</span>
-                        </div>
-                        <div className="flex justify-between text-rose-400">
-                          <span>Packaging &amp; Sorting Deductions:</span>
-                          <span>-₹9,600.00</span>
-                        </div>
-                        <div className="pt-2 border-t border-slate-700 flex justify-between text-emerald-400 font-bold text-sm">
-                          <span>Verified Net Farmer Payout:</span>
-                          <span>₹95,200.00 (₹23.80/kg)</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeSolution === 'IOT' && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <div>
-                          <span className="text-[10px] font-bold text-teal-400 uppercase tracking-wider">Solution 02</span>
-                          <h4 className="text-base font-extrabold text-white">Virtual IoT Microclimate &amp; Cold Storage Telematics</h4>
-                        </div>
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                          Telemetry Stream
-                        </span>
-                      </div>
-
-                      <p className="text-xs text-slate-300 leading-relaxed">
-                        Continuous monitoring of soil moisture, ambient canopy temperature, relative humidity, and cold room cooling cycles.
-                      </p>
-
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center text-xs">
-                        <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
-                          <span className="text-[10px] text-slate-400 block">Soil Moisture</span>
-                          <span className="text-lg font-black font-mono text-emerald-400">38.5%</span>
-                          <span className="text-[9px] text-emerald-300 block">Optimal Range</span>
-                        </div>
-                        <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
-                          <span className="text-[10px] text-slate-400 block">Canopy Temp</span>
-                          <span className="text-lg font-black font-mono text-white">28.2°C</span>
-                          <span className="text-[9px] text-slate-400 block">Day High</span>
-                        </div>
-                        <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
-                          <span className="text-[10px] text-slate-400 block">Relative Humidity</span>
-                          <span className="text-lg font-black font-mono text-blue-400">62%</span>
-                          <span className="text-[9px] text-blue-300 block">Normal Vapor</span>
-                        </div>
-                        <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
-                          <span className="text-[10px] text-slate-400 block">Battery Voltage</span>
-                          <span className="text-lg font-black font-mono text-emerald-400">4.12 V</span>
-                          <span className="text-[9px] text-emerald-300 block">Solar Charged</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeSolution === 'PROTECTION' && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <div>
-                          <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Solution 03</span>
-                          <h4 className="text-base font-extrabold text-white">Farmer Protection &amp; Digital Deal Transparency</h4>
-                        </div>
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                          Cryptographic Trust
-                        </span>
-                      </div>
-
-                      <p className="text-xs text-slate-300 leading-relaxed">
-                        Every commercial off-take agreement locks unit price and pre-approved deductions with digital weighbridge sign-offs.
-                      </p>
-
-                      <div className="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs space-y-2">
-                        <div className="flex items-center justify-between text-slate-300">
-                          <span className="font-mono font-bold text-white">Agreement AGR-A2V-2026-0814</span>
-                          <span className="text-emerald-400 font-bold">ACCEPTED &amp; LOCKED</span>
-                        </div>
-                        <div className="text-slate-400 text-[11px]">
-                          Buyer: Sahyadri Agro Processing Co-op • Floor Rate: ₹18.00 / kg • Max Deduction: ₹3,600
-                        </div>
-                        <div className="pt-2 border-t border-slate-700 flex items-center justify-between text-[11px]">
-                          <span className="text-slate-300">Milestone Tranche 1: ₹45,000 Disbursed</span>
-                          <span className="font-mono text-purple-400">SHA-256 Verified</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeSolution === 'RESCUE' && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                        <div>
-                          <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">Solution 04</span>
-                          <h4 className="text-base font-extrabold text-white">Crop Rescue Salvage Mode</h4>
-                        </div>
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                          Urgency: 85/100
-                        </span>
-                      </div>
-
-                      <p className="text-xs text-slate-300 leading-relaxed">
-                        Instantaneous post-harvest distress alerts detect approaching rainfall threats and divert perishables within 24 hours.
-                      </p>
-
-                      <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/60 text-xs space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-rose-300">⚠️ Active Weather Hazard Detected</span>
-                          <span className="text-[10px] font-mono text-white bg-rose-600 px-2 py-0.5 rounded">Action: 36h Safe Window</span>
-                        </div>
-                        <p className="text-slate-300 text-[11px]">
-                          35mm unseasonal heavy rain forecasted in Niphad cluster. Recommended action: Bypass open mandi yard and route 4,000 kg harvest directly to food park puree processing line.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Bottom Nav CTA */}
-                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-                    <span className="text-slate-400">Explore complete interactive system in console</span>
-                    <Link
-                      to="/app/dashboard"
-                      className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1.5 transition-colors"
-                    >
-                      <span>Launch Live Workspace</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-
-                </div>
-
-              </div>
-
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold tracking-wider uppercase text-emerald-800">
+                Live Interactive Studio
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
+                Test Decision &amp; Execution Engines
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500">
+                Explore simulated telemetry, mathematical calculators, and rescue routing in real time.
+              </p>
             </div>
-          </FadeIn>
-        </section>
 
-        {/* ──────────────────────────────────────────────────────────
-            SECTION 7 — INTERACTIVE DISTRESS RESCUE DEMONSTRATION
-            ────────────────────────────────────────────────────────── */}
-        <section id="rescue-demo" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 scroll-mt-24">
-          <FadeIn>
-            <InteractiveCropRescueStory />
-          </FadeIn>
-        </section>
-
-        {/* ──────────────────────────────────────────────────────────
-            SECTION 8 — INTERACTIVE FARMER PROTECTION & ESCROW STORY
-            ────────────────────────────────────────────────────────── */}
-        <section id="protection-demo" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 scroll-mt-24">
-          <FadeIn>
-            <InteractiveProtectionStory />
-          </FadeIn>
-        </section>
-
-        {/* ──────────────────────────────────────────────────────────
-            SECTION 9 — INTERACTIVE WALKTHROUGH ("SEE HOW IT WORKS")
-            ────────────────────────────────────────────────────────── */}
-        <section id="walkthrough" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-24">
-          
-          <FadeIn className="text-center space-y-2 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
-              <span>END-TO-END EXECUTION WORKFLOW</span>
+            {/* Clean Segmented Tab Switcher */}
+            <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-200/70 rounded-2xl border border-slate-300/60 text-xs font-bold self-start md:self-auto">
+              {[
+                { key: '3D_FARM', label: '3D Farm Twin', icon: MapPin },
+                { key: 'PROFIT', label: 'Profit Simulator', icon: TrendingUp },
+                { key: 'RESCUE', label: 'Rescue Triage', icon: Flame },
+                { key: 'PROTECTION', label: 'Deal Protection', icon: ShieldCheck },
+              ].map((tab) => {
+                const TabIcon = tab.icon;
+                const isSelected = activeStudioTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveStudioTab(tab.key as any)}
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-white text-emerald-800 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <TabIcon className="w-3.5 h-3.5" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 font-display">
-              See How Agri2Value Works
+          </div>
+
+          {/* Unified Studio Container */}
+          <div className="transition-all duration-300">
+            {activeStudioTab === '3D_FARM' && <Interactive3DFarmSection />}
+            {activeStudioTab === 'PROFIT' && <InteractiveProfitEngineStory />}
+            {activeStudioTab === 'RESCUE' && <InteractiveCropRescueStory />}
+            {activeStudioTab === 'PROTECTION' && <InteractiveProtectionStory />}
+          </div>
+        </section>
+
+        {/* ──────────────────────────────────────────────────────────
+            SECTION 5 — 5-STAGE WORKFLOW (STRUCTURED MINIMAL PIPELINE)
+            ────────────────────────────────────────────────────────── */}
+        <section id="walkthrough" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 scroll-mt-24">
+          <div className="text-center space-y-1.5 max-w-2xl mx-auto">
+            <span className="text-[11px] font-bold tracking-wider uppercase text-blue-800">
+              End-to-End Workflow
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
+              From Farm Parcel to Bank Settlement
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-              Follow the complete agricultural journey from farm parcel onboarding to verified bank payout. Select any stage to inspect live product capabilities.
+            <p className="text-xs sm:text-sm text-slate-500">
+              Click through the 5 operating stages to see how verified data drives transparent execution.
             </p>
-          </FadeIn>
+          </div>
 
-          {/* 5-Stage Interactive Tabs */}
+          {/* 5 Compact Stepper Buttons */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
-            {WALKTHROUGH_STAGES.map((stg) => {
+            {WORKFLOW_STAGES.map((stg) => {
               const isActive = activeStage === stg.stage;
               return (
                 <button
                   key={stg.stage}
                   onClick={() => setActiveStage(stg.stage)}
-                  className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 relative overflow-hidden ${
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1.5 ${
                     isActive
                       ? 'bg-emerald-800 text-white border-emerald-800 shadow-md ring-2 ring-emerald-600/30'
                       : 'bg-white text-slate-700 border-slate-200/80 hover:border-slate-300 hover:bg-slate-50'
@@ -987,14 +617,13 @@ export const HomeView: React.FC = () => {
                     }`}>
                       0{stg.stage}
                     </span>
-                    {isActive && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />}
+                    {isActive && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
                   </div>
-
                   <div>
-                    <div className={`font-extrabold text-xs sm:text-sm font-display ${isActive ? 'text-white' : 'text-slate-900'}`}>
+                    <div className={`font-bold text-xs ${isActive ? 'text-white' : 'text-slate-900'}`}>
                       {stg.name}
                     </div>
-                    <div className={`text-[10px] sm:text-[11px] truncate mt-0.5 ${isActive ? 'text-emerald-100' : 'text-slate-500'}`}>
+                    <div className={`text-[10px] truncate ${isActive ? 'text-emerald-100' : 'text-slate-400'}`}>
                       {stg.subtitle}
                     </div>
                   </div>
@@ -1003,376 +632,169 @@ export const HomeView: React.FC = () => {
             })}
           </div>
 
-          {/* Active Stage Detailed Panel */}
+          {/* Stage Result Display Card */}
           {(() => {
-            const currentStage = WALKTHROUGH_STAGES.find((s) => s.stage === activeStage) || WALKTHROUGH_STAGES[0];
+            const stg = WORKFLOW_STAGES.find((s) => s.stage === activeStage) || WORKFLOW_STAGES[0];
             return (
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentStage.stage}
-                  initial={shouldReduceMotion ? {} : { opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={shouldReduceMotion ? {} : { opacity: 0, y: -12 }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
-                  className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
-                >
-                  
-                  {/* Left Column: Stage Explanation (6 cols) */}
-                  <div className="lg:col-span-6 space-y-4">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                      <span>{currentStage.badge}</span>
+              <div className="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-7 shadow-xs">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                  <div className="space-y-2 max-w-xl">
+                    <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      <span>{stg.badge}</span>
+                      <span>•</span>
+                      <span>{stg.name}</span>
                     </div>
-
-                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-display">
-                      {currentStage.name}: {currentStage.subtitle}
+                    <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 font-display">
+                      {stg.result}
                     </h3>
-
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                      {currentStage.desc}
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {stg.desc}
                     </p>
-
-                    <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-1">
-                      <div className="text-[11px] font-bold text-emerald-900 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
-                        <span>Real-World Challenge Resolved:</span>
-                      </div>
-                      <p className="text-xs text-emerald-800">
-                        {currentStage.challengeSolved}
-                      </p>
-                    </div>
-
-                    <div className="pt-2 flex items-center gap-3">
-                      <Link
-                        to="/app/dashboard"
-                        className="btn-primary text-xs py-2 px-4 shadow-xs"
-                      >
-                        <span>Try in Farmer Console</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                      <span className="text-xs text-slate-400 font-mono">Step {currentStage.stage} of 5</span>
-                    </div>
                   </div>
 
-                  {/* Right Column: Realistic High-Fidelity UI Mockup (6 cols) */}
-                  <div className="lg:col-span-6 bg-slate-50 rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-2xs space-y-3">
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                      <span className="font-mono text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                        Console Data Snapshot • Stage 0{currentStage.stage}
-                      </span>
-                      <span className="badge-green text-[10px]">VERIFIED DATA</span>
-                    </div>
-
-                    {currentStage.stage === 1 && (
-                      <div className="space-y-2.5 text-xs">
-                        <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
-                          <span className="text-slate-400 text-[10px] block">Farm Profile</span>
-                          <div className="font-bold text-slate-900 text-sm">{(currentStage.mockupData as any).farmName}</div>
-                          <div className="text-slate-500 text-[11px]">{(currentStage.mockupData as any).location}</div>
-                        </div>
-                        <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
-                          <span className="text-slate-400 text-[10px] block">Cultivated Parcel Area</span>
-                          <div className="font-bold text-emerald-700 font-mono text-sm">{(currentStage.mockupData as any).area}</div>
-                        </div>
-                        <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
-                          <span className="text-slate-400 text-[10px] block">Associated On-Farm Resources</span>
-                          <div className="flex flex-wrap gap-1.5 pt-1">
-                            {(currentStage.mockupData as any).resources.map((r: string, idx: number) => (
-                              <span key={idx} className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                                {r}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
+                  {/* Concise 3-Metric Strip */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 lg:w-[480px]">
+                    {stg.metrics.map((m, idx) => (
+                      <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                        <span className="text-[10px] font-semibold text-slate-400 block truncate">{m.label}</span>
+                        <span className="text-xs font-bold font-mono text-slate-900 mt-0.5 block truncate">{m.val}</span>
                       </div>
-                    )}
-
-                    {currentStage.stage === 2 && (
-                      <div className="space-y-2.5 text-xs">
-                        <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
-                          <span className="text-slate-400 text-[10px] block">Produce Batch</span>
-                          <div className="font-bold text-slate-900 text-sm">{(currentStage.mockupData as any).lotCrop}</div>
-                          <div className="text-emerald-700 font-mono font-bold">{(currentStage.mockupData as any).quantity}</div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="p-2.5 bg-white rounded-xl border border-slate-200/80">
-                            <span className="text-slate-400 text-[10px] block">Quality Grade</span>
-                            <span className="font-bold text-slate-900 text-xs">{(currentStage.mockupData as any).grade}</span>
-                          </div>
-                          <div className="p-2.5 bg-white rounded-xl border border-slate-200/80">
-                            <span className="text-slate-400 text-[10px] block">Sugar / Brix Score</span>
-                            <span className="font-bold text-emerald-700 font-mono text-xs">{(currentStage.mockupData as any).brix}</span>
-                          </div>
-                        </div>
-                        <div className="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-[11px] font-semibold flex items-center justify-between">
-                          <span>Dispatch Status</span>
-                          <span>{(currentStage.mockupData as any).status}</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {currentStage.stage === 3 && (
-                      <div className="space-y-2 text-xs">
-                        <div className="p-3 bg-emerald-50/80 rounded-xl border border-emerald-300 space-y-1">
-                          <div className="flex justify-between items-center font-bold">
-                            <span className="text-emerald-900">★ {(currentStage.mockupData as any).buyerOffer.name}</span>
-                            <span className="font-mono text-emerald-700">{(currentStage.mockupData as any).buyerOffer.net}</span>
-                          </div>
-                          <div className="text-[11px] text-emerald-700 flex justify-between">
-                            <span>Total Realized: {(currentStage.mockupData as any).buyerOffer.totalNet}</span>
-                            <span className="font-bold">{(currentStage.mockupData as any).uplift}</span>
-                          </div>
-                        </div>
-
-                        <div className="p-2.5 bg-white rounded-xl border border-slate-200/80 flex justify-between items-center text-[11px]">
-                          <span className="text-slate-700">{(currentStage.mockupData as any).mandiYard.name}</span>
-                          <span className="font-mono font-bold text-slate-900">{(currentStage.mockupData as any).mandiYard.net} (Net: {(currentStage.mockupData as any).mandiYard.totalNet})</span>
-                        </div>
-
-                        <div className="p-2.5 bg-white rounded-xl border border-slate-200/80 flex justify-between items-center text-[11px]">
-                          <span className="text-slate-700">{(currentStage.mockupData as any).coldStorage.name}</span>
-                          <span className="font-mono font-bold text-blue-800">{(currentStage.mockupData as any).coldStorage.net}</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {currentStage.stage === 4 && (
-                      <div className="space-y-2.5 text-xs">
-                        <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
-                          <span className="text-slate-400 text-[10px] block">Cryptographic Agreement</span>
-                          <div className="font-bold text-slate-900 font-mono">{(currentStage.mockupData as any).contractNo}</div>
-                          <div className="text-slate-600 text-[11px]">Buyer: {(currentStage.mockupData as any).partner}</div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-[11px]">
-                          <div className="p-2.5 bg-white rounded-xl border border-slate-200/80">
-                            <span className="text-slate-400 text-[10px] block">Fleet Assigned</span>
-                            <span className="font-bold text-slate-900">{(currentStage.mockupData as any).vehicle}</span>
-                          </div>
-                          <div className="p-2.5 bg-white rounded-xl border border-slate-200/80">
-                            <span className="text-slate-400 text-[10px] block">Transit Distance</span>
-                            <span className="font-bold text-slate-900">{(currentStage.mockupData as any).transitDistance}</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {currentStage.stage === 5 && (
-                      <div className="space-y-2.5 text-xs">
-                        <div className="p-3 bg-white rounded-xl border border-slate-200/80 space-y-1">
-                          <span className="text-slate-400 text-[10px] block">Weighbridge Receipt</span>
-                          <div className="font-bold text-slate-900">Delivered: {(currentStage.mockupData as any).deliveredQty}</div>
-                          <div className="text-emerald-700 font-semibold text-[11px]">Accepted: {(currentStage.mockupData as any).acceptedQty}</div>
-                        </div>
-                        <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 space-y-1">
-                          <span className="text-emerald-800 text-[10px] font-bold block">Escrow Disbursement</span>
-                          <div className="text-emerald-900 font-bold">{(currentStage.mockupData as any).tranche1}</div>
-                          <div className="text-[10px] text-emerald-700 font-mono">{(currentStage.mockupData as any).auditDigest}</div>
-                        </div>
-                      </div>
-                    )}
-
+                    ))}
                   </div>
+                </div>
 
-                </motion.div>
-              </AnimatePresence>
+                <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Step {stg.stage} of 5 in Agri2Value Lifecycle</span>
+                  <Link
+                    to="/app/dashboard"
+                    className="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1"
+                  >
+                    <span>Open Console Workflow</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
             );
           })()}
-
         </section>
 
         {/* ──────────────────────────────────────────────────────────
-            SECTION 10 — AGRICULTURAL ECOSYSTEM VISUALIZATION
+            SECTION 6 — COMPACT AGRICULTURAL ECOSYSTEM STRIP
             ────────────────────────────────────────────────────────── */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          
-          <FadeIn className="text-center space-y-2 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200">
-              <span>UNIFIED STAKEHOLDER NETWORK</span>
-            </div>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 font-display">
-              Integrated Agricultural Execution Ecosystem
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="text-center space-y-1.5 max-w-2xl mx-auto">
+            <span className="text-[11px] font-bold tracking-wider uppercase text-purple-800">
+              Connected Network
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display">
+              Integrated Value Chain Stakeholders
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-              Agri2Value interconnects every critical stakeholder in the horticultural value chain into a unified, transparent execution network.
+            <p className="text-xs sm:text-sm text-slate-500">
+              Bridging farm gate supply directly with processors, buyers, and cold logistics.
             </p>
-          </FadeIn>
+          </div>
 
-          {/* 6 Connected Ecosystem Nodes with Stagger Motion */}
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              {
-                step: '01',
-                title: 'Farmers',
-                sub: 'Producers & Growers',
-                icon: Sprout,
-                value: 'Guaranteed Payout & Dispute Escrow',
-                color: 'emerald',
-              },
-              {
-                step: '02',
-                title: 'FPOs & Co-ops',
-                sub: 'Aggregators',
-                icon: Users,
-                value: 'Consolidated Bulk Tenders',
-                color: 'teal',
-              },
-              {
-                step: '03',
-                title: 'Corporate Buyers',
-                sub: 'Retail & Processors',
-                icon: Building2,
-                value: 'Traceable Grade A Supply',
-                color: 'sky',
-              },
-              {
-                step: '04',
-                title: 'Logistics Fleets',
-                sub: 'Tempo & Reefer Trucks',
-                icon: Truck,
-                value: 'Predictable Backhaul Bookings',
-                color: 'blue',
-              },
-              {
-                step: '05',
-                title: 'Cold Storage Hubs',
-                sub: 'Pre-Cooling Facilities',
-                icon: Warehouse,
-                value: 'High Occupancy & Monitored Temp',
-                color: 'indigo',
-              },
-              {
-                step: '06',
-                title: 'Processing Plants',
-                sub: 'Puree & Paste Units',
-                icon: Boxes,
-                value: 'Zero Field Dump Waste',
-                color: 'purple',
-              },
+              { title: 'Farmers', sub: 'Producers', icon: Sprout, benefit: 'Guaranteed Payout' },
+              { title: 'FPOs', sub: 'Aggregators', icon: Users, benefit: 'Bulk Tenders' },
+              { title: 'Corporate Buyers', sub: 'Retailers', icon: Building2, benefit: 'Grade A Supply' },
+              { title: 'Logistics Fleets', sub: 'Reefers', icon: Truck, benefit: 'Backhaul Loads' },
+              { title: 'Cold Hubs', sub: 'Pre-Cooling', icon: Warehouse, benefit: 'Monitored Temp' },
+              { title: 'Processors', sub: 'Puree Plants', icon: Boxes, benefit: 'Zero Dump Waste' },
             ].map((node, idx) => {
               const Icon = node.icon;
               const isHovered = hoveredNode === idx;
               return (
-                <StaggerItem key={idx}>
-                  <div
-                    onMouseEnter={() => setHoveredNode(idx)}
-                    onMouseLeave={() => setHoveredNode(null)}
-                    className={`p-4 rounded-2xl border transition-all text-center flex flex-col justify-between space-y-3 cursor-pointer h-full ${
-                      isHovered
-                        ? 'bg-emerald-800 text-white border-emerald-800 shadow-lg -translate-y-1.5'
-                        : 'bg-white text-slate-800 border-slate-200/80 hover:border-slate-300 shadow-xs'
-                    }`}
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-[10px] font-mono font-bold">
-                        <span className={isHovered ? 'text-emerald-200' : 'text-slate-400'}>{node.step}</span>
-                        <span className={`w-2 h-2 rounded-full ${isHovered ? 'bg-emerald-400 animate-pulse' : 'bg-slate-300'}`} />
-                      </div>
-
-                      <div className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center transition-colors ${
-                        isHovered ? 'bg-white/10 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                      }`}>
-                        <Icon className="w-5 h-5" />
-                      </div>
-
-                      <div>
-                        <h4 className="font-extrabold text-sm font-display">{node.title}</h4>
-                        <span className={`text-[10px] block ${isHovered ? 'text-emerald-100' : 'text-slate-500'}`}>
-                          {node.sub}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className={`pt-2 border-t text-[10px] font-semibold leading-tight ${
-                      isHovered ? 'border-white/20 text-emerald-200' : 'border-slate-100 text-emerald-700'
+                <div
+                  key={idx}
+                  onMouseEnter={() => setHoveredNode(idx)}
+                  onMouseLeave={() => setHoveredNode(null)}
+                  className={`p-3.5 rounded-2xl border transition-all text-center flex flex-col justify-between space-y-2 cursor-pointer ${
+                    isHovered
+                      ? 'bg-emerald-800 text-white border-emerald-800 shadow-md -translate-y-1'
+                      : 'bg-white text-slate-800 border-slate-200/80 shadow-2xs hover:border-slate-300'
+                  }`}
+                >
+                  <div className="space-y-1.5">
+                    <div className={`w-8 h-8 mx-auto rounded-xl flex items-center justify-center ${
+                      isHovered ? 'bg-white/10 text-white' : 'bg-emerald-50 text-emerald-700'
                     }`}>
-                      {node.value}
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-xs">{node.title}</h4>
+                      <span className={`text-[10px] block ${isHovered ? 'text-emerald-100' : 'text-slate-400'}`}>
+                        {node.sub}
+                      </span>
                     </div>
                   </div>
-                </StaggerItem>
+                  <div className={`pt-1.5 border-t text-[10px] font-semibold ${
+                    isHovered ? 'border-white/20 text-emerald-200' : 'border-slate-100 text-emerald-700'
+                  }`}>
+                    {node.benefit}
+                  </div>
+                </div>
               );
             })}
-          </StaggerContainer>
-
+          </div>
         </section>
 
         {/* ──────────────────────────────────────────────────────────
-            SECTION 11 — FINAL HIGH-CONVERSION CTA BANNER
+            SECTION 7 — FINAL CLEAN CONVERSION CTA BANNER
             ────────────────────────────────────────────────────────── */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="bg-gradient-to-br from-emerald-950 via-[#0a3528] to-slate-950 text-white rounded-3xl p-8 sm:p-14 shadow-2xl relative overflow-hidden border border-emerald-800/40 text-center space-y-6">
-              
-              {/* Ambient Lighting Glows */}
-              <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-              <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl pointer-events-none -mb-20" />
-
-              <div className="relative z-10 max-w-3xl mx-auto space-y-4">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-emerald-300 text-xs font-bold">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>TRANSFORM YOUR HORTICULTURAL REALIZATIONS</span>
-                </div>
-
-                <h2 className="text-3xl sm:text-5xl font-black text-white font-display tracking-tight leading-tight">
-                  {t('landing.finalCtaTitle', 'Your Farm Deserves Smarter Decisions.')}
-                </h2>
-
-                <p className="text-emerald-100/90 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto font-normal">
-                  {t(
-                    'landing.finalCtaSubtitle',
-                    'Join forward-looking farmers, FPOs, and agribusinesses securing transparent digital contracts, deterministic profit optimization, and guaranteed market connections.'
-                  )}
-                </p>
-
-                <div className="flex flex-col sm:flex-row justify-center items-center gap-3.5 pt-4">
-                  <motion.div
-                    whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -2 }}
-                    whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
-                    className="w-full sm:w-auto"
-                  >
-                    <Link
-                      to="/app/dashboard"
-                      className="w-full sm:w-auto px-8 py-4 bg-emerald-700 hover:bg-emerald-800 text-white font-black text-base rounded-2xl shadow-xl shadow-emerald-700/30 transition-all flex items-center justify-center gap-2"
-                    >
-                      <span>Launch Farmer Console</span>
-                      <ArrowRight className="w-5 h-5 text-white" />
-                    </Link>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
-                    whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
-                    className="w-full sm:w-auto"
-                  >
-                    <Link
-                      to="/login"
-                      className="w-full sm:w-auto px-7 py-4 bg-white/10 hover:bg-white/15 border border-white/30 text-white font-bold text-base rounded-2xl backdrop-blur-md transition-all flex items-center justify-center gap-2"
-                    >
-                      <span>Sign In with Demo OTP</span>
-                    </Link>
-                  </motion.div>
-                </div>
-
-                <div className="pt-6 flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-xs text-emerald-200/80">
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>100% Deterministic Engine</span>
-                  </span>
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Zero Middleman Loss</span>
-                  </span>
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Cryptographic Trust Ledger</span>
-                  </span>
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Free Demo Account</span>
-                  </span>
-                </div>
+          <div className="bg-gradient-to-br from-emerald-950 via-[#0a3528] to-slate-950 text-white rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden border border-emerald-800/40 text-center space-y-5">
+            <div className="relative z-10 max-w-2xl mx-auto space-y-3.5">
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-emerald-300 text-xs font-bold">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                <span>AGRICULTURAL INTELLIGENCE 2026</span>
               </div>
 
+              <h2 className="text-2xl sm:text-4xl font-black text-white font-display tracking-tight">
+                {t('landing.finalCtaTitle', 'Your Farm Deserves Smarter Decisions.')}
+              </h2>
+
+              <p className="text-emerald-100/90 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-normal">
+                {t(
+                  'landing.finalCtaSubtitle',
+                  'Join forward-looking farmers, FPOs, and agribusinesses securing transparent digital contracts, deterministic profit optimization, and guaranteed market connections.'
+                )}
+              </p>
+
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-3 pt-3">
+                <Link
+                  to="/app/dashboard"
+                  className="w-full sm:w-auto px-7 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-black text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 active:scale-98"
+                >
+                  <span>Launch Farmer Console</span>
+                  <ArrowRight className="w-4 h-4 text-white" />
+                </Link>
+
+                <Link
+                  to="/login"
+                  className="w-full sm:w-auto px-6 py-3.5 bg-white/10 hover:bg-white/15 border border-white/30 text-white font-bold text-sm rounded-xl backdrop-blur-md transition-all flex items-center justify-center gap-2 active:scale-98"
+                >
+                  <span>Sign In with Demo OTP</span>
+                </Link>
+              </div>
+
+              <div className="pt-4 flex flex-wrap items-center justify-center gap-y-1.5 gap-x-5 text-[11px] text-emerald-200/80">
+                <span className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Deterministic Engine</span>
+                </span>
+                <span className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Zero Middleman Loss</span>
+                </span>
+                <span className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Escrow Safe Payouts</span>
+                </span>
+              </div>
             </div>
-          </FadeIn>
+          </div>
         </section>
 
       </div>

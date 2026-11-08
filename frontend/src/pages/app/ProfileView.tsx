@@ -157,7 +157,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <div className="flex justify-between items-center py-2 border-b border-slate-100">
                 <span className="text-slate-500 flex items-center gap-1.5 font-medium">
                   <Globe className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{t('profile.preferredLanguage')}</span>
+                  <span>{t('profile.preferredLanguage', 'Preferred Language')}</span>
                 </span>
                 <div>
                   <LanguageSelector />

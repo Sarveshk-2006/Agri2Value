@@ -140,6 +140,27 @@ export const hi: TranslationSchema = {
     harvestDate: 'कटाई की तारीख',
     evaluateProfit: 'मुनाफे का विश्लेषण करें',
     rescueCrop: 'फसल बचाएं',
+  
+    registerLot: 'नई फसल दर्ज करें',
+    activeLots: 'कुल फसल लॉट्स',
+    allFarms: 'सभी खेत',
+    allGrades: 'सभी ग्रेड',
+    allStatuses: 'सभी स्थितियां',
+    latestHarvest: 'नवीनतम कटाई',
+    oldestHarvest: 'पुरानी कटाई',
+    qtyHighToLow: 'मात्रा (अधिक से कम)',
+    qtyLowToHigh: 'मात्रा (कम से अधिक)',
+    searchPlaceholder: 'फसल, किस्म या खेत के नाम से खोजें...',
+    demoSeedRecord: 'डेमो रिकॉर्ड',
+    liveFarmRecord: 'सत्यापित खेत रिकॉर्ड',
+    registeredQty: 'पंजीकृत फसल मात्रा',
+    standardKg: 'मानक आधार इकाई (किलो)',
+    decisionReady: 'निर्णय के लिए तैयार',
+    localTime: 'स्थानीय कटाई समय',
+    pendingDecision: 'निर्णय लंबित',
+    activeDecisions: 'सक्रिय निर्णय',
+    reset: 'रीसेट',
+    lotsRegistered: 'पंजीकृत लॉट्स',
   },
   profit: {
     title: 'लाभ निर्णय इंजन',
@@ -157,6 +178,9 @@ export const hi: TranslationSchema = {
     advantage: 'अतिरिक्त शुद्ध लाभ',
     initiateBooking: 'बुकिंग शुरू करें',
     integratedSettlement: 'एकीकृत भुगतान समाधान',
+  
+    calculate: 'सर्वोत्तम बिक्री मार्ग की गणना करें',
+    calculating: 'गणना जारी है...',
   },
   market: {
     title: 'मंडी भाव और मौसम विश्लेषण',
@@ -255,6 +279,9 @@ export const hi: TranslationSchema = {
     preferredLang: 'पसंदीदा भाषा',
     security: 'सुरक्षा और सत्र',
     demoControls: 'डेमो डेटा नियंत्रण',
+  
+    preferredLanguage: 'पसंदीदा भाषा',
+    activeSession: 'सक्रिय सत्र',
   },
   chatbot: {
     title: 'Agri2Value सहायक',

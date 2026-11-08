@@ -66,6 +66,11 @@ i18n
     },
     lng: initialLang,
     fallbackLng: 'en',
+    parseMissingKeyHandler: (key: string) => {
+      const parts = key.split('.');
+      const last = parts[parts.length - 1];
+      return last.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim();
+    },
     interpolation: {
       escapeValue: false, // React already escapes values
     },

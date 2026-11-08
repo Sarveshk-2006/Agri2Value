@@ -140,6 +140,27 @@ export const ml: TranslationSchema = {
     harvestDate: 'വിളവെടുത്ത തീയതി',
     evaluateProfit: 'ലാഭം വിലയിരുത്തുക',
     rescueCrop: 'വിള സംരക്ഷിക്കുക',
+  
+    registerLot: 'പുതിയ വിള രജിസ്റ്റർ ചെയ്യുക',
+    activeLots: 'ആകെ വിളവെടുപ്പ് ലോട്ടുകൾ',
+    allFarms: 'എല്ലാ ഫാമുകളും',
+    allGrades: 'എല്ലാ ഗ്രേഡുകളും',
+    allStatuses: 'എല്ലാ നിലകളും',
+    latestHarvest: 'ഏറ്റവും പുതിയ വിളവെടുപ്പ്',
+    oldestHarvest: 'പഴയ വിളവെടുപ്പ്',
+    qtyHighToLow: 'അളവ് (കൂടിയതിൽ നിന്ന് കുറഞ്ഞതിലേക്ക്)',
+    qtyLowToHigh: 'അളവ് (കുറഞ്ഞതിൽ നിന്ന് കൂടിയതിലേക്ക്)',
+    searchPlaceholder: 'വിള, ഇനം അല്ലെങ്കിൽ ഫാമിന്റെ പേര് ഉപയോഗിച്ച് തിരയുക...',
+    demoSeedRecord: 'ഡെമോ റെക്കോർഡ്',
+    liveFarmRecord: 'തത്സമയ ഫാം റെക്കോർഡ്',
+    registeredQty: 'രജിസ്റ്റർ ചെയ്ത വിളവെടുപ്പ് അളവ്',
+    standardKg: 'സാധാരണ അടിസ്ഥാന യൂണിറ്റ് (കിലോഗ്രാം)',
+    decisionReady: 'തീരുമാനത്തിന് തയ്യാറാണ്',
+    localTime: 'പ്രാദേശിക വിളവെടുപ്പ് സമയം',
+    pendingDecision: 'തീരുമാനം തീർപ്പുകൽപ്പിച്ചിട്ടില്ല',
+    activeDecisions: 'സജീവ തീരുമാനങ്ങൾ',
+    reset: 'റീസെറ്റ്',
+    lotsRegistered: 'രജിസ്റ്റർ ചെയ്ത വിളകൾ',
   },
   profit: {
     title: 'ലാഭ തീരുമാന എഞ്ചിൻ',
@@ -157,6 +178,9 @@ export const ml: TranslationSchema = {
     advantage: 'കൂടുതൽ ലഭിക്കുന്ന ലാഭം',
     initiateBooking: 'വിൽപ്പന ഉറപ്പിക്കുക',
     integratedSettlement: 'നേരിട്ടുള്ള ബാങ്ക് പേയ്മെന്റ്',
+  
+    calculate: 'മികച്ച വിൽപന പാത കണക്കാക്കുക',
+    calculating: 'കണക്കുകൂട്ടുന്നു...',
   },
   market: {
     title: 'വിപണി വിലകളും കാലാവസ്ഥയും',
@@ -255,6 +279,9 @@ export const ml: TranslationSchema = {
     preferredLang: 'തിരഞ്ഞെടുത്ത ഭാഷ',
     security: 'സുരക്ഷയും പാസ്‌വേഡും',
     demoControls: 'ഡെമോ ഡാറ്റ നിയന്ത്രണങ്ങൾ',
+  
+    preferredLanguage: 'തിരഞ്ഞെടുത്ത ഭാഷ',
+    activeSession: 'സജീവ സെഷൻ',
   },
   chatbot: {
     title: 'Agri2Value സഹായി',

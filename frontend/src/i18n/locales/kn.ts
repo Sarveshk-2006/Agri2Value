@@ -140,6 +140,27 @@ export const kn: TranslationSchema = {
     harvestDate: 'ಕಟಾವು ದಿನಾಂಕ',
     evaluateProfit: 'ಲಾಭ ವಿಶ್ಲೇಷಿಸಿ',
     rescueCrop: 'ಬೆಳೆ ರಕ್ಷಿಸಿ',
+  
+    registerLot: 'ಹೊಸ ಬೆಳೆಯನ್ನು ನೋಂದಾಯಿಸಿ',
+    activeLots: 'ಒಟ್ಟು ಬೆಳೆ ಲಾಟ್‌ಗಳು',
+    allFarms: 'ಎಲ್ಲಾ ಫಾರ್ಮ್‌ಗಳು',
+    allGrades: 'ಎಲ್ಲಾ ಗ್ರೇಡ್‌ಗಳು',
+    allStatuses: 'ಎಲ್ಲಾ ಸ್ಥಿತಿಗಳು',
+    latestHarvest: 'ಇತ್ತೀಚಿನ ಕೊಯ್ಲು',
+    oldestHarvest: 'ಹಳೆಯ ಕೊಯ್ಲು',
+    qtyHighToLow: 'ಪ್ರಮಾಣ (ಹೆಚ್ಚು ನಿಂದ ಕಡಿಮೆ)',
+    qtyLowToHigh: 'ಪ್ರಮಾಣ (ಕಡಿಮೆ ನಿಂದ ಹೆಚ್ಚು)',
+    searchPlaceholder: 'ಬೆಳೆ, ತಳಿ ಅಥವಾ ಫಾರ್ಮ್ ಹೆಸರಿನಿಂದ ಹುಡುಕಿ...',
+    demoSeedRecord: 'ಡೆಮೊ ದಾಖಲೆ',
+    liveFarmRecord: 'ಲೈವ್ ಫಾರ್ಮ್ ದಾಖಲೆ',
+    registeredQty: 'ನೋಂದಾಯಿತ ಕೊಯ್ಲು ಪ್ರಮಾಣ',
+    standardKg: 'ಪ್ರಮಾಣಿತ ಮೂಲ ಘಟಕ (ಕೆಜಿ)',
+    decisionReady: 'ನಿರ್ಧಾರಕ್ಕೆ ಸಿದ್ಧ',
+    localTime: 'ಸ್ಥಳೀಯ ಕೊಯ್ಲು ಸಮಯ',
+    pendingDecision: 'ನಿರ್ಧಾರ ಬಾಕಿ',
+    activeDecisions: 'ಸಕ್ರಿಯ ನಿರ್ಧಾರಗಳು',
+    reset: 'ಮರುಹೊಂದಿಸಿ',
+    lotsRegistered: 'ನೋಂದಾಯಿತ ಲಾಟ್‌ಗಳು',
   },
   profit: {
     title: 'ಲಾಭ ನಿರ್ಧಾರ ಎಂಜಿನ್',
@@ -157,6 +178,9 @@ export const kn: TranslationSchema = {
     advantage: 'ಹೆಚ್ಚುವರಿ ನಿವ್ವಳ ಲಾಭ',
     initiateBooking: 'ಬುಕಿಂಗ್ ಆರಂಭಿಸಿ',
     integratedSettlement: 'ನೇರ ಬ್ಯಾಂಕ್ ಜಮಾ ಪರಿಹಾರ',
+  
+    calculate: 'ಉತ್ತಮ ಮಾರ್ಗವನ್ನು ಲೆಕ್ಕಹಾಕಿ',
+    calculating: 'ಲೆಕ್ಕಹಾಕಲಾಗುತ್ತಿದೆ...',
   },
   market: {
     title: 'ಮಾರುಕಟ್ಟೆ ದರಗಳು ಮತ್ತು ಹವಾಮಾನ',
@@ -255,6 +279,9 @@ export const kn: TranslationSchema = {
     preferredLang: 'ಆದ್ಯತೆಯ ಭಾಷೆ',
     security: 'ಭದ್ರತೆ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್',
     demoControls: 'ಡೆಮೊ ಡೇಟಾ ನಿಯಂತ್ರಣಗಳು',
+  
+    preferredLanguage: 'ಆದ್ಯತೆಯ ಭಾಷೆ',
+    activeSession: 'ಸಕ್ರಿಯ ಅಧಿವೇಶನ',
   },
   chatbot: {
     title: 'Agri2Value ಸಹಾಯಕ',

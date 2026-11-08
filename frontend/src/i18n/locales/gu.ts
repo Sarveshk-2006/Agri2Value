@@ -140,6 +140,27 @@ export const gu: TranslationSchema = {
     harvestDate: 'લણણી તારીખ',
     evaluateProfit: 'નફાનું મૂલ્યાંકન કરો',
     rescueCrop: 'પાક બચાવો',
+  
+    registerLot: 'નવો પાક નોંધણી કરો',
+    activeLots: 'કુલ પાક લોટ',
+    allFarms: 'બધા ખેતરો',
+    allGrades: 'બધા ગ્રેડ',
+    allStatuses: 'બધી સ્થિતિઓ',
+    latestHarvest: 'તાજેતરની લણણી',
+    oldestHarvest: 'જૂની લણણી',
+    qtyHighToLow: 'જથ્થો (વધુથી ઓછો)',
+    qtyLowToHigh: 'જથ્થો (ઓછાથી વધુ)',
+    searchPlaceholder: 'પાક, જાત અથવા ખેતરના નામથી શોધો...',
+    demoSeedRecord: 'ડેમો રેકોર્ડ',
+    liveFarmRecord: 'લાઇવ ખેતર રેકોર્ડ',
+    registeredQty: 'નોંધાયેલ પાક જથ્થો',
+    standardKg: 'પ્રમાણભૂત આધાર એકમ (કિગ્રા)',
+    decisionReady: 'નિર્ણય માટે તૈયાર',
+    localTime: 'સ્થાનિક લણણી સમય',
+    pendingDecision: 'નિર્ણય બાકી',
+    activeDecisions: 'સક્રિય નિર્ણયો',
+    reset: 'રીસેટ',
+    lotsRegistered: 'નોંધાયેલા લોટ',
   },
   profit: {
     title: 'નફા નિર્ણય એન્જિન',
@@ -157,6 +178,9 @@ export const gu: TranslationSchema = {
     advantage: 'વધારાનો ચોખ્ખો ફાયદો',
     initiateBooking: 'બુકિંગ શરૂ કરો',
     integratedSettlement: 'સીધા બેંક ખાતામાં ચૂકવણી',
+  
+    calculate: 'શ્રેષ્ઠ વેચાણ માર્ગની ગણતરી કરો',
+    calculating: 'ગણતરી ચાલુ છે...',
   },
   market: {
     title: 'બજાર ભાવ અને હવામાન વિશ્લેષણ',
@@ -255,6 +279,9 @@ export const gu: TranslationSchema = {
     preferredLang: 'પસંદગીની ભાષા',
     security: 'સુરક્ષા અને પાસવર્ડ',
     demoControls: 'ડેમો ડેટા નિયંત્રણો',
+  
+    preferredLanguage: 'પસંદગીની ભાષા',
+    activeSession: 'સક્રિય સત્ર',
   },
   chatbot: {
     title: 'Agri2Value સહાયક',

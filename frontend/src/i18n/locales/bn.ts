@@ -140,6 +140,27 @@ export const bn: TranslationSchema = {
     harvestDate: 'ফসল তোলার তারিখ',
     evaluateProfit: 'লাভ বিশ্লেষণ করুন',
     rescueCrop: 'ফসল রক্ষা করুন',
+  
+    registerLot: 'নতুন ফসল নিবন্ধন করুন',
+    activeLots: 'মোট ফসল লট',
+    allFarms: 'সমস্ত খামার',
+    allGrades: 'সমস্ত গ্রেড',
+    allStatuses: 'সমস্ত অবস্থা',
+    latestHarvest: 'সাম্প্রতিক ফসল তোলা',
+    oldestHarvest: 'আগের ফসল তোলা',
+    qtyHighToLow: 'পরিমাণ (বেশি থেকে কম)',
+    qtyLowToHigh: 'পরিমাণ (কম থেকে বেশি)',
+    searchPlaceholder: 'ফসল, জাত বা খামারের নাম দিয়ে অনুসন্ধান করুন...',
+    demoSeedRecord: 'ডেমো রেকর্ড',
+    liveFarmRecord: 'লাইভ খামার রেকর্ড',
+    registeredQty: 'নথিভুক্ত ফসল পরিমাণ',
+    standardKg: 'প্রমিত মূল একক (কেজি)',
+    decisionReady: 'সিদ্ধান্তের জন্য প্রস্তুত',
+    localTime: 'স্থানীয় ফসল তোলার সময়',
+    pendingDecision: 'সিদ্ধান্ত বাকি',
+    activeDecisions: 'সক্রিয় সিদ্ধান্ত',
+    reset: 'রিসেট',
+    lotsRegistered: 'নথিভুক্ত লট',
   },
   profit: {
     title: 'লাভ সিদ্ধান্ত ইঞ্জিন',
@@ -157,6 +178,9 @@ export const bn: TranslationSchema = {
     advantage: 'অতিরিক্ত নিট লাভ',
     initiateBooking: 'বুকিং শুরু করুন',
     integratedSettlement: 'সরাসরি ব্যাংক সমাধান',
+  
+    calculate: 'সর্বোত্তম বিক্রয় পথ গণনা করুন',
+    calculating: 'গণনা চলছে...',
   },
   market: {
     title: 'বাজার দর ও আবহাওয়া বিশ্লেষণ',
@@ -255,6 +279,9 @@ export const bn: TranslationSchema = {
     preferredLang: 'পছন্দের ভাষা',
     security: 'নিরাপত্তা ও পাসওয়ার্ড',
     demoControls: 'ডেমো ডেটা নিয়ন্ত্রণ',
+  
+    preferredLanguage: 'পছন্দের ভাষা',
+    activeSession: 'সক্রিয় সেশন',
   },
   chatbot: {
     title: 'Agri2Value সহকারী',

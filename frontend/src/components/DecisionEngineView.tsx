@@ -329,7 +329,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
             className="btn-primary text-xs py-2 px-3.5 flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>{loading ? t('profit.calculating') : t('profit.calculate')}</span>
+            <span>{loading ? t('profit.calculating', 'Calculating...') : t('profit.calculate', 'Calculate Optimal Pathway')}</span>
           </button>
         </div>
       </div>
