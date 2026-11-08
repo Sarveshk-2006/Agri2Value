@@ -191,3 +191,4 @@ async function verifyAllReferenceModules() {
 }
 
 verifyAllReferenceModules();
+

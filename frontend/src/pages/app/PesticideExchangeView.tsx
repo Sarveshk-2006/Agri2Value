@@ -648,3 +648,4 @@ export const PesticideExchangeView: React.FC = () => {
     </div>
   );
 };
+

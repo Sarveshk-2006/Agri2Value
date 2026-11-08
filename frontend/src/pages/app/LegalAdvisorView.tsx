@@ -386,3 +386,4 @@ export const LegalAdvisorView: React.FC = () => {
     </div>
   );
 };
+

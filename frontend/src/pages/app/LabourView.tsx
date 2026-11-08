@@ -464,3 +464,4 @@ export const LabourView: React.FC = () => {
     </div>
   );
 };
+

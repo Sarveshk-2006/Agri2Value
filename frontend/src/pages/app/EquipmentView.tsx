@@ -712,3 +712,4 @@ export const EquipmentView: React.FC = () => {
     </div>
   );
 };
+
