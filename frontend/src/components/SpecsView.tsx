@@ -54,7 +54,7 @@ export const SpecsView: React.FC = () => {
 
   const [loadingHealth, setLoadingHealth] = useState<boolean>(true);
   const [selectedLayer, setSelectedLayer] = useState<number>(1);
-  const [activeNavTab, setActiveNavTab] = useState<string>('architecture');
+  const [activeNavTab, setActiveNavTab] = useState<string>('overview');
   const [dbSearch, setDbSearch] = useState<string>('');
   const [dbDomainFilter, setDbDomainFilter] = useState<string>('ALL');
   const [selectedModel, setSelectedModel] = useState<string | null>('users');
@@ -784,13 +784,13 @@ export const SpecsView: React.FC = () => {
               <RefreshCw className={`w-3.5 h-3.5 ${loadingHealth ? 'animate-spin' : ''}`} />
               <span>Refresh Health</span>
             </button>
-            <a
-              href="#evaluation"
+            <button
+              onClick={() => setActiveNavTab('evaluation')}
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold shadow-xs transition cursor-pointer"
             >
               <Award className="w-3.5 h-3.5" />
               <span>Judging Criteria (124 Tests)</span>
-            </a>
+            </button>
           </div>
         </div>
 
@@ -857,6 +857,7 @@ export const SpecsView: React.FC = () => {
       {/* ─── 2. STICKY SUB-NAVIGATION PILLS ─── */}
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar">
         {[
+          { key: 'overview', label: 'System Overview', icon: FileCode2 },
           { key: 'architecture', label: '6-Layer Architecture', icon: Layers },
           { key: 'stack', label: 'Technology Stack', icon: Server },
           { key: 'database', label: `Database Schema (${dbModels.length})`, icon: Database },
@@ -872,11 +873,7 @@ export const SpecsView: React.FC = () => {
           return (
             <button
               key={tab.key}
-              onClick={() => {
-                setActiveNavTab(tab.key);
-                const elem = document.getElementById(tab.key);
-                if (elem) elem.scrollIntoView({ behavior: 'smooth' });
-              }}
+              onClick={() => setActiveNavTab(tab.key)}
               className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
                 isActive
                   ? 'bg-purple-700 text-white shadow-xs'
@@ -890,7 +887,206 @@ export const SpecsView: React.FC = () => {
         })}
       </div>
 
+      {/* ─── TAB 0: SYSTEM ARCHITECTURE OVERVIEW (4-CARD GRID) ─── */}
+      {activeNavTab === 'overview' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 animate-in fade-in duration-200">
+          
+          {/* Card 1: Backend & Database Stack */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs flex flex-col justify-between space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
+                    <Server className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-900 font-display">
+                    Backend & Database Stack
+                  </h3>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  Verified
+                </span>
+              </div>
+
+              <ul className="space-y-2.5 text-xs text-slate-600">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>FastAPI 0.162+ async REST API</strong> with structured structlog logging and Pydantic V2 validations.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>SQLAlchemy 2.1 + asyncpg / aiosqlite</strong> with full async session transaction management.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Alembic version-controlled migrations</strong> (0001_initial_schema through 0005_farmer_protection).</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Deterministic Profit Engine:</strong> Zero Hallucinations. Strict mathematical calculations of gross revenue, logistics, processing fee, and net payout.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>JWT HS256 Authentication</strong> with server-side role & tenant ownership isolation.</span>
+                </li>
+              </ul>
+            </div>
+
+            <button
+              onClick={() => setActiveNavTab('stack')}
+              className="mt-2 w-full py-2.5 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer"
+            >
+              <span>Explore Full Technology Stack</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Card 2: Core Database Models */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs flex flex-col justify-between space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-100">
+                    <Database className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-900 font-display">
+                    Core Database Models
+                  </h3>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                  {dbModels.length} Models
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
+                  <div className="font-mono font-bold text-slate-900 text-[11px]">users</div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">id (UUID), phone (unique), role, preferred_language, timestamps.</div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
+                  <div className="font-mono font-bold text-slate-900 text-[11px]">farms & farm_resources</div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">farm holdings, GPS coordinates, storage sheds, sorting equipment, crates.</div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
+                  <div className="font-mono font-bold text-slate-900 text-[11px]">crop_lots & decision_runs</div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">normalized kilograms, quality grades, immutable auditable decision snapshots.</div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
+                  <div className="font-mono font-bold text-slate-900 text-[11px]">execution_requests & iot_telemetry</div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">traceable partner orders, financial reconciliation, and microclimate telemetry.</div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setActiveNavTab('database')}
+              className="mt-2 w-full py-2.5 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer"
+            >
+              <span>Explore All {dbModels.length} Database Models</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Card 3: Key API Endpoints */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs flex flex-col justify-between space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center border border-purple-100">
+                    <Terminal className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-900 font-display">
+                    Key API Endpoints
+                  </h3>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                  {apiEndpoints.length} Routes
+                </span>
+              </div>
+
+              <div className="space-y-1.5 text-xs">
+                {[
+                  { m: 'GET', p: '/api/v1/health', d: 'Health & DB check' },
+                  { m: 'POST', p: '/api/v1/decision/evaluate', d: 'Profit Decision Engine' },
+                  { m: 'GET', p: '/api/v1/weather/farm', d: 'Open-Meteo Proxy' },
+                  { m: 'GET', p: '/api/v1/mandi/prices', d: 'APMC Mandi Intelligence' },
+                  { m: 'POST', p: '/api/v1/execution/requests', d: 'Smart Execution Network' },
+                  { m: 'POST', p: '/api/v1/execution/crop-rescue/assess', d: 'Crop Rescue Triage' },
+                  { m: 'GET', p: '/api/v1/protection/agreements', d: 'Farmer Protection & Trust' },
+                ].map((ep, i) => (
+                  <div key={i} className="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-slate-50 border border-slate-100 font-mono text-[11px]">
+                    <div className="flex items-center gap-2 truncate">
+                      <span className={`px-1.5 py-0.2 rounded text-[9px] font-black ${ep.m === 'GET' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                        {ep.m}
+                      </span>
+                      <span className="text-slate-800 font-semibold truncate">{ep.p}</span>
+                    </div>
+                    <span className="text-slate-500 text-[10px] shrink-0 font-sans">{ep.d}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => setActiveNavTab('api')}
+              className="mt-2 w-full py-2.5 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer"
+            >
+              <span>Explore All {apiEndpoints.length} API Routes</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Card 4: Grand Challenge 2026 Evaluation Criteria */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs flex flex-col justify-between space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-100">
+                    <Award className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-900 font-display">
+                    Grand Challenge 2026 Evaluation Criteria
+                  </h3>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                  124 Tests Green
+                </span>
+              </div>
+
+              <ul className="space-y-2.5 text-xs text-slate-600">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Ground Truth & Data Provenance:</strong> Every demo record explicitly tagged as 'DEMO_SEED' / 'SIMULATED', zero fake claims.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>End-to-End Vertical Architecture:</strong> From farmer sign-in to farm creation, harvest lot registration, deterministic profit analysis, and execution booking.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Automated Testing:</strong> Over 124 automated unit & integration tests covering security, schemas, isolation, and CRUD.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Design Excellence:</strong> Modern agricultural SaaS ergonomics designed for high legibility and field usability.</span>
+                </li>
+              </ul>
+            </div>
+
+            <button
+              onClick={() => setActiveNavTab('evaluation')}
+              className="mt-2 w-full py-2.5 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer"
+            >
+              <span>View Full Judging Criteria (8 Standards)</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+        </div>
+      )}
+
       {/* ─── 3. INTERACTIVE 6-LAYER ARCHITECTURE DIAGRAM ─── */}
+      {activeNavTab === 'architecture' && (
       <div id="architecture" className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
           <div>
@@ -1062,8 +1258,10 @@ export const SpecsView: React.FC = () => {
           ))}
         </div>
       </div>
+      )}
 
       {/* ─── 4. TECHNOLOGY STACK EXPLORER ─── */}
+      {activeNavTab === 'stack' && (
       <div id="stack" className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
         <div className="border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2">
@@ -1200,8 +1398,10 @@ export const SpecsView: React.FC = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* ─── 5. INTERACTIVE DATABASE SCHEMA EXPLORER (25 MODELS) ─── */}
+      {activeNavTab === 'database' && (
       <div id="database" className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
@@ -1336,8 +1536,10 @@ export const SpecsView: React.FC = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* ─── 6. API DOCUMENTATION CENTER (40+ ENDPOINTS) ─── */}
+      {activeNavTab === 'api' && (
       <div id="api" className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
@@ -1447,8 +1649,10 @@ export const SpecsView: React.FC = () => {
           })}
         </div>
       </div>
+      )}
 
       {/* ─── 7. DETERMINISTIC PROFIT ENGINE: VISUAL CALCULATION PIPELINE ─── */}
+      {activeNavTab === 'decision' && (
       <div id="decision" className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
         <div className="border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2">
@@ -1526,8 +1730,10 @@ export const SpecsView: React.FC = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* ─── 8. END-TO-END DATA INTELLIGENCE PIPELINE ─── */}
+      {activeNavTab === 'pipeline' && (
       <div id="pipeline" className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
         <div className="border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2">
@@ -1571,8 +1777,10 @@ export const SpecsView: React.FC = () => {
           ))}
         </div>
       </div>
+      )}
 
       {/* ─── 9. SECURITY & TENANT ISOLATION ARCHITECTURE ─── */}
+      {activeNavTab === 'security' && (
       <div id="security" className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
         <div className="border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2">
@@ -1641,8 +1849,10 @@ export const SpecsView: React.FC = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* ─── 10. GRAND CHALLENGE 2026 EVALUATION CRITERIA (8 CRITERIA) ─── */}
+      {activeNavTab === 'evaluation' && (
       <div id="evaluation" className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
@@ -1689,8 +1899,10 @@ export const SpecsView: React.FC = () => {
           ))}
         </div>
       </div>
+      )}
 
       {/* ─── 11. ALEMBIC MIGRATION HISTORY (5 MIGRATIONS) ─── */}
+      {activeNavTab === 'migrations' && (
       <div id="migrations" className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
         <div className="border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2">
@@ -1730,6 +1942,7 @@ export const SpecsView: React.FC = () => {
           ))}
         </div>
       </div>
+      )}
 
     </div>
   );

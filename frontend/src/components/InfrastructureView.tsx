@@ -404,203 +404,96 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-16">
+    <div className="space-y-5 max-w-7xl mx-auto pb-16 animate-in fade-in duration-200">
       
       {/* ──────────────────────────────────────────────────────────
-         1. HERO HEADER SECTION
+         1. CLEAN EXECUTIVE HEADER CARD
          ────────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white p-6 sm:p-8 md:p-10 border border-emerald-800/60 shadow-xl">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-10 w-60 h-60 rounded-full bg-teal-500/10 blur-2xl pointer-events-none" />
-
-        <div className="relative z-10 space-y-6">
-          {/* Top badges */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Live Infrastructure Network Active
-              </span>
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-emerald-200 border border-white/15">
-                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-                Nashik Regional Network
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-emerald-900/40 text-emerald-300 border border-emerald-700/40">
-                Multi-Commodity Grid
-              </span>
-            </div>
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center justify-center shrink-0">
+            <Truck className="w-5 h-5 text-emerald-600" />
           </div>
-
-          {/* Title & Headline */}
-          <div className="max-w-3xl space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-900/50 flex-shrink-0">
-                <Truck className="w-6 h-6" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black font-display tracking-tight text-white">
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-black font-display tracking-tight text-slate-900">
                 {t('logistics.title')}
               </h1>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Regional Grid Active
+              </span>
             </div>
-            <p className="text-sm sm:text-base md:text-lg font-semibold text-emerald-300">
-              Move Smarter. Store Better. Deliver Fresher.
-            </p>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
-              {t('logistics.subtitle')}
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Verified local transport fleets, cold storage pre-cooling hubs, and food processing facilities across Nashik & Pune.
             </p>
           </div>
+        </div>
 
-          {/* Agricultural Supply-Chain Flow Visual */}
-          <div className="pt-2">
-            <div className="p-3 sm:p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs flex flex-wrap items-center justify-between gap-4 text-xs">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold">1</div>
-                <div>
-                  <div className="font-bold text-white">Farm Harvest</div>
-                  <div className="text-[10px] text-slate-400">Produce Lot Ready</div>
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-emerald-500/60 hidden sm:block" />
-
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold">2</div>
-                <div>
-                  <div className="font-bold text-white">Transport Fleet</div>
-                  <div className="text-[10px] text-slate-400">Tempo & Reefer Vans</div>
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-emerald-500/60 hidden sm:block" />
-
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold">3</div>
-                <div>
-                  <div className="font-bold text-white">Cold Storage</div>
-                  <div className="text-[10px] text-slate-400">Pre-cooling & CA Hubs</div>
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-emerald-500/60 hidden sm:block" />
-
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold">4</div>
-                <div>
-                  <div className="font-bold text-white">Processing Plants</div>
-                  <div className="text-[10px] text-slate-400">Puree, Pulp & Flakes</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Trigger */}
-          <div className="flex items-center gap-3 pt-1">
-            <button
-              onClick={handleScrollToExplore}
-              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md hover:shadow-emerald-500/30 cursor-pointer"
-            >
-              <span>Explore Infrastructure</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <span className="text-xs text-slate-400">
-              Covering <strong>Nashik, Pune, Mumbai MMR & Ahmednagar</strong>
-            </span>
-          </div>
+        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+          <button
+            onClick={handleScrollToExplore}
+            className="btn-primary text-xs py-2 px-3.5 shadow-xs flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>Explore Providers</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
       {/* ──────────────────────────────────────────────────────────
-         2. LOGISTICS OVERVIEW STATISTICS (4 KPI CARDS)
+         2. COMPACT KPI STRIP (4 CLEAN METRICS)
          ────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Stat 1: Transport Fleets */}
-        <div className="card p-5 border-slate-200 hover:border-emerald-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Transport Fleets</span>
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <Truck className="w-5 h-5" />
-            </div>
-          </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
-              {stats.fleetsCount} <span className="text-sm font-semibold text-slate-500">Fleets</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Transport Fleets</span>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 font-display mt-0.5">
+              {stats.fleetsCount} <span className="text-xs font-semibold text-slate-400">Fleets</span>
             </div>
-            <div className="text-xs text-emerald-700 font-bold flex items-center gap-1 mt-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{stats.fleetCapacityTons} MT Total Payload Capacity</span>
-            </div>
+            <span className="text-[11px] text-emerald-700 font-semibold">{stats.fleetCapacityTons} MT Total Capacity</span>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Tempo & Reefer Ready</span>
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <Truck className="w-4 h-4" />
           </div>
         </div>
 
-        {/* Stat 2: Cold Storage Hubs */}
-        <div className="card p-5 border-slate-200 hover:border-blue-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Cold Storage Hubs</span>
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Warehouse className="w-5 h-5" />
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
-              {stats.coldCount} <span className="text-sm font-semibold text-slate-500">Hubs</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Cold Storage Hubs</span>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 font-display mt-0.5">
+              {stats.coldCount} <span className="text-xs font-semibold text-slate-400">Hubs</span>
             </div>
-            <div className="text-xs text-blue-700 font-bold flex items-center gap-1 mt-1">
-              <Droplets className="w-3.5 h-3.5" />
-              <span>{stats.coldAvailableTons} MT / {stats.coldTotalTons} MT Available</span>
-            </div>
+            <span className="text-[11px] text-blue-700 font-semibold">{stats.coldAvailableTons} MT Available</span>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Pre-Cooling & CA Chambers</span>
-            <span className="w-2 h-2 rounded-full bg-blue-500" />
+          <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <Warehouse className="w-4 h-4" />
           </div>
         </div>
 
-        {/* Stat 3: Processing Plants */}
-        <div className="card p-5 border-slate-200 hover:border-purple-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Processing Units</span>
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
-              <Factory className="w-5 h-5" />
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
-              {stats.procCount} <span className="text-sm font-semibold text-slate-500">Plants</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Processing Plants</span>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 font-display mt-0.5">
+              {stats.procCount} <span className="text-xs font-semibold text-slate-400">Units</span>
             </div>
-            <div className="text-xs text-purple-700 font-bold flex items-center gap-1 mt-1">
-              <Zap className="w-3.5 h-3.5" />
-              <span>{stats.procAvailableTons} MT Daily Intake Ready</span>
-            </div>
+            <span className="text-[11px] text-purple-700 font-semibold">{stats.procAvailableTons} MT Daily Intake</span>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Puree, Pulping & Drying</span>
-            <span className="w-2 h-2 rounded-full bg-purple-500" />
+          <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <Factory className="w-4 h-4" />
           </div>
         </div>
 
-        {/* Stat 4: Total Available Capacity */}
-        <div className="card p-5 border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Available Capacity</span>
-            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
-              <Gauge className="w-5 h-5" />
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
-              {stats.aggregateReadyCapacityTons} <span className="text-sm font-semibold text-slate-500">MT</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Active Bookings</span>
+            <div className="text-xl sm:text-2xl font-black text-emerald-700 font-display mt-0.5">
+              {stats.activeBookingsCount} <span className="text-xs font-semibold text-emerald-600">Reserved</span>
             </div>
-            <div className="text-xs text-teal-700 font-bold flex items-center gap-1 mt-1">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Verified Institutional Grid</span>
-            </div>
+            <span className="text-[11px] text-slate-500 font-medium">{stats.completedBookingsCount} Fulfilled</span>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Instant Booking Guaranteed</span>
-            <span className="w-2 h-2 rounded-full bg-teal-500" />
+          <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
+            <Gauge className="w-4 h-4" />
           </div>
         </div>
       </div>

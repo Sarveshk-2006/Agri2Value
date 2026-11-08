@@ -551,81 +551,46 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
           </div>
         </div>
 
-        {/* Live Operational Status Ribbon */}
-        <div className="mt-6 pt-5 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 text-xs">
-          <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-100 space-y-1">
-            <div className="text-[11px] font-semibold text-slate-500">Operational Mode</div>
-            <div className="flex items-center gap-1.5 font-bold">
-              {isSimulatingContinuous ? (
-                <>
-                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-                  <span className="text-blue-700 font-mono">STREAMING ({simIntervalSeconds}s)</span>
-                </>
-              ) : isOnline ? (
-                <>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-emerald-700">MONITORING ACTIVE</span>
-                </>
-              ) : (
-                <>
-                  <span className="w-2 h-2 rounded-full bg-slate-400" />
-                  <span className="text-slate-600">DEVICE STANDBY</span>
-                </>
-              )}
+        {/* Live Operational Status Ribbon (Clean & Compact) */}
+        <div className="mt-5 pt-4 border-t border-slate-100 grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-slate-500">Node Status</span>
+            <div className="flex items-center gap-1.5 font-bold text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-emerald-800">ONLINE</span>
             </div>
           </div>
 
-          <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-100 space-y-1">
-            <div className="text-[11px] font-semibold text-slate-500">Registered Nodes</div>
-            <div className="text-sm font-extrabold text-slate-900 font-mono">
-              {devices.length} Virtual Node{devices.length !== 1 ? 's' : ''}
-            </div>
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-slate-500">Active Sensors</span>
+            <span className="font-mono font-bold text-slate-900">6 Telemetry Channels</span>
           </div>
 
-          <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-100 space-y-1">
-            <div className="text-[11px] font-semibold text-slate-500">Active Sensors</div>
-            <div className="text-sm font-extrabold text-slate-900 font-mono">
-              6 Telemetry Channels
-            </div>
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-slate-500">Active Risk Alerts</span>
+            <span className="font-mono font-bold text-amber-700">{unresolvedAlerts.length} Flagged</span>
           </div>
 
-          <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-100 space-y-1">
-            <div className="text-[11px] font-semibold text-slate-500">Active Risk Alerts</div>
-            <div className="flex items-center gap-1.5 text-sm font-extrabold font-mono">
-              <span className={unresolvedAlerts.length > 0 ? 'text-amber-600' : 'text-emerald-700'}>
-                {unresolvedAlerts.length} Active
-              </span>
-              <span className="text-slate-400 font-normal text-xs">({alerts.length} Total)</span>
-            </div>
-          </div>
-
-          <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-100 space-y-1 col-span-2 sm:col-span-1">
-            <div className="text-[11px] font-semibold text-slate-500">Last Telemetry Ingestion</div>
-            <div className="text-xs font-bold text-slate-800 font-mono truncate">
-              {activeDevice?.last_seen_at ? new Date(activeDevice.last_seen_at).toLocaleTimeString() : 'Awaiting Ingestion'}
-            </div>
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-slate-500">Last Telemetry</span>
+            <span className="font-mono font-bold text-slate-700 truncate max-w-[130px]">
+              {activeDevice?.last_seen_at ? new Date(activeDevice.last_seen_at).toLocaleTimeString() : 'Active'}
+            </span>
           </div>
         </div>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION 2: SIMULATION TRANSPARENCY & HARDWARE DISCLOSURE
+          SECTION 2: COMPACT SIMULATION TRANSPARENCY NOTICE
           ───────────────────────────────────────────────────────────── */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/80 border border-amber-200/90 shadow-xs flex flex-col sm:flex-row items-start gap-3.5">
-        <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
-          <Info className="w-5 h-5" />
+      <div className="p-3 sm:px-4 rounded-xl bg-amber-50/90 border border-amber-200/80 text-xs text-amber-900 flex items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center gap-2">
+          <Info className="w-4 h-4 text-amber-700 shrink-0" />
+          <span>
+            <strong>Simulation Telemetry Mode:</strong> Microclimate readings are evaluated using our virtual node simulator via authenticated <code className="bg-amber-100 font-mono px-1 rounded">POST /api/v1/iot/telemetry</code>.
+          </span>
         </div>
-        <div className="space-y-1 text-xs text-amber-950 flex-1 leading-relaxed">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-extrabold text-sm text-amber-950 font-display">
-              Sensor Telemetry & Simulation Disclosure
-            </span>
-            <span className="badge-yellow text-[10px] font-medium">VIRTUAL TELEMETRY</span>
-          </div>
-          <p className="text-amber-900">
-            Agri2Value currently operates with a <strong>virtual IoT telemetry architecture</strong>. Environmental readings (soil moisture, temperature, humidity, rainfall) are synthetic telemetric payloads generated by the virtual sensor simulator and transmitted through authenticated <code className="bg-amber-100 text-amber-950 font-mono px-1 py-0.5 rounded font-bold">POST /api/v1/iot/telemetry</code> with device token verification. Physical edge devices can connect using the standard REST ingest endpoint.
-          </p>
-        </div>
+        <span className="badge-yellow text-[10px] shrink-0 font-mono">SIMULATION FIRST</span>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────

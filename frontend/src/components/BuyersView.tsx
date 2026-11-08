@@ -329,73 +329,41 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn pb-16">
+    <div className="space-y-5 animate-fadeIn pb-16">
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      {/* 1. HERO SECTION: COMMERCIAL BUYER NETWORK                                  */}
+      {/* 1. CLEAN EXECUTIVE HEADER: COMMERCIAL BUYER NETWORK                        */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-slate-900 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden border border-emerald-800/40">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-10 w-64 h-64 bg-teal-500/10 rounded-full blur-2xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                <ShoppingBag className="w-3.5 h-3.5" />
-                Live B2B Procurement Marketplace
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-200 border border-emerald-500/30">
-                <Sparkles className="w-3.5 h-3.5" />
-                Verified Commercial Quotes
-              </span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-display text-white">
-              {t('buyers.title')}
-            </h1>
-
-            <div className="text-emerald-300 font-bold text-sm sm:text-base flex items-center gap-2">
-              <span>{t('buyers.verifiedProcurement')}</span>
-            </div>
-
-            <p className="text-xs sm:text-sm text-emerald-100/80 max-w-2xl leading-relaxed">
-              {t('buyers.subtitle')}
-            </p>
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center justify-center shrink-0">
+            <ShoppingBag className="w-5 h-5 text-emerald-600" />
           </div>
-
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-            <button
-              onClick={() => {
-                document.getElementById('buyer-listings')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95 cursor-pointer"
-            >
-              <span>Explore Buyers</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={loadBuyers}
-              className="p-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors flex items-center justify-center cursor-pointer"
-              title="Refresh Marketplace"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-black font-display tracking-tight text-slate-900">
+                {t('buyers.title')}
+              </h1>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Verified Procurement Network
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Direct B2B offtake contracts with institutional food processors, supermarket retail chains, and exporters.
+            </p>
           </div>
         </div>
 
-        {/* Hero Bottom Bar */}
-        <div className="mt-6 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between text-[11px] text-emerald-200/70 gap-2">
-          <div className="flex items-center gap-4">
-            <span>Corporate Escrow Guarantee Enabled</span>
-            <span>•</span>
-            <span>Standardized Grade A & B Sourcing</span>
-          </div>
-          <div className="flex items-center gap-1.5 font-semibold text-emerald-300">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Zero Unverified Traders Policy</span>
-          </div>
+        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+          <button
+            onClick={loadBuyers}
+            className="px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+            title="Refresh Marketplace"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
         </div>
       </div>
 

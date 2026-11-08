@@ -227,160 +227,107 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
       {/* ──────────────────────────────────────────────────────────
          1. EMERGENCY HERO COMMAND BANNER
          ────────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-950 via-slate-900 to-amber-950 text-white p-6 sm:p-8 md:p-10 border border-rose-800/60 shadow-xl">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 rounded-full bg-rose-500/15 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-10 w-60 h-60 rounded-full bg-amber-500/10 blur-2xl pointer-events-none" />
-
-        <div className="relative z-10 space-y-6">
-          {/* Top badges */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-rose-500/25 text-rose-300 border border-rose-500/40 shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping" />
-                Emergency Salvage Response Active
-              </span>
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-amber-200 border border-white/15">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                Grounded Salvage Rules Engine
-              </span>
+      {/* ──────────────────────────────────────────────────────────
+         1. CLEAN EMERGENCY RESPONSE HEADER CARD
+         ────────────────────────────────────────────────────────── */}
+      <div className="bg-white rounded-2xl border border-rose-200/90 p-5 sm:p-6 shadow-xs relative overflow-hidden">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-rose-50 text-rose-700 border border-rose-200/80 flex items-center justify-center shrink-0">
+              <Flame className="w-5 h-5 text-rose-600" />
             </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-lg bg-rose-950/80 text-rose-300 border border-rose-800">
-                CRITICAL URGENCY • 85/100
-              </span>
-            </div>
-          </div>
-
-          {/* Title & Headline */}
-          <div className="max-w-3xl space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-amber-600 text-white flex items-center justify-center shadow-lg shadow-rose-950/50 flex-shrink-0">
-                <Flame className="w-6 h-6" />
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-black font-display tracking-tight text-slate-900">
+                  {t('cropRescue.title')}
+                </h1>
+                <span className="text-rose-700 font-semibold text-sm">
+                  (फसल बचाव मोड)
+                </span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-800 border border-rose-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
+                  Urgency Score: {assessment?.urgency_score || 85}/100
+                </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black font-display tracking-tight text-white">
-                {t('cropRescue.title')}
-              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5 max-w-2xl">
+                Rapid decision support comparing direct processing salvage, cold storage holding, and APMC liquidation to prevent distress sales.
+              </p>
             </div>
-            <p className="text-sm sm:text-base md:text-lg font-semibold text-rose-300">
-              Protect Your Harvest. Recover Your Value. (फसल बचाव मोड)
-            </p>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
-              {t('cropRescue.subtitle')}
-            </p>
           </div>
 
-          {/* Quick Context Strip */}
-          <div className="p-3 sm:p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-rose-400" />
-              <span className="text-slate-200 font-medium">Assessing Lot: <strong>{currentLot?.crop_name} ({currentLot?.variety || 'Red'})</strong></span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Scale className="w-4 h-4 text-amber-400" />
-              <span className="text-slate-200 font-medium">Quantity: <strong>{currentLot?.quantity_kg_normalized.toLocaleString()} kg</strong></span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-emerald-400" />
-              <span className="text-slate-200 font-medium">Safe Window: <strong>24 Hours</strong></span>
-            </div>
+          <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+            <button
+              onClick={() => setShowConfigDrawer(true)}
+              className="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-700 bg-slate-50 hover:bg-slate-100 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <Settings className="w-3.5 h-3.5 text-slate-600" />
+              <span>Assumptions</span>
+            </button>
+            <button
+              onClick={() => activeLotId && loadAssessment(activeLotId, customAssumptions)}
+              disabled={loading || !activeLotId}
+              className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <span>Re-evaluate</span>
+            </button>
           </div>
         </div>
       </div>
 
       {/* ──────────────────────────────────────────────────────────
-         2. AGRICULTURAL EMERGENCY OVERVIEW (4 COMPACT CARDS)
+         2. COMPACT EMERGENCY KPI STRIP (4 CLEAN METRICS)
          ────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Harvest At Risk */}
-        <div className="card p-5 border-slate-200 hover:border-rose-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Harvest At Risk</span>
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
-          </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
-              {assessment ? assessment.quantity_kg.toLocaleString() : '4,000'} <span className="text-sm font-semibold text-slate-500">kg</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Harvest At Risk</span>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 font-display mt-0.5">
+              {assessment ? assessment.quantity_kg.toLocaleString() : '4,000'} <span className="text-xs font-semibold text-slate-400">kg</span>
             </div>
-            <div className="text-xs text-rose-700 font-bold flex items-center gap-1 mt-1">
-              <span>{assessment?.crop_name || 'Tomato'} (Grade {assessment?.quality_grade || 'A'})</span>
-            </div>
+            <span className="text-[11px] text-rose-700 font-semibold">{assessment?.crop_name || 'Tomato'} (Grade {assessment?.quality_grade || 'A'})</span>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>100% Crop Exposed</span>
-            <span className="w-2 h-2 rounded-full bg-rose-500" />
+          <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+            <AlertTriangle className="w-4 h-4" />
           </div>
         </div>
 
-        {/* Card 2: Urgency Index */}
-        <div className="card p-5 border-slate-200 hover:border-amber-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Urgency Index</span>
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
-              <Flame className="w-5 h-5" />
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-rose-600 font-display font-mono">
-              {assessment?.urgency_score || 85} <span className="text-sm font-semibold text-slate-400">/ 100</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Urgency Status</span>
+            <div className="text-xl sm:text-2xl font-black text-rose-600 font-display mt-0.5">
+              {assessment?.urgency_score || 85} <span className="text-xs font-semibold text-slate-400">/ 100</span>
             </div>
-            <div className="text-xs text-rose-700 font-bold flex items-center gap-1 mt-1">
-              <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-black uppercase">
-                {assessment?.urgency_level || 'CRITICAL'}
-              </span>
-              <span>Action in &lt; 24h</span>
-            </div>
+            <span className="text-[11px] text-rose-800 font-bold uppercase">{assessment?.urgency_level || 'CRITICAL'} RISK</span>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Rapid Shelf-Life Decay</span>
-            <span className="w-2 h-2 rounded-full bg-amber-500" />
+          <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <Flame className="w-4 h-4" />
           </div>
         </div>
 
-        {/* Card 3: Time to Safety */}
-        <div className="card p-5 border-slate-200 hover:border-blue-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Time To Safety</span>
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Clock className="w-5 h-5" />
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
-              24 <span className="text-sm font-semibold text-slate-500">Hours</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Safe Action Window</span>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 font-display mt-0.5">
+              24 <span className="text-xs font-semibold text-slate-400">Hours</span>
             </div>
-            <div className="text-xs text-blue-700 font-bold flex items-center gap-1 mt-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Prior to Fungal Rot Spike</span>
-            </div>
+            <span className="text-[11px] text-blue-700 font-semibold">Prior to Rot Inception</span>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>High Confidence Forecast</span>
-            <span className="w-2 h-2 rounded-full bg-blue-500" />
+          <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <Clock className="w-4 h-4" />
           </div>
         </div>
 
-        {/* Card 4: Potential Value At Risk */}
-        <div className="card p-5 border-slate-200 hover:border-purple-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Value At Risk</span>
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
-              <TrendingDown className="w-5 h-5" />
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display font-mono">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Value At Risk</span>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 font-mono mt-0.5">
               ₹72,000
             </div>
-            <div className="text-xs text-rose-600 font-bold flex items-center gap-1 mt-1">
-              <span>Potential Loss: ₹24,000</span>
-            </div>
+            <span className="text-[11px] text-emerald-700 font-semibold">Salvage Recovers ~95%</span>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Salvage Plan Avoids Loss</span>
-            <span className="w-2 h-2 rounded-full bg-purple-500" />
+          <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <TrendingDown className="w-4 h-4" />
           </div>
         </div>
       </div>

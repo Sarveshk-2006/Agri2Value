@@ -269,184 +269,93 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-16">
+    <div className="space-y-5 max-w-7xl mx-auto pb-16 animate-in fade-in duration-200">
       
       {/* ──────────────────────────────────────────────────────────
-         1. HERO HEADER SECTION
+         1. CLEAN EXECUTIVE HEADER CARD
          ────────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white p-6 sm:p-8 md:p-10 border border-emerald-800/60 shadow-xl">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-10 w-60 h-60 rounded-full bg-teal-500/10 blur-2xl pointer-events-none" />
-
-        <div className="relative z-10 space-y-6">
-          {/* Top badges */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Live Transaction Tracking Active
-              </span>
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-emerald-200 border border-white/15">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                Traceable Workflow & Escrow Protected
-              </span>
-            </div>
-
-            <button
-              onClick={loadRequests}
-              disabled={loading}
-              className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-emerald-200 hover:text-white border border-white/15 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span>Refresh Ledger</span>
-            </button>
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center justify-center shrink-0">
+            <FileText className="w-5 h-5 text-emerald-600" />
           </div>
-
-          {/* Title & Headline */}
-          <div className="max-w-3xl space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-900/50 flex-shrink-0">
-                <FileText className="w-6 h-6" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black font-display tracking-tight text-white">
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-black font-display tracking-tight text-slate-900">
                 {t('execution.title')}
               </h1>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Traceable Workflow
+              </span>
             </div>
-            <p className="text-sm sm:text-base md:text-lg font-semibold text-emerald-300">
-              From Decision to Realized Profit.
-            </p>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
-              {t('execution.subtitle')}
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              End-to-end lifecycle from profit recommendation to confirmed booking, in-transit tracking, and realized settlement.
             </p>
           </div>
+        </div>
 
-          {/* End-to-End Pipeline Visualization */}
-          <div className="p-3 sm:p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-[11px]">1</div>
-              <span className="font-semibold text-white">Decision Locked</span>
-            </div>
-            <ArrowRight className="w-3.5 h-3.5 text-emerald-500/60 hidden sm:block" />
-
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-[11px]">2</div>
-              <span className="font-semibold text-white">Capacity Confirmed</span>
-            </div>
-            <ArrowRight className="w-3.5 h-3.5 text-emerald-500/60 hidden sm:block" />
-
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold text-[11px]">3</div>
-              <span className="font-semibold text-white">Transit & In-Execution</span>
-            </div>
-            <ArrowRight className="w-3.5 h-3.5 text-emerald-500/60 hidden sm:block" />
-
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-[11px]">4</div>
-              <span className="font-semibold text-white">Weighbridge Verified</span>
-            </div>
-            <ArrowRight className="w-3.5 h-3.5 text-emerald-500/60 hidden sm:block" />
-
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-emerald-400 text-slate-950 flex items-center justify-center font-black text-[11px]">5</div>
-              <span className="font-bold text-emerald-300">Realized Payout</span>
-            </div>
-          </div>
+        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+          <button
+            onClick={loadRequests}
+            disabled={loading}
+            className="px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
         </div>
       </div>
 
       {/* ──────────────────────────────────────────────────────────
-         2. EXECUTION OVERVIEW STATISTICS (4 KPI CARDS)
+         2. COMPACT KPI STRIP (4 CLEAN METRICS)
          ────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Stat 1: Total Executions */}
-        <div className="card p-5 border-slate-200 hover:border-emerald-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Executions</span>
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <FileText className="w-5 h-5" />
-            </div>
-          </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
-              {stats.totalCount} <span className="text-sm font-semibold text-slate-500">Orders</span>
-            </div>
-            <div className="text-xs text-emerald-700 font-bold flex items-center gap-1 mt-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{stats.totalVolumeKg.toLocaleString()} kg Total Cargo Volume</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Total Orders</span>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 font-display mt-0.5">
+              {stats.totalCount} <span className="text-xs font-semibold text-slate-400">Total</span>
             </div>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Commercial & Infra Orders</span>
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <div className="w-9 h-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center">
+            <FileText className="w-4 h-4" />
           </div>
         </div>
 
-        {/* Stat 2: Active Executions */}
-        <div className="card p-5 border-slate-200 hover:border-blue-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Active Executions</span>
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Activity className="w-5 h-5" />
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
-              {stats.activeCount} <span className="text-sm font-semibold text-slate-500">In-Flight</span>
-            </div>
-            <div className="text-xs text-blue-700 font-bold flex items-center gap-1 mt-1">
-              <Clock className="w-3.5 h-3.5" />
-              <span>₹{stats.inFlightEstimatedPayout.toLocaleString()} Estimated Value</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">In-Flight Active</span>
+            <div className="text-xl sm:text-2xl font-black text-emerald-700 font-display mt-0.5">
+              {stats.activeCount} <span className="text-xs font-semibold text-emerald-600">Active</span>
             </div>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Escrow Guaranteed</span>
-            <span className="w-2 h-2 rounded-full bg-blue-500" />
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <Activity className="w-4 h-4" />
           </div>
         </div>
 
-        {/* Stat 3: Completed Transactions */}
-        <div className="card p-5 border-slate-200 hover:border-purple-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Completed Deals</span>
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-display">
-              {stats.completedCount} <span className="text-sm font-semibold text-slate-500">Settled</span>
-            </div>
-            <div className="text-xs text-purple-700 font-bold flex items-center gap-1 mt-1">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>100% Weighbridge Verified</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Total Cargo Volume</span>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 font-display mt-0.5">
+              {stats.totalVolumeKg.toLocaleString()} <span className="text-xs font-semibold text-slate-400">kg</span>
             </div>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>RTGS / NEFT Paid</span>
-            <span className="w-2 h-2 rounded-full bg-purple-500" />
+          <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <Scale className="w-4 h-4" />
           </div>
         </div>
 
-        {/* Stat 4: Total Realized Farmer Payout */}
-        <div className="card p-5 border-slate-200 hover:border-emerald-400 hover:shadow-md transition-all space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Realized Payout</span>
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <Coins className="w-5 h-5" />
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between shadow-xs">
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-800 font-display font-mono">
-              ₹{stats.totalRealizedPayout.toLocaleString()}
-            </div>
-            <div className="text-xs text-emerald-700 font-bold flex items-center gap-1 mt-1">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>Direct Bank Settlement</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Indicative Net Payout</span>
+            <div className="text-xl sm:text-2xl font-black text-emerald-800 font-mono mt-0.5">
+              ₹{Math.round(stats.totalEstimatedPayout).toLocaleString()}
             </div>
           </div>
-          <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-            <span>Realized to Farmer Account</span>
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <Coins className="w-4 h-4" />
           </div>
         </div>
       </div>

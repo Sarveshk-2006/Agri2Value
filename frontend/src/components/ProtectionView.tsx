@@ -420,69 +420,48 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
     <div className="space-y-6 max-w-7xl mx-auto pb-16 animate-in fade-in duration-300">
       
       {/* ─── 1. HERO SECTION: FINANCIAL TRUST CENTER (Clean White Card with Emerald Identity) ─── */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 shadow-xs relative overflow-hidden">
-        {/* Subtle decorative background glow */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-50/60 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-teal-50/40 rounded-full blur-2xl pointer-events-none -mb-20" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                Farmer Protection & Trust
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center justify-center shrink-0">
+            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-black font-display tracking-tight text-slate-900">
+                {t('protection.title')}
+              </h1>
+              <span className="text-emerald-700 font-semibold text-sm">
+                (कृषि-सुरक्षा व विश्वास)
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Commercial Ledger
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200">
-                <Clock className="w-3 h-3 text-slate-400" />
-                Updated: {lastRefreshed}
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Ledger Active
               </span>
             </div>
-
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-display flex flex-wrap items-center gap-2">
-              <span>{t('protection.title')}</span>
-              <span className="text-emerald-700 text-lg font-normal">कृषि-सुरक्षा व विश्वास</span>
-            </h1>
-
-            <p className="text-sm font-semibold text-emerald-800 tracking-wide">
-              "Your Harvest. Your Money. Your Rights. Everything Transparent."
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5 max-w-2xl">
+              Transparent digital agreements, delivery evidence tracking, verified deduction audits, and statutory payment protection.
             </p>
-
-            <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">
-              {t('protection.subtitle')}
-            </p>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-center shrink-0">
-            <button
-              onClick={loadProtectionData}
-              disabled={loading}
-              className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold border border-slate-200 transition cursor-pointer"
-              title="Refresh ledger"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span>Refresh</span>
-            </button>
-            <button
-              onClick={() => setIsDisputeModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition cursor-pointer"
-            >
-              <Scale className="w-3.5 h-3.5" />
-              <span>Raise Dispute</span>
-            </button>
           </div>
         </div>
 
-        {/* Compact Grounded Disclaimer */}
-        <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-start gap-2 text-xs text-slate-500">
-          <Info className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-          <span>
-            <strong>Commercial Protection Note:</strong> Agri2Value provides structured commercial transparency, versioned contract snapshots, and verifiable transaction records for farmer assurance.
-          </span>
+        {/* Action buttons */}
+        <div className="flex items-center gap-2 self-start lg:self-center shrink-0">
+          <button
+            onClick={loadProtectionData}
+            disabled={loading}
+            className="px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 transition cursor-pointer flex items-center gap-1.5"
+            title="Refresh ledger"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+          <button
+            onClick={() => setIsDisputeModalOpen(true)}
+            className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition cursor-pointer flex items-center gap-1.5"
+          >
+            <Scale className="w-3.5 h-3.5" />
+            <span>Raise Dispute</span>
+          </button>
         </div>
       </div>
 
@@ -648,73 +627,65 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
       {activeSubTab === 'overview' && (
         <div className="space-y-6">
 
-          {/* QUICK ACTION CENTER (4 Premium Interactive White Cards) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* QUICK ACTION CENTER (Compact 4-Action Ribbon) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <button
               onClick={() => setIsDeliveryModalOpen(true)}
-              className="bg-white rounded-2xl border border-slate-200 p-5 text-left transition group hover:border-emerald-500 hover:shadow-xs cursor-pointer flex flex-col justify-between"
+              className="bg-white rounded-xl border border-slate-200 p-3.5 text-left transition group hover:border-emerald-500 hover:shadow-2xs cursor-pointer flex items-center gap-3"
             >
-              <div>
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                  <Truck className="w-5 h-5" />
-                </div>
-                <h3 className="font-extrabold text-slate-900 text-sm">Log Produce Delivery</h3>
-                <p className="text-xs text-slate-500 mt-1">Record partial or full weighbridge shipment with receipt slip.</p>
+              <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                <Truck className="w-4 h-4" />
               </div>
-              <div className="mt-4 flex items-center gap-1 text-xs font-bold text-emerald-700">
-                <span>Record Delivery</span>
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition" />
+              <div className="min-w-0">
+                <h3 className="font-bold text-slate-900 text-xs truncate">Log Delivery</h3>
+                <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-0.5">
+                  Record weighbridge <ChevronRight className="w-3 h-3 inline" />
+                </span>
               </div>
             </button>
 
             <button
               onClick={() => setIsPaymentModalOpen(true)}
-              className="bg-white rounded-2xl border border-slate-200 p-5 text-left transition group hover:border-blue-500 hover:shadow-xs cursor-pointer flex flex-col justify-between"
+              className="bg-white rounded-xl border border-slate-200 p-3.5 text-left transition group hover:border-blue-500 hover:shadow-2xs cursor-pointer flex items-center gap-3"
             >
-              <div>
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                  <Wallet className="w-5 h-5" />
-                </div>
-                <h3 className="font-extrabold text-slate-900 text-sm">Record Simulated Payment</h3>
-                <p className="text-xs text-slate-500 mt-1">Simulate advance or final bank transfer installment in demo ledger.</p>
+              <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                <Wallet className="w-4 h-4" />
               </div>
-              <div className="mt-4 flex items-center gap-1 text-xs font-bold text-blue-700">
-                <span>Record Payment</span>
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition" />
+              <div className="min-w-0">
+                <h3 className="font-bold text-slate-900 text-xs truncate">Record Payment</h3>
+                <span className="text-[10px] text-blue-700 font-semibold flex items-center gap-0.5">
+                  Simulate installment <ChevronRight className="w-3 h-3 inline" />
+                </span>
               </div>
             </button>
 
             <button
               onClick={() => setIsDisputeModalOpen(true)}
-              className="bg-white rounded-2xl border border-slate-200 p-5 text-left transition group hover:border-rose-500 hover:shadow-xs cursor-pointer flex flex-col justify-between"
+              className="bg-white rounded-xl border border-slate-200 p-3.5 text-left transition group hover:border-rose-500 hover:shadow-2xs cursor-pointer flex items-center gap-3"
             >
-              <div>
-                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                  <Scale className="w-5 h-5" />
-                </div>
-                <h3 className="font-extrabold text-slate-900 text-sm">Raise Protection Dispute</h3>
-                <p className="text-xs text-slate-500 mt-1">Formal internal grievance for overdue payment or unexpected deductions.</p>
+              <div className="w-9 h-9 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                <Scale className="w-4 h-4" />
               </div>
-              <div className="mt-4 flex items-center gap-1 text-xs font-bold text-rose-700">
-                <span>Raise Dispute</span>
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition" />
+              <div className="min-w-0">
+                <h3 className="font-bold text-slate-900 text-xs truncate">Raise Dispute</h3>
+                <span className="text-[10px] text-rose-700 font-semibold flex items-center gap-0.5">
+                  Overdue or mismatch <ChevronRight className="w-3 h-3 inline" />
+                </span>
               </div>
             </button>
 
             <button
               onClick={() => setActiveSubTab('alerts')}
-              className="bg-white rounded-2xl border border-slate-200 p-5 text-left transition group hover:border-amber-500 hover:shadow-xs cursor-pointer flex flex-col justify-between"
+              className="bg-white rounded-xl border border-slate-200 p-3.5 text-left transition group hover:border-amber-500 hover:shadow-2xs cursor-pointer flex items-center gap-3"
             >
-              <div>
-                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3 group-hover:scale-105 transition">
-                  <AlertTriangle className="w-5 h-5" />
-                </div>
-                <h3 className="font-extrabold text-slate-900 text-sm">Review Financial Risks</h3>
-                <p className="text-xs text-slate-500 mt-1">Detect unverified price changes, delivery mismatches or term amendments.</p>
+              <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                <AlertTriangle className="w-4 h-4" />
               </div>
-              <div className="mt-4 flex items-center gap-1 text-xs font-bold text-amber-700">
-                <span>Review Risks</span>
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition" />
+              <div className="min-w-0">
+                <h3 className="font-bold text-slate-900 text-xs truncate">Financial Risks</h3>
+                <span className="text-[10px] text-amber-700 font-semibold flex items-center gap-0.5">
+                  Review alerts <ChevronRight className="w-3 h-3 inline" />
+                </span>
               </div>
             </button>
           </div>
