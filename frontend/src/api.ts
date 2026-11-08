@@ -797,7 +797,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (data && data.current && data.advisory) {
+          return data;
+        }
       }
     } catch {}
     return MOCK_WEATHER;
@@ -814,7 +817,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (data && Array.isArray(data.records)) {
+          return data;
+        }
       }
     } catch {}
     return MOCK_MANDI_PRICES;
@@ -829,7 +835,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (data && data.rate_per_kg !== undefined) {
+          return data;
+        }
       }
     } catch {}
     return {
@@ -1309,7 +1318,10 @@ class ApiService {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (data && data.active_agreements_count !== undefined) {
+          return data;
+        }
       }
     } catch {}
     return MOCK_PROTECTION_METRICS;
