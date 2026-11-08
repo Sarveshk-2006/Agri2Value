@@ -23,3 +23,4 @@ class AIAdvisorResponseSchema(BaseModel):
     confidence_score: float
     suggested_actions: List[SuggestedAction]
     disclaimer: str
+

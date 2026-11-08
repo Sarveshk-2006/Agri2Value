@@ -26,3 +26,4 @@ class MarkReadResponse(BaseModel):
     success: bool
     marked_id: Optional[str] = None
     unread_count: int
+

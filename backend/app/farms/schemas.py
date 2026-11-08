@@ -8,7 +8,7 @@ from datetime import datetime
 
 # ---- Enums / Constants ----------------------------------------
 
-LAND_AREA_UNITS = {"acre", "hectare", "bigha", "guntha", "sq_meter"}
+LAND_AREA_UNITS = {"acre", "acres", "hectare", "hectares", "bigha", "guntha", "sq_meter"}
 
 
 # ---- FarmResource Schemas ------------------------------------
@@ -50,9 +50,14 @@ class FarmCreate(BaseModel):
     @field_validator("land_area_unit")
     @classmethod
     def validate_unit(cls, v: str) -> str:
-        if v not in LAND_AREA_UNITS:
-            raise ValueError(f"land_area_unit must be one of: {', '.join(sorted(LAND_AREA_UNITS))}")
-        return v
+        val = v.lower().strip()
+        if val == "acres":
+            val = "acre"
+        elif val == "hectares":
+            val = "hectare"
+        if val not in {"acre", "hectare", "bigha", "guntha", "sq_meter"}:
+            raise ValueError(f"land_area_unit must be one of: {', '.join(sorted({'acre', 'hectare', 'bigha', 'guntha', 'sq_meter'}))}")
+        return val
 
 
 class FarmUpdate(BaseModel):

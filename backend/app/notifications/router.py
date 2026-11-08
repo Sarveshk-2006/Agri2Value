@@ -69,3 +69,4 @@ async def mark_all_read(
         marked_id=None,
         unread_count=0,
     )
+

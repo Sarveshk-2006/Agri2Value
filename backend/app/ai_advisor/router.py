@@ -107,3 +107,4 @@ async def ask_advisor(
     )
 
     return AIAdvisorResponseSchema(**result.to_dict())
+

@@ -329,3 +329,4 @@ class AIAdvisorManager:
 
 
 ai_advisor_service = AIAdvisorManager()
+
