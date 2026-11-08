@@ -1,20 +1,12 @@
 // frontend/src/pages/app/LegalAdvisorView.tsx
 import React, { useState } from 'react';
 import {
-  FileText,
-  ShieldCheck,
   AlertTriangle,
   CheckCircle2,
   Scale,
-  UploadCloud,
-  FileCheck,
-  HelpCircle,
   Clock,
-  DollarSign,
-  ChevronRight,
-  Gavel,
-  Check,
-  X
+  ShieldCheck,
+  Gavel
 } from 'lucide-react';
 
 interface ContractAuditClause {

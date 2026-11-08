@@ -27,10 +27,8 @@ import {
   Truck,
   Warehouse,
   ShoppingBag,
-  DollarSign,
   Layers,
   Sprout,
-  Calendar,
   Building2,
   Check,
 } from 'lucide-react';

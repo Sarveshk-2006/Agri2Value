@@ -1,6 +1,6 @@
 // frontend/src/components/public/motion/Interactive3DFarmCanvas.tsx
 import React, { useRef, useState, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Html, Float } from '@react-three/drei';
 import * as THREE from 'three';
 

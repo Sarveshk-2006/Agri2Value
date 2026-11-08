@@ -18,22 +18,17 @@ import {
   UserCheck,
   ShieldCheck,
   MapPin,
-  Calendar,
   Search,
   Filter,
   ArrowRight,
-  ExternalLink,
   Printer,
   Sparkles,
-  Phone,
   Scale,
   Navigation,
   Activity,
   Check,
-  SlidersHorizontal,
   RotateCcw,
-  AlertTriangle,
-  Info
+  AlertTriangle
 } from 'lucide-react';
 import type { ExecutionRequest, CropLot, ExecutionRequestEvent } from '../types';
 import { api } from '../api';

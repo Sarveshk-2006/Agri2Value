@@ -1,7 +1,6 @@
 // frontend/src/pages/app/ProfileView.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   History,
@@ -24,17 +23,8 @@ import {
   RotateCcw,
   CheckCircle2,
   Phone,
-  MapPin,
-  Clock,
   Download,
-  AlertTriangle,
-  MessageCircle,
-  Truck,
-  Check,
-  Calendar,
-  X,
-  Camera,
-  Trash2
+  Check
 } from 'lucide-react';
 import type { User as UserType, Farm, CropLot, TabKey } from '../../types';
 import { LanguageSelector } from '../../components/LanguageSelector';
@@ -93,12 +83,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   farms = [],
   cropLots = [],
   onSelectTab,
-  onOpenCreateFarm,
-  onOpenCreateLot,
   onResetDemoData,
   onLogout,
 }) => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Active Profile Section Tab

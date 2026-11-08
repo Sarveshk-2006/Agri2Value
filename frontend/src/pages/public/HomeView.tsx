@@ -2,45 +2,29 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import {
   TrendingUp,
   Sparkles,
-  Sprout,
   ArrowRight,
   Layers,
   ShieldCheck,
-  Activity,
   Flame,
   Truck,
-  Building2,
-  Wheat,
+  CheckCircle2,
+  ChevronRight,
+  Compass,
+  ChevronDown,
+  PlayCircle,
   MapPin,
+  Wheat,
   Cpu,
   ShoppingBag,
-  Warehouse,
   CloudSun,
-  Scale,
-  CheckCircle2,
-  AlertTriangle,
-  ChevronRight,
-  ExternalLink,
+  Sprout,
   Users,
-  Compass,
-  FileText,
-  Clock,
-  Droplets,
-  DollarSign,
-  Boxes,
-  Zap,
-  BarChart3,
-  Calendar,
-  Lock,
-  ChevronDown,
-  Sun,
-  Wind,
-  Check,
-  PlayCircle
+  Building2,
+  Warehouse,
+  Boxes
 } from 'lucide-react';
 import tractorsImg from '../../assets/TRACTORS.jpg';
 
@@ -48,7 +32,6 @@ import tractorsImg from '../../assets/TRACTORS.jpg';
 import { ScrollProgressBar } from '../../components/public/motion/ScrollProgressBar';
 import { SmoothScrollProvider } from '../../components/public/motion/SmoothScrollProvider';
 import { AnimatedCounter } from '../../components/public/motion/AnimatedCounter';
-import { FadeIn, StaggerContainer, StaggerItem, HoverCard } from '../../components/public/motion/MotionWrappers';
 import { InteractiveProfitEngineStory } from '../../components/public/motion/InteractiveProfitEngineStory';
 import { InteractiveCropRescueStory } from '../../components/public/motion/InteractiveCropRescueStory';
 import { InteractiveProtectionStory } from '../../components/public/motion/InteractiveProtectionStory';
@@ -56,7 +39,6 @@ import { Interactive3DFarmSection } from '../../components/public/motion/Interac
 
 export const HomeView: React.FC = () => {
   const { t } = useTranslation();
-  const shouldReduceMotion = useReducedMotion();
 
   // Interactive Tab State: '3D_FARM' | 'PROFIT' | 'RESCUE' | 'PROTECTION'
   const [activeStudioTab, setActiveStudioTab] = useState<'3D_FARM' | 'PROFIT' | 'RESCUE' | 'PROTECTION'>('3D_FARM');

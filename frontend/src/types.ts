@@ -34,6 +34,9 @@ export interface Farm {
   land_area?: number;
   land_area_unit: string;
   boundary_geojson?: string;
+  soil_type?: string;
+  irrigation_type?: string;
+  gps_coordinates?: string;
   is_active: boolean;
   resources: FarmResource[];
   created_at: string;
@@ -60,6 +63,7 @@ export interface CropLot {
   quantity_kg_normalized: number;
   harvest_date?: string;
   quality_grade?: string;
+  brix?: number | string;
   status: string;
   data_mode: 'real' | 'demo';
   notes?: string;
@@ -834,6 +838,8 @@ export interface ProtectionDashboardMetrics {
   recent_events: TransactionAuditEvent[];
   disclaimer: string;
 }
+
+export type FarmerProtectionSummary = ProtectionDashboardMetrics;
 
 export interface NotificationItem {
   id: string;

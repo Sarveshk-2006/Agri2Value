@@ -5,10 +5,8 @@ import {
   Wheat,
   Plus,
   Search,
-  Filter,
   Calendar,
   MapPin,
-  Building2,
   Sparkles,
   Flame,
   ArrowRight,
@@ -18,12 +16,9 @@ import {
   ChevronDown,
   ChevronUp,
   RotateCcw,
-  Info,
-  Scale,
   Sprout,
   AlertTriangle,
-  Layers,
-  Award,
+  Award
 } from 'lucide-react';
 import type { CropLot, Farm } from '../types';
 

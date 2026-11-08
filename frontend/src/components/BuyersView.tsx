@@ -7,7 +7,6 @@ import {
   Search,
   CheckCircle2,
   MapPin,
-  Sparkles,
   Building2,
   Star,
   X,
@@ -15,22 +14,12 @@ import {
   ShieldCheck,
   TrendingUp,
   Clock,
-  SlidersHorizontal,
-  ChevronRight,
-  Filter,
-  Check,
   Scale,
-  DollarSign,
   Truck,
   Phone,
   Mail,
-  AlertCircle,
-  FileText,
   Calculator,
-  RefreshCw,
-  ExternalLink,
-  Layers,
-  Info
+  RefreshCw
 } from 'lucide-react';
 import type { Buyer, BuyerOffer, CropLot } from '../types';
 import { api } from '../api';

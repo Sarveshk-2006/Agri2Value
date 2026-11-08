@@ -2,21 +2,11 @@
 import React, { useState, useMemo } from 'react';
 import {
   Search,
-  Filter,
   PlusCircle,
   MapPin,
-  Clock,
-  DollarSign,
   Star,
   CheckCircle2,
-  Calendar,
-  X,
-  Phone,
-  ShieldCheck,
-  ChevronRight,
-  TrendingUp,
-  Sliders,
-  Check
+  X
 } from 'lucide-react';
 import tractorsImg from '../../assets/TRACTORS.jpg';
 

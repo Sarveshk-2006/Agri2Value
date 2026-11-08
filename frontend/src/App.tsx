@@ -302,13 +302,13 @@ const AppContent: React.FC = () => {
     showToast(`Harvest lot '${newLot.crop_name}' registered (${newLot.quantity_kg_normalized} kg)`);
   };
 
-  const handleDeleteFarm = async (farmId: string) => {
+  const _handleDeleteFarm = async (farmId: string) => {
     await api.deleteFarm(farmId);
     setFarms(farms.filter((f) => f.id !== farmId));
     showToast('Farm parcel deactivated');
   };
 
-  const handleDeleteLot = async (lotId: string) => {
+  const _handleDeleteLot = async (lotId: string) => {
     await api.deleteCropLot(lotId);
     setCropLots(cropLots.filter((l) => l.id !== lotId));
     showToast('Harvest produce lot removed');

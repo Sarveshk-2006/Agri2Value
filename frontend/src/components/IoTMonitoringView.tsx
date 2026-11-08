@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Activity,
   Droplet,
   Thermometer,
   CloudRain,
@@ -10,7 +9,6 @@ import {
   Cpu,
   RefreshCw,
   Info,
-  Sparkles,
   ArrowRight,
   AlertTriangle,
   CheckCircle2,
@@ -21,9 +19,7 @@ import {
   ShieldCheck,
   Clock,
   TrendingDown,
-  TrendingUp,
   Wifi,
-  WifiOff,
   Copy,
   Check,
   History,
@@ -36,11 +32,8 @@ import {
   ArrowUpRight,
   BarChart2,
   Settings2,
-  ChevronRight,
   ChevronDown,
   ChevronUp,
-  Layers,
-  FileText,
   AlertCircle
 } from 'lucide-react';
 import { api } from '../api';

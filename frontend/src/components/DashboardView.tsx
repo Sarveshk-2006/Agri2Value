@@ -8,20 +8,9 @@ import {
   Layers, 
   TrendingUp, 
   PlusCircle, 
-  CheckCircle2, 
   Sparkles,
   ArrowRight,
   Flame,
-  Activity,
-  Landmark,
-  ScanLine,
-  ShieldCheck,
-  Building2,
-  Calendar,
-  Clock,
-  ExternalLink,
-  ChevronRight,
-  Snowflake,
   Shield
 } from 'lucide-react';
 import type {
@@ -104,7 +93,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       try {
         const prot = await api.getProtectionDashboard();
         if (isMounted) {
-          setProtectionSummary(prot.farmer_protection_summary);
+          setProtectionSummary(prot);
           setRecentEvents(prot.recent_events || []);
         }
       } catch {}
@@ -403,7 +392,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Tool 6: Diagnostic Scanner */}
           <div
-            onClick={() => setIsScannerOpen(true)}
+            onClick={() => setIsScannerModalOpen(true)}
             className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-green-300 transition-all cursor-pointer group active:scale-[0.98] space-y-1.5 flex flex-col justify-between"
           >
             <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
@@ -427,7 +416,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* ─── SECTION 5: MICROCLIMATE WEATHER & MANDI BENCHMARK (CLEAN 2-COL) ─── */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         <div className="lg:col-span-7 flex flex-col">
-          <WeatherSprayWidget primaryFarm={primaryFarm} />
+          <WeatherSprayWidget
+            latitude={primaryFarm?.latitude || 20.0768}
+            longitude={primaryFarm?.longitude || 74.0375}
+            locationName={primaryFarm ? `${primaryFarm.village}, ${primaryFarm.district}` : 'Niphad, Nashik'}
+          />
         </div>
 
         <div className="lg:col-span-5 bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between space-y-4">
@@ -600,7 +593,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 </span>
                 <div>
                   <span className="font-bold text-gray-900">{evt.event_type.replace(/_/g, ' ')}: </span>
-                  <span className="text-gray-600">{evt.description || 'Milestone verified.'}</span>
+                  <span className="text-gray-600">{evt.summary || 'Milestone verified.'}</span>
                 </div>
               </div>
               <span className="text-[11px] font-mono text-gray-400 shrink-0">

@@ -9,13 +9,7 @@ import {
   FileText,
   Bookmark,
   BookmarkCheck,
-  Building2,
   Calendar,
-  Layers,
-  ChevronRight,
-  Sparkles,
-  ArrowRight,
-  ShieldCheck,
   Check
 } from 'lucide-react';
 

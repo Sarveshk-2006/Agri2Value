@@ -3,8 +3,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
-  TrendingDown,
-  CloudSun, 
   Search, 
   RefreshCw, 
   Sparkles,
@@ -16,19 +14,10 @@ import {
   ShieldCheck,
   AlertTriangle,
   CheckCircle2,
-  Clock,
   Calendar,
-  ChevronRight,
-  Info,
-  ExternalLink,
   Sun,
   CloudRain,
-  CloudLightning,
   Shield,
-  SlidersHorizontal,
-  ArrowUpDown,
-  Check,
-  Flame,
   Truck,
   Scissors
 } from 'lucide-react';

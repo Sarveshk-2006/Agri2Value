@@ -12,7 +12,6 @@ import {
   FileText,
   Flame,
   Activity,
-  FileCode2,
   ChevronLeft,
   ChevronRight,
   X,

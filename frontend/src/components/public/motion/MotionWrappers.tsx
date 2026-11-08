@@ -1,5 +1,5 @@
 // frontend/src/components/public/motion/MotionWrappers.tsx
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 
 interface FadeInProps {

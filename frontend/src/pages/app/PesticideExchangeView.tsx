@@ -2,21 +2,15 @@
 import React, { useState, useMemo } from 'react';
 import {
   Search,
-  Filter,
   PlusCircle,
   MapPin,
-  Calendar,
-  AlertTriangle,
   CheckCircle2,
   Share2,
   Gift,
-  Tag,
   ShieldCheck,
   X,
   Phone,
-  FileText,
-  Clock,
-  ExternalLink
+  Clock
 } from 'lucide-react';
 
 export interface AgrochemicalListing {

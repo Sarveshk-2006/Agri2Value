@@ -4,13 +4,11 @@ import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
   Flame,
-  ShieldAlert,
   ArrowRight,
   TrendingDown,
   Clock,
   Warehouse,
   CheckCircle2,
-  Info,
   RefreshCw,
   Sparkles,
   CloudRain,
@@ -19,28 +17,16 @@ import {
   ChevronDown,
   ChevronUp,
   RotateCcw,
-  Factory,
-  Truck,
-  Building2,
   ShieldCheck,
-  TrendingUp,
   X,
-  Scale,
-  MapPin,
-  Calendar,
   AlertCircle,
-  Activity,
-  Layers,
-  Thermometer,
-  Zap,
-  Check
+  Thermometer
 } from 'lucide-react';
 import type {
   CropLot,
   CropRescueAssessment,
   RescuePathwayOption,
   CropRescueCustomAssumptions,
-  AssumptionItem,
 } from '../types';
 import { api } from '../api';
 

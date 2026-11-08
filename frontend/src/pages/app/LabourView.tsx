@@ -3,19 +3,13 @@ import React, { useState, useMemo } from 'react';
 import {
   Users,
   Search,
-  Filter,
   Calendar,
-  Clock,
   MapPin,
   CheckCircle2,
   Star,
-  Phone,
-  ShieldCheck,
-  ChevronRight,
   Plus,
   Minus,
-  X,
-  FileCheck
+  X
 } from 'lucide-react';
 
 export interface LabourCrew {
