@@ -38,7 +38,9 @@ export const STORAGE_KEY = 'agri2value_language';
 const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
 const urlLang = urlParams?.get('lang');
 const savedLanguage = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
-const candidateLang = urlLang || savedLanguage || 'en';
+const cookieMatch = typeof document !== 'undefined' ? document.cookie.match(/googtrans=\/en\/([a-z]{2})/) : null;
+const cookieLang = cookieMatch ? cookieMatch[1] : null;
+const candidateLang = urlLang || savedLanguage || cookieLang || 'en';
 const initialLang = SUPPORTED_LANGUAGES.some(l => l.code === candidateLang) ? candidateLang : 'en';
 
 // If URL specified language, sync localStorage immediately
@@ -91,12 +93,27 @@ export const changeAppLanguage = async (code: string) => {
     document.documentElement.lang = code;
 
     // 4. Synchronize Google Translate cookie for silent dynamic translation fallback
+    const hostname = window.location.hostname;
+    const parts = hostname.split('.');
+    const parentDomain = parts.length > 2 ? '.' + parts.slice(-2).join('.') : '';
+
     if (code === 'en') {
-      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=${window.location.hostname}; path=/;`;
+      const domains = ['', hostname, '.' + hostname, parentDomain].filter(Boolean);
+      const paths = ['/', ''];
+      domains.forEach(d => {
+        paths.forEach(p => {
+          document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${p};${d ? ` domain=${d};` : ''}`;
+        });
+      });
     } else {
-      document.cookie = `googtrans=/en/${code}; path=/;`;
-      document.cookie = `googtrans=/en/${code}; domain=${window.location.hostname}; path=/;`;
+      const val = `/en/${code}`;
+      document.cookie = `googtrans=${val}; path=/;`;
+      if (hostname) {
+        document.cookie = `googtrans=${val}; path=/; domain=${hostname};`;
+      }
+      if (parentDomain) {
+        document.cookie = `googtrans=${val}; path=/; domain=${parentDomain};`;
+      }
     }
 
     // 5. Dispatch custom event for reactive UI updates

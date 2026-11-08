@@ -47,22 +47,25 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
 
   const handleSelect = async (lang: LanguageOption) => {
     setIsOpen(false);
+    if (lang.code === currentLangCode) return;
     await changeAppLanguage(lang.code);
     if (onLanguageChange) {
       onLanguageChange(lang.code);
     }
+    // Reload to apply Google Translate neural DOM translation universally across all 100% of elements
+    window.location.reload();
   };
 
-  // Determine styling based on variant
+  // Determine styling based on variant - matches dark pill in user screenshot
   const pillClasses = variant === 'dark'
-    ? 'bg-slate-900/90 text-white hover:bg-slate-800 border-slate-700/80 shadow-md'
+    ? 'bg-[#181a20]/95 hover:bg-[#23272e] text-white border-slate-700/80 shadow-md'
     : variant === 'light'
     ? 'bg-white text-slate-800 hover:bg-slate-100 border-slate-200/80 shadow-xs'
-    : 'bg-slate-900/90 hover:bg-slate-800 text-white border-slate-700/60 shadow-xs';
+    : 'bg-[#181a20]/95 hover:bg-[#23272e] text-white border-slate-700/80 shadow-md';
 
   return (
-    <div className={`relative inline-block text-left ${className}`} ref={dropdownRef}>
-      {/* Trigger Pill matching screenshot */}
+    <div className={`relative inline-block text-left notranslate ${className}`} ref={dropdownRef}>
+      {/* Trigger Pill matching screenshot 1 */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -72,21 +75,16 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         aria-label="Select Language"
         title="Select Language / भाषा निवडा"
       >
-        <Globe className="w-3.5 h-3.5 shrink-0" />
-        <span className="tracking-tight">{currentLang.name}</span>
+        <Globe className="w-3.5 h-3.5 shrink-0 text-white" />
+        <span className="tracking-tight text-white">{currentLang.name}</span>
       </button>
 
-      {/* Floating Dropdown matching Image 2 */}
+      {/* Floating Dropdown matching user screenshot 2 */}
       {isOpen && (
         <div
-          className="absolute right-0 mt-1.5 w-48 rounded-xl bg-white shadow-2xl border border-slate-200 py-1 z-50 animate-in fade-in zoom-in-95 duration-150 max-h-80 overflow-y-auto"
+          className="absolute right-0 mt-1.5 w-36 rounded-lg bg-white shadow-2xl border border-slate-200 py-1 z-50 animate-in fade-in zoom-in-95 duration-100 max-h-80 overflow-y-auto notranslate"
           role="listbox"
         >
-          <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 flex items-center justify-between">
-            <span>Select Language</span>
-            <span className="text-[9px] text-emerald-600 font-mono">10 Languages</span>
-          </div>
-
           {SUPPORTED_LANGUAGES.map((lang) => {
             const isSelected = lang.code === currentLangCode;
             return (
@@ -96,21 +94,14 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                 role="option"
                 aria-selected={isSelected}
                 onClick={() => handleSelect(lang)}
-                className={`w-full text-left px-3 py-2 flex items-center justify-between text-xs transition-colors cursor-pointer ${
+                className={`w-full text-left px-3.5 py-1.5 flex items-center justify-between text-sm transition-colors cursor-pointer ${
                   isSelected
-                    ? 'bg-blue-600 text-white font-bold'
-                    : 'text-slate-800 hover:bg-slate-100'
+                    ? 'bg-[#1a73e8] text-white font-semibold'
+                    : 'text-slate-800 hover:bg-slate-100 font-normal'
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">{lang.name}</span>
-                  {lang.code !== 'en' && (
-                    <span className={`text-[10px] ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
-                      ({lang.englishName})
-                    </span>
-                  )}
-                </div>
-                {isSelected && <Check className="w-4 h-4 text-white shrink-0" />}
+                <span>{lang.name}</span>
+                {isSelected && <Check className="w-3.5 h-3.5 text-white shrink-0" />}
               </button>
             );
           })}
@@ -119,3 +110,4 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
     </div>
   );
 };
+

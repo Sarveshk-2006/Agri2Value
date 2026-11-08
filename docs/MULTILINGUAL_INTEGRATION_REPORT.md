@@ -80,3 +80,4 @@ The chatbot incorporates dynamic language adaptation:
 - **Backend Integration Tests:** 125/125 tests passed in 14.07s (`python -m pytest backend/tests`).
 - **Frontend Production Build:** Compiled with 0 errors in 493ms (`npm run build`).
 - **Visual Evidence:** Captured full-fidelity browser screenshots in English, Marathi, Hindi, Telugu, and Tamil across desktop (1440px) and mobile (375px) viewports with 0 layout clipping or text overlap.
+

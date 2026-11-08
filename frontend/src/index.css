@@ -415,3 +415,48 @@
   letter-spacing: -0.02em;
   color: #0f172a;
 }
+
+/* ============================================================
+   GOOGLE TRANSLATE SEAMLESS INVISIBLE INTEGRATION OVERRIDES
+   ============================================================ */
+.goog-te-banner-frame.skiptranslate,
+.skiptranslate iframe.goog-te-banner-frame,
+iframe.goog-te-banner-frame,
+.goog-te-banner-frame {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+html, body {
+  top: 0px !important;
+  position: static !important;
+}
+
+/* Hide Google branding & translation artifacts */
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-aZ2wEe-OiiCO,
+.VIpgJd-ZVi9od-vH1Gmf,
+.goog-logo-link,
+.goog-te-gadget,
+#google_translate_element {
+  display: none !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  display: none !important;
+}
+
+/* Prevent Google text highlight popups/tooltips on hover */
+.goog-text-highlight {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}

@@ -6,13 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agri2Value — AI-Assisted Farm-to-Profit Decision Platform</title>
     <meta name="description" content="AI-assisted farm-to-profit decision and execution platform. Helping farmers maximize harvest profits through transparent decisions, feasibility checks, and resource coordination." />
+    <!-- Pre-synchronize Google Translate cookie from localStorage before paint -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('agri2value_language');
+          if (saved && saved !== 'en') {
+            var cookieVal = '/en/' + saved;
+            document.cookie = 'googtrans=' + cookieVal + '; path=/;';
+            document.cookie = 'googtrans=' + cookieVal + '; path=/; domain=' + window.location.hostname + ';';
+          } else if (saved === 'en') {
+            document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=' + window.location.hostname + '; path=/;';
+          }
+        } catch (e) {}
+      })();
+    </script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body class="bg-slate-50 text-slate-900 antialiased min-h-screen selection:bg-emerald-600 selection:text-white">
+    <!-- Google Translate Silent Initialization Mount -->
+    <div id="google_translate_element" style="display:none"></div>
     <div id="root"></div>
+    <script type="text/javascript">
+      window.googleTranslateElementInit = function() {
+        if (window.google && window.google.translate) {
+          new window.google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,hi,mr,te,ta,kn,gu,pa,bn,ml',
+            autoDisplay: false
+          }, 'google_translate_element');
+        }
+      };
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
