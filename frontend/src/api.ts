@@ -203,6 +203,7 @@ export const DEFAULT_DEMO_LOT: CropLot = {
 
 class ApiService {
   private token: string | null = localStorage.getItem('a2v_access_token');
+  private backendOnlineState: boolean | null = null;
 
   setToken(token: string | null) {
     this.token = token;
@@ -219,6 +220,10 @@ class ApiService {
 
   hasToken(): boolean {
     return !!this.token;
+  }
+
+  isBackendOnline(): boolean | null {
+    return this.backendOnlineState;
   }
 
   private getHeaders(): HeadersInit {
@@ -248,22 +253,26 @@ class ApiService {
       if (res.ok) {
         const contentType = res.headers.get('content-type') || '';
         if (!contentType.includes('application/json')) {
+          this.backendOnlineState = false;
           return { status: 'offline', backendOnline: false, latency_ms: latency };
         }
         const data = await res.json();
+        this.backendOnlineState = true;
         return {
           status: data.status || 'healthy',
           backendOnline: true,
           app: data.app || 'Agri2Value',
           version: data.version || '0.1.0',
-          environment: data.environment || 'development',
+          environment: data.environment || 'production',
           database: data.database || 'connected',
           demo_mode: data.demo_mode ?? true,
           latency_ms: latency,
         };
       }
+      this.backendOnlineState = false;
       return { status: 'offline', backendOnline: false, latency_ms: latency };
     } catch {
+      this.backendOnlineState = false;
       return { status: 'offline', backendOnline: false, latency_ms: 0 };
     }
   }
@@ -364,15 +373,28 @@ class ApiService {
   }
 
   async getMe(): Promise<User> {
+    if (this.backendOnlineState === false) {
+      const saved = localStorage.getItem('a2v_current_user');
+      if (saved) {
+        try { return JSON.parse(saved); } catch {}
+      }
+      return DEFAULT_DEMO_USER;
+    }
     try {
       const res = await fetch(`${API_BASE}/auth/me`, {
         headers: this.getHeaders(),
       });
       if (res.ok) {
-        return await res.json();
+        const u = await res.json();
+        localStorage.setItem('a2v_current_user', JSON.stringify(u));
+        return u;
       }
     } catch {
       // Fallback
+    }
+    const saved = localStorage.getItem('a2v_current_user');
+    if (saved) {
+      try { return JSON.parse(saved); } catch {}
     }
     return DEFAULT_DEMO_USER;
   }
@@ -397,6 +419,16 @@ class ApiService {
   }
 
   async getFarms(): Promise<Farm[]> {
+    if (this.backendOnlineState === false) {
+      const saved = localStorage.getItem('a2v_farms');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch {}
+      }
+      return DEFAULT_DEMO_FARMS;
+    }
     try {
       const res = await fetch(`${API_BASE}/farms`, {
         headers: this.getHeaders(),
@@ -530,6 +562,16 @@ class ApiService {
   }
 
   async getCropLots(farmId?: string): Promise<CropLot[]> {
+    if (this.backendOnlineState === false) {
+      const saved = localStorage.getItem('a2v_crop_lots');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch {}
+      }
+      return [DEFAULT_DEMO_LOT];
+    }
     try {
       const url = farmId ? `${API_BASE}/crop-lots?farm_id=${farmId}` : `${API_BASE}/crop-lots`;
       const res = await fetch(url, { headers: this.getHeaders() });
@@ -1710,16 +1752,7 @@ class ApiService {
   }
 
   async getNotifications(limit: number = 25): Promise<NotificationListResponse> {
-    try {
-      const res = await fetch(`${API_BASE}/notifications?limit=${limit}`, {
-        headers: this.getHeaders(),
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {}
-
-    return {
+    const fallbackNotifications: NotificationListResponse = {
       items: [
         {
           id: 'notif-demo-1',
@@ -1758,6 +1791,21 @@ class ApiService {
       unread_count: 2,
       total: 3,
     };
+
+    if (this.backendOnlineState === false) {
+      return fallbackNotifications;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/notifications?limit=${limit}`, {
+        headers: this.getHeaders(),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {}
+
+    return fallbackNotifications;
   }
 
   async markNotificationRead(notificationId: string): Promise<void> {

@@ -265,7 +265,7 @@ const AppContent: React.FC = () => {
     const interval = setInterval(async () => {
       const health = await api.checkHealth();
       setBackendOnline(health.backendOnline);
-    }, 15000);
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 

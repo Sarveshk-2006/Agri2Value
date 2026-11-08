@@ -70,8 +70,8 @@ export const Header: React.FC<HeaderProps> = ({
 
   useEffect(() => {
     fetchNotifications();
-    // Poll notifications every 30 seconds if active
-    const interval = setInterval(fetchNotifications, 30000);
+    // Poll notifications every 60 seconds if active
+    const interval = setInterval(fetchNotifications, 60000);
     return () => clearInterval(interval);
   }, [user?.id]);
 
