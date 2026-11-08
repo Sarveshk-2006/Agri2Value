@@ -167,16 +167,36 @@ class ApiService {
     return headers;
   }
 
-  async checkHealth(): Promise<{ status: string; backendOnline: boolean }> {
+  async checkHealth(): Promise<{
+    status: string;
+    backendOnline: boolean;
+    app?: string;
+    version?: string;
+    environment?: string;
+    database?: string;
+    demo_mode?: boolean;
+    latency_ms?: number;
+  }> {
+    const start = typeof performance !== 'undefined' ? performance.now() : Date.now();
     try {
       const res = await fetch(`${API_BASE}/health`);
+      const latency = Math.round((typeof performance !== 'undefined' ? performance.now() : Date.now()) - start);
       if (res.ok) {
         const data = await res.json();
-        return { status: data.status, backendOnline: true };
+        return {
+          status: data.status || 'healthy',
+          backendOnline: true,
+          app: data.app || 'Agri2Value',
+          version: data.version || '0.1.0',
+          environment: data.environment || 'development',
+          database: data.database || 'connected',
+          demo_mode: data.demo_mode ?? true,
+          latency_ms: latency,
+        };
       }
-      return { status: 'offline', backendOnline: false };
+      return { status: 'offline', backendOnline: false, latency_ms: latency };
     } catch {
-      return { status: 'offline', backendOnline: false };
+      return { status: 'offline', backendOnline: false, latency_ms: 0 };
     }
   }
 
