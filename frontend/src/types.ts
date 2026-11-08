@@ -550,7 +550,12 @@ export type TabKey =
   | 'iot-monitoring'
   | 'protection'
   | 'profile'
-  | 'specs';
+  | 'specs'
+  | 'schemes'
+  | 'equipment'
+  | 'pesticide-exchange'
+  | 'labour'
+  | 'legal-advisor';
 
 export interface IoTTelemetrySample {
   reading_id: string;

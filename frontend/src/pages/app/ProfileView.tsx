@@ -279,6 +279,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         'rescue': '/app/rescue',
         'protection': '/app/protection',
         'iot-monitoring': '/app/iot',
+        'schemes': '/app/schemes',
+        'equipment': '/app/equipment',
+        'pesticide-exchange': '/app/pesticide-exchange',
+        'labour': '/app/labour',
+        'legal-advisor': '/app/legal-advisor',
       };
       if (map[tabKey]) navigate(map[tabKey]);
     }
@@ -769,6 +774,48 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                         <ArrowRight className="w-3.5 h-3.5" />
                       </span>
                     </div>
+                  </div>
+                </div>
+
+                {/* Additional Verified Farmer Tools (Inspired by JSPM Narhe Winners) */}
+                <div className="pt-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleNavClick('schemes')}
+                      className="p-4 rounded-2xl bg-white border border-gray-100 hover:border-green-300 hover:shadow-md transition text-left space-y-1 cursor-pointer active:scale-[0.98]"
+                    >
+                      <div className="text-xl">🏛️</div>
+                      <div className="font-bold text-gray-900 text-xs font-display">Govt Schemes</div>
+                      <div className="text-[10px] text-gray-400">PMFBY, SMAM, Ponds</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleNavClick('equipment')}
+                      className="p-4 rounded-2xl bg-white border border-gray-100 hover:border-green-300 hover:shadow-md transition text-left space-y-1 cursor-pointer active:scale-[0.98]"
+                    >
+                      <div className="text-xl">🚜</div>
+                      <div className="font-bold text-gray-900 text-xs font-display">Find Machinery</div>
+                      <div className="text-[10px] text-gray-400">Tractors & harvesters</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleNavClick('pesticide-exchange')}
+                      className="p-4 rounded-2xl bg-white border border-gray-100 hover:border-green-300 hover:shadow-md transition text-left space-y-1 cursor-pointer active:scale-[0.98]"
+                    >
+                      <div className="text-xl">🌿</div>
+                      <div className="font-bold text-gray-900 text-xs font-display">Input Exchange</div>
+                      <div className="text-[10px] text-gray-400">Bio-nutrients & sprays</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleNavClick('legal-advisor')}
+                      className="p-4 rounded-2xl bg-white border border-gray-100 hover:border-green-300 hover:shadow-md transition text-left space-y-1 cursor-pointer active:scale-[0.98]"
+                    >
+                      <div className="text-xl">⚖️</div>
+                      <div className="font-bold text-gray-900 text-xs font-display">Legal & MSP</div>
+                      <div className="text-[10px] text-gray-400">T+3 dispute protection</div>
+                    </button>
                   </div>
                 </div>
 

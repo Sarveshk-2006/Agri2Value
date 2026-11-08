@@ -31,6 +31,11 @@ import { IoTMonitoringView } from './components/IoTMonitoringView';
 import { ProtectionView } from './components/ProtectionView';
 import { SpecsView } from './components/SpecsView';
 import { ProfileView } from './pages/app/ProfileView';
+import { SchemesView } from './pages/app/SchemesView';
+import { EquipmentView } from './pages/app/EquipmentView';
+import { PesticideExchangeView } from './pages/app/PesticideExchangeView';
+import { LabourView } from './pages/app/LabourView';
+import { LegalAdvisorView } from './pages/app/LegalAdvisorView';
 import { NotFoundView } from './pages/NotFoundView';
 
 import { api, DEFAULT_DEMO_USER, DEFAULT_DEMO_FARMS } from './api';
@@ -107,6 +112,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     if (path.includes('/app/iot')) return 'iot-monitoring';
     if (path.includes('/app/profile')) return 'profile';
     if (path.includes('/app/specs')) return 'specs';
+    if (path.includes('/app/schemes')) return 'schemes';
+    if (path.includes('/app/equipment')) return 'equipment';
+    if (path.includes('/app/pesticide-exchange')) return 'pesticide-exchange';
+    if (path.includes('/app/labour')) return 'labour';
+    if (path.includes('/app/legal-advisor')) return 'legal-advisor';
     return 'dashboard';
   };
 
@@ -128,6 +138,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       'iot-monitoring': '/app/iot',
       'profile': '/app/profile',
       'specs': '/app/specs',
+      'schemes': '/app/schemes',
+      'equipment': '/app/equipment',
+      'pesticide-exchange': '/app/pesticide-exchange',
+      'labour': '/app/labour',
+      'legal-advisor': '/app/legal-advisor',
     };
     if (routeMap[tab]) {
       navigate(routeMap[tab]);
@@ -322,6 +337,11 @@ const AppContent: React.FC = () => {
       'iot-monitoring': '/app/iot',
       'profile': '/app/profile',
       'specs': '/app/specs',
+      'schemes': '/app/schemes',
+      'equipment': '/app/equipment',
+      'pesticide-exchange': '/app/pesticide-exchange',
+      'labour': '/app/labour',
+      'legal-advisor': '/app/legal-advisor',
     };
     if (routeMap[tab]) {
       navigate(routeMap[tab]);
@@ -516,6 +536,11 @@ const AppContent: React.FC = () => {
           />
 
           <Route path="specs" element={<SpecsView />} />
+          <Route path="schemes" element={<SchemesView />} />
+          <Route path="equipment" element={<EquipmentView />} />
+          <Route path="pesticide-exchange" element={<PesticideExchangeView />} />
+          <Route path="labour" element={<LabourView />} />
+          <Route path="legal-advisor" element={<LegalAdvisorView />} />
         </Route>
 
         {/* ─── 404 Catch-All ─── */}

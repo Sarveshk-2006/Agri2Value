@@ -66,6 +66,11 @@ export const en: TranslationSchema = {
     home: 'Home',
     sensors: 'Sensors',
     alert: 'ALERT',
+    schemes: 'Govt Schemes',
+    equipment: 'Find Equipment',
+    pesticideExchange: 'Pesticide Exchange',
+    labour: 'Find Labour',
+    legalAdvisor: 'Legal Advisor',
   },
   dashboard: {
     welcome: 'Namaste',

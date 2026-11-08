@@ -65,6 +65,11 @@ export interface TranslationSchema {
     home: string;
     sensors: string;
     alert: string;
+    schemes?: string;
+    equipment?: string;
+    pesticideExchange?: string;
+    labour?: string;
+    legalAdvisor?: string;
   };
   dashboard: {
     welcome: string;

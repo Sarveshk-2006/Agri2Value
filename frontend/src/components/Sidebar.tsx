@@ -19,7 +19,11 @@ import {
   ArrowUpRight,
   UserCheck,
   Globe,
-  ShieldCheck
+  ShieldCheck,
+  Award,
+  Tractor,
+  Sprout,
+  Scale
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from './LanguageSelector';
@@ -89,6 +93,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
     {
+      sectionTitle: 'Farmer Hub & Machinery',
+      items: [
+        {
+          key: 'schemes',
+          label: t('nav.schemes', 'Govt Schemes'),
+          icon: Award,
+          badge: 'HOT',
+          badgeColor: 'rose',
+        },
+        {
+          key: 'equipment',
+          label: t('nav.equipment', 'Find Equipment'),
+          icon: Tractor,
+          badge: null,
+        },
+        {
+          key: 'pesticide-exchange',
+          label: t('nav.pesticideExchange', 'Pesticide Exchange'),
+          icon: Sprout,
+          badge: null,
+        },
+        {
+          key: 'labour',
+          label: t('nav.labour', 'Find Labour'),
+          icon: Users,
+          badge: 'NEW',
+          badgeColor: 'blue',
+        },
+      ],
+    },
+    {
       sectionTitle: t('nav.farmManagement'),
       items: [
         {
@@ -128,15 +163,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       sectionTitle: t('nav.marketplaceExecution'),
       items: [
         {
-          key: 'buyers',
-          label: t('nav.buyers'),
-          icon: Users,
-          badge: null,
-        },
-        {
           key: 'infrastructure',
           label: t('nav.logistics'),
           icon: Truck,
+          badge: 'SAFE',
+          badgeColor: 'emerald',
+        },
+        {
+          key: 'buyers',
+          label: t('nav.buyers'),
+          icon: Users,
           badge: null,
         },
         {
@@ -162,6 +198,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           label: t('nav.farmerProtection'),
           icon: ShieldCheck,
           badge: null,
+        },
+        {
+          key: 'legal-advisor',
+          label: t('nav.legalAdvisor', 'Legal Advisor'),
+          icon: Scale,
+          badge: 'SAFE',
+          badgeColor: 'emerald',
         },
       ],
     },
@@ -374,10 +417,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </div>
 
-        {/* Bottom Farmer Support Banner */}
+        {/* Bottom Farmer Support Banner & PMFBY Insurance Badge */}
         {!isCollapsed && (
-          <div className="p-3 border-t border-slate-100 bg-slate-50/70">
-            <div className="p-3 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-100">
+          <div className="p-3 border-t border-slate-100 bg-slate-50/70 space-y-2">
+            {/* PMFBY Insurance Badge Card (Matching JSPM Narhe Winners) */}
+            <div className="p-2.5 bg-emerald-50/90 rounded-xl border border-emerald-100 text-left">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-emerald-900 flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  Insurance Active
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              </div>
+              <p className="text-[10px] text-emerald-700 mt-0.5 leading-tight">
+                Crops protected under PMFBY & trust ledger.
+              </p>
+              <button
+                onClick={() => handleSelect('schemes')}
+                className="text-[10px] font-extrabold text-emerald-800 hover:text-emerald-950 mt-1 flex items-center gap-0.5 cursor-pointer tracking-wider"
+              >
+                <span>STATUS &gt;</span>
+              </button>
+            </div>
+
+            <div className="p-2.5 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-100">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[11px] font-extrabold text-emerald-900 flex items-center gap-1 font-display">
                   🌾 Field Sync Active
@@ -386,22 +449,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   NASHIK
                 </span>
               </div>
-              <p className="text-[11px] text-emerald-800 leading-tight">
-                APMC Pimpalgaon & Open-Meteo feeds synchronized.
+              <p className="text-[10px] text-emerald-800 leading-tight">
+                APMC Pimpalgaon & Open-Meteo synchronized.
               </p>
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-emerald-200/60">
+              <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-emerald-200/60">
                 <button
                   onClick={() => handleSelect('specs')}
                   className="text-[10px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer"
                 >
-                  Engine Specs <ArrowUpRight className="w-3 h-3" />
+                  Specs <ArrowUpRight className="w-2.5 h-2.5" />
                 </button>
                 <Link
                   to="/"
                   className="text-[10px] font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 cursor-pointer"
                 >
                   <Globe className="w-3 h-3" />
-                  <span>Public Site</span>
+                  <span>Public</span>
                 </Link>
               </div>
             </div>

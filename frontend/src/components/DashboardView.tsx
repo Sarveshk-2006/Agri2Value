@@ -514,13 +514,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={() => setIsSchemeModalOpen(true)}
-            className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
-          >
-            <span>{t('dashboard.exploreSchemes')}</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => navigate('/app/schemes')}
+              className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            >
+              <span>Explore 10 DBT Schemes</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setIsSchemeModalOpen(true)}
+              className="py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-200 transition-colors cursor-pointer"
+            >
+              <span>Quick Modal</span>
+            </button>
+          </div>
         </div>
 
         {/* Tool 2: AI Crop Damage & Spoilage Diagnostic Scanner */}
@@ -553,6 +561,107 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </button>
         </div>
 
+      </section>
+
+      {/* ─── SECTION E.1: FARM MACHINERY & FIELD SERVICES (JSPM NARHE WINNERS INSPIRED) ─── */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>FARM IMPLEMENTS, LABOUR & FIELD SERVICES</span>
+          </h3>
+          <span className="text-[11px] text-slate-400 font-medium">Verified Local Network</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          {/* Service 1: Equipment Marketplace */}
+          <div
+            onClick={() => navigate('/app/equipment')}
+            className="card p-4 sm:p-5 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group active:scale-[0.98] space-y-2"
+          >
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              🚜
+            </div>
+            <div>
+              <div className="text-xs sm:text-sm font-extrabold text-slate-900 font-display group-hover:text-emerald-700 transition">
+                Find Machinery
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                Tractors, Harvesters & Sprayers
+              </p>
+            </div>
+            <div className="pt-1 flex items-center gap-1 text-[10px] font-bold text-emerald-700">
+              <span>Hourly from ₹250/hr</span>
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </div>
+
+          {/* Service 2: Pesticide & Bio-Input Exchange */}
+          <div
+            onClick={() => navigate('/app/pesticide-exchange')}
+            className="card p-4 sm:p-5 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group active:scale-[0.98] space-y-2"
+          >
+            <div className="w-10 h-10 rounded-xl bg-green-50 text-green-700 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              🌿
+            </div>
+            <div>
+              <div className="text-xs sm:text-sm font-extrabold text-slate-900 font-display group-hover:text-emerald-700 transition">
+                Input Exchange
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                Bio-stimulants & organic sprays
+              </p>
+            </div>
+            <div className="pt-1 flex items-center gap-1 text-[10px] font-bold text-green-700">
+              <span>Barter, Share or Buy</span>
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </div>
+
+          {/* Service 3: Labour & Harvesting Crews */}
+          <div
+            onClick={() => navigate('/app/labour')}
+            className="card p-4 sm:p-5 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group active:scale-[0.98] space-y-2"
+          >
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              👥
+            </div>
+            <div>
+              <div className="text-xs sm:text-sm font-extrabold text-slate-900 font-display group-hover:text-blue-700 transition">
+                Harvest Crews
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                Pickers, sprayers & drivers
+              </p>
+            </div>
+            <div className="pt-1 flex items-center gap-1 text-[10px] font-bold text-blue-700">
+              <span>₹400–₹550/day</span>
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </div>
+
+          {/* Service 4: Legal & MSP Contracts */}
+          <div
+            onClick={() => navigate('/app/legal-advisor')}
+            className="card p-4 sm:p-5 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group active:scale-[0.98] space-y-2"
+          >
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+              ⚖️
+            </div>
+            <div>
+              <div className="text-xs sm:text-sm font-extrabold text-slate-900 font-display group-hover:text-indigo-700 transition">
+                Legal & MSP
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                Contract audit & dispute shield
+              </p>
+            </div>
+            <div className="pt-1 flex items-center gap-1 text-[10px] font-bold text-indigo-700">
+              <span>Section 6 Enforced</span>
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ─── SECTION F: ACTIVE HARVEST WORKSPACE & SECTION G: REGISTERED FARM ─── */}
