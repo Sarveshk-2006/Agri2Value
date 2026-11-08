@@ -37,6 +37,8 @@ import {
   BarChart2,
   Settings2,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Layers,
   FileText,
   AlertCircle
@@ -127,7 +129,9 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
   const [humidityThreshold] = useState<number>(85.0);
   const [rainThreshold] = useState<number>(25.0);
 
-  // Simulator controls
+  // Simulator & Ledger Collapsible Controls (Clean & Minimal UI)
+  const [isSimulatorOpen, setIsSimulatorOpen] = useState<boolean>(false);
+  const [isLedgerOpen, setIsLedgerOpen] = useState<boolean>(false);
   const [selectedScenario, setSelectedScenario] = useState<string>('NORMAL_OPTIMAL');
   const [isSimulatingContinuous, setIsSimulatingContinuous] = useState<boolean>(false);
   const [simIntervalSeconds, setSimIntervalSeconds] = useState<number>(5);
@@ -694,36 +698,51 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION 4: MICROCLIMATE SCENARIO SIMULATOR
+          SECTION 4: COLLAPSIBLE MICROCLIMATE SCENARIO SIMULATOR
           ───────────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setIsSimulatorOpen(!isSimulatorOpen)}
+          className="w-full p-4 sm:p-5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors cursor-pointer"
+        >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-100">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-100 shrink-0">
               <Sliders className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-extrabold text-slate-900 font-display">
-                  Microclimate Scenario Simulator
+                <h2 className="text-sm sm:text-base font-extrabold text-slate-900 font-display">
+                  Microclimate Scenario Simulator &amp; Field Stress Testing
                 </h2>
-                <span className="badge-blue text-[10px]">EDGE SYNTHESIS</span>
+                <span className="badge-blue text-[10px]">SIMULATOR</span>
               </div>
-              <p className="text-xs text-slate-500">
-                Generate controlled environmental conditions to evaluate crop stress and threshold-based advisories.
+              <p className="text-xs text-slate-500 mt-0.5">
+                Inject custom stress conditions, trigger irrigation alerts, and simulate sensor failure scenarios.
               </p>
             </div>
           </div>
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition-colors shrink-0">
+            <span>{isSimulatorOpen ? 'Hide Simulator' : 'Open Simulator'}</span>
+            {isSimulatorOpen ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
+          </div>
+        </button>
 
-          {lastApiStatus && (
-            <div className={`text-xs px-3 py-1.5 rounded-xl border font-mono flex items-center gap-1.5 ${
-              lastApiStatus.isError ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-            }`}>
-              {lastApiStatus.isError ? <AlertTriangle className="w-3.5 h-3.5 text-red-500" /> : <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
-              <span>{lastApiStatus.status} ({lastApiStatus.time})</span>
+        {isSimulatorOpen && (
+          <div className="p-6 pt-2 border-t border-slate-100 space-y-5 animate-in fade-in duration-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <p className="text-xs text-slate-500">
+                Generate controlled environmental conditions to evaluate crop stress and threshold-based advisories.
+              </p>
+              {lastApiStatus && (
+                <div className={`text-xs px-3 py-1.5 rounded-xl border font-mono flex items-center gap-1.5 ${
+                  lastApiStatus.isError ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                }`}>
+                  {lastApiStatus.isError ? <AlertTriangle className="w-3.5 h-3.5 text-red-500" /> : <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                  <span>{lastApiStatus.status} ({lastApiStatus.time})</span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
         {/* Scenario Presets Bar */}
         <div>
@@ -916,6 +935,8 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
           </div>
         </div>
       </div>
+      )}
+    </div>
 
       {/* ─────────────────────────────────────────────────────────────
           SECTION 5: SENSOR INTELLIGENCE DASHBOARD (6 Major Cards)
@@ -1528,10 +1549,39 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION 9: SENSOR TELEMETRY & INGESTION LEDGER
+          SECTION 9: COLLAPSIBLE SENSOR TELEMETRY & INGESTION LEDGER
           ───────────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setIsLedgerOpen(!isLedgerOpen)}
+          className="w-full p-4 sm:p-5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100 shrink-0">
+              <History className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm sm:text-base font-extrabold text-slate-900 font-display">
+                  Sensor Telemetry &amp; Ingestion Ledger ({filteredLedger.length})
+                </h2>
+                <span className="badge-green text-[10px]">RECORD TRAIL</span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Timestamped sensor records, raw hardware packets, and cryptographic verification flags.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-600 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition-colors shrink-0">
+            <span>{isLedgerOpen ? 'Hide Ledger' : 'View Ledger'}</span>
+            {isLedgerOpen ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
+          </div>
+        </button>
+
+        {isLedgerOpen && (
+          <div className="p-6 pt-2 border-t border-slate-100 space-y-4 animate-in fade-in duration-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
             <History className="w-5 h-5 text-emerald-600" />
             <h2 className="text-base font-extrabold text-slate-900 font-display">
@@ -1645,6 +1695,8 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
             No telemetry records match the current filters. Run the simulator above to log fresh telematics.
           </div>
         )}
+      </div>
+      )}
       </div>
 
       {/* ─────────────────────────────────────────────────────────────

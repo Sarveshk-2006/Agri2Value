@@ -73,40 +73,35 @@ export const ColdStorageMap: React.FC<ColdStorageMapProps> = ({
       const isSelected = selectedFacility?.id === facility.id;
       const isAvailable = facility.availability_status === 'AVAILABLE';
 
-      const bgGradient = isAvailable
-        ? 'linear-gradient(135deg, #16a34a, #15803d)'
-        : 'linear-gradient(135deg, #dc2626, #b91c1c)';
+      const pinColor = isSelected ? '#16a34a' : (isAvailable ? '#ef4444' : '#64748b');
 
       const markerHtml = `
         <div style="
           position: relative;
-          width: ${isSelected ? 46 : 38}px;
-          height: ${isSelected ? 46 : 38}px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: ${bgGradient};
-          color: white;
-          border-radius: 9999px;
-          border: 3px solid ${isSelected ? '#38bdf8' : '#ffffff'};
-          box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+          width: ${isSelected ? 38 : 32}px;
+          height: ${isSelected ? 48 : 42}px;
           cursor: pointer;
+          filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+          transform: translate(-50%, -100%);
           transition: transform 0.2s ease;
-          transform: translate(-50%, -50%);
         ">
-          <span style="font-size: ${isSelected ? 20 : 16}px; line-height: 1;">❄️</span>
+          <svg viewBox="0 0 32 42" width="${isSelected ? 38 : 32}" height="${isSelected ? 48 : 42}" fill="none">
+            <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26c0-8.84-7.16-16-16-16z" fill="${pinColor}" stroke="#ffffff" stroke-width="2"/>
+            <path d="M10 19v-6l6-3.5 6 3.5v6H10z" fill="#ffffff" />
+            <path d="M13.5 19v-3.5h5v3.5" fill="${pinColor}" />
+          </svg>
           ${
             isSelected
               ? `<span style="
                   position: absolute;
-                  bottom: -2px;
+                  top: -2px;
                   right: -2px;
-                  width: 14px;
-                  height: 14px;
+                  width: 12px;
+                  height: 12px;
                   border-radius: 50%;
-                  background: #38bdf8;
+                  background: #22c55e;
                   border: 2px solid white;
-                  box-shadow: 0 0 8px #38bdf8;
+                  box-shadow: 0 0 6px #22c55e;
                 "></span>`
               : ''
           }
@@ -116,9 +111,9 @@ export const ColdStorageMap: React.FC<ColdStorageMapProps> = ({
       const customIcon = L.divIcon({
         className: 'cold-storage-marker-icon',
         html: markerHtml,
-        iconSize: [isSelected ? 46 : 38, isSelected ? 46 : 38],
-        iconAnchor: [isSelected ? 23 : 19, isSelected ? 23 : 19],
-        popupAnchor: [0, isSelected ? -23 : -19],
+        iconSize: [isSelected ? 38 : 32, isSelected ? 48 : 42],
+        iconAnchor: [isSelected ? 19 : 16, isSelected ? 48 : 42],
+        popupAnchor: [0, isSelected ? -48 : -42],
       });
 
       const marker = L.marker([lat, lng], { icon: customIcon }).addTo(map);

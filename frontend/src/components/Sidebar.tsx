@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const navGroups: NavGroup[] = [
     {
-      sectionTitle: t('nav.overview'),
+      sectionTitle: 'MAIN MENU',
       items: [
         {
           key: 'dashboard',
@@ -90,23 +90,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: UserCheck,
           badge: null,
         },
-      ],
-    },
-    {
-      sectionTitle: 'Farmer Hub & Machinery',
-      items: [
+        {
+          key: 'equipment',
+          label: t('nav.equipment', 'Find Equipment'),
+          icon: Tractor,
+          badge: null,
+        },
         {
           key: 'schemes',
           label: t('nav.schemes', 'Govt Schemes'),
           icon: Award,
           badge: 'HOT',
           badgeColor: 'rose',
-        },
-        {
-          key: 'equipment',
-          label: t('nav.equipment', 'Find Equipment'),
-          icon: Tractor,
-          badge: null,
         },
         {
           key: 'pesticide-exchange',
@@ -124,7 +119,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
     {
-      sectionTitle: t('nav.farmManagement'),
+      sectionTitle: 'HARVEST & MARKETPLACE',
       items: [
         {
           key: 'farms',
@@ -140,11 +135,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           badge: lotCount > 0 ? lotCount : null,
           badgeColor: 'emerald',
         },
-      ],
-    },
-    {
-      sectionTitle: t('nav.intelligence'),
-      items: [
         {
           key: 'decision-preview',
           label: t('nav.profit'),
@@ -157,11 +147,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: CloudSun,
           badge: null,
         },
-      ],
-    },
-    {
-      sectionTitle: t('nav.marketplaceExecution'),
-      items: [
         {
           key: 'infrastructure',
           label: t('nav.logistics'),
@@ -184,7 +169,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
     {
-      sectionTitle: t('nav.protectionSection'),
+      sectionTitle: 'PROTECTION & MONITORING',
       items: [
         {
           key: 'rescue',
@@ -206,26 +191,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           badge: 'SAFE',
           badgeColor: 'emerald',
         },
-      ],
-    },
-    {
-      sectionTitle: t('nav.smartFarming'),
-      items: [
         {
           key: 'iot-monitoring',
           label: t('nav.iot'),
           icon: Activity,
-          badge: null,
-        },
-      ],
-    },
-    {
-      sectionTitle: t('nav.technical'),
-      items: [
-        {
-          key: 'specs',
-          label: t('nav.engineSpecs'),
-          icon: FileCode2,
           badge: null,
         },
       ],

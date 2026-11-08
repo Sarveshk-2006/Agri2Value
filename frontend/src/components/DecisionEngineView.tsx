@@ -387,19 +387,17 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
             </div>
           </div>
 
-          {/* Step 3: Simulation Preset Switcher */}
-          <div className="space-y-1.5">
-            <label className="label">{t('profit.step3')}</label>
-            <select
-              value={selectedScenario}
-              onChange={(e) => setSelectedScenario(e.target.value)}
-              className="input-field text-xs font-semibold cursor-pointer"
+          {/* Step 3: Run Engine Trigger */}
+          <div className="space-y-1.5 flex flex-col justify-end">
+            <label className="label">Evaluation Action</label>
+            <button
+              onClick={() => runEvaluation(activeLotId, 'PILOT_BASELINE')}
+              disabled={loading}
+              className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition active:scale-95 cursor-pointer"
             >
-              <option value="PILOT_BASELINE">Realistic Base Case (Market Spreads)</option>
-              <option value="MANDI_WINS">Mandi Wins (Distant Buyer & High Freight)</option>
-              <option value="PROCESSING_BOTTLENECK">Processing Infeasible (Capacity Limit)</option>
-              <option value="MISSING_DATA">Incomplete Data (Missing Recovery Yield)</option>
-            </select>
+              <Sparkles className="w-4 h-4" />
+              <span>{loading ? 'Evaluating Market Spreads...' : 'Calculate Top Net Profit'}</span>
+            </button>
           </div>
         </div>
 

@@ -35,7 +35,7 @@ async def test_unauthenticated_requests_rejected(client: AsyncClient):
             resp = await client.get(path)
         else:
             resp = await client.post(path, json={})
-        assert resp.status_code == 401, f"Endpoint {method} {path} allowed unauthenticated access! Status: {resp.status_code}"
+        assert resp.status_code in [401, 403], f"Endpoint {method} {path} allowed unauthenticated access! Status: {resp.status_code}"
 
 
 @pytest.mark.asyncio

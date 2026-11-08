@@ -230,23 +230,17 @@ export const FarmerChatbot: React.FC = () => {
   return (
     <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 sm:z-50">
       
-      {/* ─── Trigger Button ─── */}
+      {/* ─── Clean Circular Floating Trigger Button (Matches Reference Design) ─── */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-full shadow-green-lg hover:-translate-y-1.5 animate-float transition-all duration-300 cursor-pointer"
+          className="w-12 h-12 sm:w-14 sm:h-14 bg-green-600 hover:bg-green-700 active:scale-95 text-white rounded-full shadow-lg shadow-green-600/30 flex items-center justify-center transition-all duration-200 cursor-pointer"
           aria-label="Open Krishi Advisory"
+          title="Chat with Mandi Advisor"
         >
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-            <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-white animate-bounce" />
-          </div>
-          <div className="text-left hidden sm:block">
-            <div className="text-xs font-black tracking-tight flex items-center gap-1.5 font-display">
-              <span>Krishi Advisory 🌾</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-300 animate-ping" />
-            </div>
-            <div className="text-[10px] text-green-100 font-medium">Post-Harvest & Mandi Guide</div>
-          </div>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
         </button>
       )}
 

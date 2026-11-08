@@ -576,48 +576,45 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
                         </div>
                       </div>
 
-                      {/* Capacity Bar */}
-                      <div className="mt-3 pt-2.5 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-500">
-                        <span>
-                          Available: <strong className="text-green-700 font-bold">{Math.round(facility.available_capacity_kg / 1000).toLocaleString()} MT</strong>
-                        </span>
-                        <span>
-                          Temp: <strong className="text-blue-600 font-bold">{facility.temperature_range_celsius}</strong>
-                        </span>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="mt-3.5 flex items-center gap-2 pt-2 border-t border-gray-100">
-                        <a
-                          href={`tel:${facility.contact_phone}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex-1 py-2 px-3 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition active:scale-95"
-                        >
-                          <Phone className="w-3.5 h-3.5 text-gray-500" />
-                          <span>Call Facility</span>
-                        </a>
-
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenBooking(
-                              'COLD_STORAGE',
-                              facility.id,
-                              facility.facility_name,
-                              facility.storage_rate_per_kg_per_month,
-                              facility.available_capacity_kg,
-                              `${facility.location_taluka}, ${facility.location_district}`,
-                              'INR/kg/month',
-                              `${facility.temperature_range_celsius} (${facility.compatible_commodities})`
-                            );
-                          }}
-                          className="flex-1 py-2 px-3 rounded-xl bg-green-600 hover:bg-green-700 text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm shadow-green-600/20"
-                        >
-                          <span>Book Cold Bay</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                      {/* If Selected: Reveal Capacity & Booking Action */}
+                      {isSelected && (
+                        <div className="mt-3 pt-3 border-t border-gray-100 space-y-2.5 animate-in fade-in duration-150">
+                          <div className="flex items-center justify-between text-[11px] text-gray-500">
+                            <span>Available: <strong className="text-green-700 font-bold">{Math.round(facility.available_capacity_kg / 1000).toLocaleString()} MT</strong></span>
+                            <span>Temp: <strong className="text-blue-600 font-bold">{facility.temperature_range_celsius}</strong></span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <a
+                              href={`tel:${facility.contact_phone}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="py-1.5 px-3 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-bold flex items-center justify-center gap-1.5 transition"
+                            >
+                              <Phone className="w-3.5 h-3.5 text-gray-500" />
+                              <span>Call</span>
+                            </a>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenBooking(
+                                  'COLD_STORAGE',
+                                  facility.id,
+                                  facility.facility_name,
+                                  facility.storage_rate_per_kg_per_month,
+                                  facility.available_capacity_kg,
+                                  `${facility.location_taluka}, ${facility.location_district}`,
+                                  'INR/kg/month',
+                                  `${facility.temperature_range_celsius} (${facility.compatible_commodities})`
+                                );
+                              }}
+                              className="flex-1 py-1.5 px-3 rounded-xl bg-green-600 hover:bg-green-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs"
+                            >
+                              <span>Reserve Cold Bay</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })

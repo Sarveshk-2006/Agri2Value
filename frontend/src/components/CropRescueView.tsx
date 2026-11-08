@@ -82,6 +82,7 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
   });
 
   // What-If Scenario Simulator State
+  const [showSimulator, setShowSimulator] = useState<boolean>(false);
   const [scenarioPriceSlumpPct, setScenarioPriceSlumpPct] = useState<number>(22);
   const [scenarioRainIntensity, setScenarioRainIntensity] = useState<'MILD' | 'MODERATE' | 'SEVERE'>('MODERATE');
   const [scenarioShelfLifeDays, setScenarioShelfLifeDays] = useState<number>(3);
@@ -408,237 +409,66 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
       ) : assessment ? (
         <div className="space-y-6">
 
-          {/* ──────────────────────────────────────────────────────────
-             4. INTELLIGENT URGENCY INDEX & ROOT CAUSES COCKPIT
-             ────────────────────────────────────────────────────────── */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {/* Urgency Gauge & Factor Decomposition */}
-            <div className="card p-6 border-slate-200 space-y-5 bg-gradient-to-b from-white to-rose-50/20">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Activity className="w-4 h-4 text-rose-600" />
-                  <span>Urgency Index Cockpit</span>
-                </span>
-                <span className="badge-red text-[10px]">
-                  {assessment.urgency_level}
-                </span>
-              </div>
-
-              {/* Urgency Progress Arc / Bar */}
-              <div className="space-y-2">
-                <div className="flex items-baseline justify-between">
-                  <div className="text-4xl sm:text-5xl font-black font-mono text-rose-600 font-display">
-                    {assessment.urgency_score}
-                    <span className="text-base text-slate-400 font-normal ml-1">/ 100</span>
-                  </div>
-                  <span className="text-xs font-bold text-rose-700">Immediate Action Tier</span>
+          {/* ─── CLEAN EMERGENCY COCKPIT & RISK STRIP ─── */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-rose-800">
+                    Emergency Perishable Salvage Protocol
+                  </span>
                 </div>
-
-                <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-rose-600 rounded-full transition-all duration-700"
-                    style={{ width: `${assessment.urgency_score}%` }}
-                  />
-                </div>
-                <p className="text-[11px] text-slate-500">
-                  Calculated using IMD rain thresholds, canopy relative humidity, and ambient perishability.
-                </p>
-              </div>
-
-              {/* Factor Breakdown Weights */}
-              <div className="space-y-2.5 pt-3 border-t border-slate-100 text-xs">
-                <div className="font-bold text-slate-800 text-[11px] uppercase tracking-wider">
-                  Urgency Score Factor Breakdown:
-                </div>
-
-                <div className="space-y-1.5">
-                  <div>
-                    <div className="flex justify-between text-[11px]">
-                      <span className="text-slate-600">Weather & Rain Exposure:</span>
-                      <strong className="text-rose-700">35% (+30 pts)</strong>
-                    </div>
-                    <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                      <div className="h-full bg-rose-500 rounded-full w-[85%]" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-[11px]">
-                      <span className="text-slate-600">Ambient Shelf-Life Decay:</span>
-                      <strong className="text-amber-700">30% (+25 pts)</strong>
-                    </div>
-                    <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                      <div className="h-full bg-amber-500 rounded-full w-[75%]" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-[11px]">
-                      <span className="text-slate-600">APMC Mandi Price Volatility:</span>
-                      <strong className="text-purple-700">20% (+18 pts)</strong>
-                    </div>
-                    <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                      <div className="h-full bg-purple-500 rounded-full w-[65%]" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-[11px]">
-                      <span className="text-slate-600">Logistics & Cold Storage Limit:</span>
-                      <strong className="text-blue-700">15% (+12 pts)</strong>
-                    </div>
-                    <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500 rounded-full w-[50%]" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Categorized Risk Intelligence Panel */}
-            <div className="card p-6 border-slate-200 lg:col-span-2 space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldAlert className="w-4 h-4 text-rose-600" />
-                  <span>Categorized Root Causes & Risk Signals Flagged</span>
-                </span>
-                <span className="text-[11px] font-semibold text-slate-400">
-                  Grounded Decision Engine v2.1
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                {/* Weather Risk Box */}
-                <div className="p-3.5 rounded-2xl bg-blue-50/80 border border-blue-200 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-blue-950 flex items-center gap-1.5">
-                      <CloudRain className="w-4 h-4 text-blue-600" />
-                      <span>Weather Risk</span>
-                    </span>
-                    <span className="text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">HIGH SEVERITY</span>
-                  </div>
-                  <p className="text-[11px] text-blue-900 leading-relaxed">
-                    {assessment.weather_alert || '35mm rain threat in Nashik basin within 48 hours.'} Moisture on harvest accelerates soft rot.
-                  </p>
-                </div>
-
-                {/* Market Risk Box */}
-                <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-rose-950 flex items-center gap-1.5">
-                      <TrendingDown className="w-4 h-4 text-rose-600" />
-                      <span>Market Glut Risk</span>
-                    </span>
-                    <span className="text-[10px] font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded">CRITICAL</span>
-                  </div>
-                  <p className="text-[11px] text-rose-900 leading-relaxed">
-                    {assessment.mandi_price_signal || 'Terminal market prices slumping 20% due to rain-threat distressed panic selling.'}
-                  </p>
-                </div>
-
-                {/* Crop Condition Box */}
-                <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-amber-950 flex items-center gap-1.5">
-                      <Thermometer className="w-4 h-4 text-amber-600" />
-                      <span>Perishability Decay</span>
-                    </span>
-                    <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">TICKING</span>
-                  </div>
-                  <p className="text-[11px] text-amber-900 leading-relaxed">
-                    Harvest lot at 31°C ambient field temperature. Bio-shelf life decaying rapidly past 36 hours.
-                  </p>
-                </div>
-
-                {/* Logistics Bottleneck Box */}
-                <div className="p-3.5 rounded-2xl bg-purple-50/80 border border-purple-200 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-purple-950 flex items-center gap-1.5">
-                      <Truck className="w-4 h-4 text-purple-600" />
-                      <span>Logistics Corridor</span>
-                    </span>
-                    <span className="text-[10px] font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded">MODERATE</span>
-                  </div>
-                  <p className="text-[11px] text-purple-900 leading-relaxed">
-                    Rural approach roads risk waterlogging delays. Direct farmgate transit pickup must be locked within 12h.
-                  </p>
-                </div>
-              </div>
-
-              {/* Recommended Action Summary */}
-              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <strong className="block text-emerald-900 font-bold mb-0.5">Primary Decision Recommendation:</strong>
-                  <span>{assessment.recommended_action}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ──────────────────────────────────────────────────────────
-             5. EMERGENCY RISK PROGRESSION TIMELINE
-             ────────────────────────────────────────────────────────── */}
-          <div className="card p-6 border-slate-200 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
-              <div>
-                <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2 font-display">
-                  <Clock className="w-4 h-4 text-rose-600" />
-                  <span>Risk Escalation Trajectory (Intervention Safe Window)</span>
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 font-display">
+                  {assessment.recommended_action || 'Direct Agro-Processing Intake Recommended'}
                 </h3>
-                <p className="text-xs text-slate-500">
-                  Projected timeline showing risk progression if dispatch action is postponed.
+                <p className="text-xs text-slate-500 max-w-2xl">
+                  Immediate dispatch protects your harvest from incoming IMD rainfall and market price slumps.
                 </p>
               </div>
-              <span className="text-[11px] font-bold text-rose-700 bg-rose-50 px-3 py-1 rounded-full border border-rose-200 w-fit">
-                ● 24-Hour Safe Intervention Window
-              </span>
+
+              {/* Urgency Score Pill */}
+              <div className="flex items-center gap-3 bg-rose-50 border border-rose-200 rounded-2xl px-4 py-3 self-start md:self-auto shrink-0">
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl font-black font-mono text-rose-700">
+                    {assessment.urgency_score}
+                    <span className="text-xs text-slate-400 font-normal ml-0.5">/100</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-rose-600 uppercase tracking-tight">Urgency Index</span>
+                </div>
+                <div className="border-l border-rose-200 pl-3">
+                  <span className="badge-red text-[10px]">
+                    {assessment.urgency_level || 'CRITICAL'} RISK
+                  </span>
+                  <div className="text-[11px] font-bold text-slate-700 mt-0.5">24h Safe Window</div>
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 text-xs">
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                <div className="font-black text-slate-900 flex items-center justify-between">
-                  <span>NOW</span>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded">Optimal</span>
+            {/* 3 Key Risk Factors */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3.5 rounded-xl bg-blue-50/80 border border-blue-200 flex items-start gap-2.5">
+                <CloudRain className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-blue-950 block font-bold">Rainfall Threat</strong>
+                  <p className="text-[11px] text-blue-900 mt-0.5">{assessment.weather_alert || '35mm rain forecast within 48h. Micro-condensation risks rot.'}</p>
                 </div>
-                <p className="text-[11px] text-slate-600">Pre-monsoon warning detected; produce is Grade A and intact.</p>
-                <div className="text-[10px] text-emerald-700 font-bold">100% Value Retained</div>
               </div>
 
-              <div className="p-3 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-1">
-                <div className="font-black text-amber-950 flex items-center justify-between">
-                  <span>+6 HOURS</span>
-                  <span className="text-[10px] font-bold text-amber-800 bg-amber-200 px-1.5 py-0.2 rounded">Moisture</span>
+              <div className="p-3.5 rounded-xl bg-rose-50/80 border border-rose-200 flex items-start gap-2.5">
+                <TrendingDown className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-rose-950 block font-bold">Mandi Price Slump</strong>
+                  <p className="text-[11px] text-rose-900 mt-0.5">{assessment.mandi_price_signal || 'Wholesale rates dropping 20% due to distressed harvest panic selling.'}</p>
                 </div>
-                <p className="text-[11px] text-slate-600">Canopy RH increases past 85%; micro-condensation begins.</p>
-                <div className="text-[10px] text-amber-800 font-bold">~95% Value Retained</div>
               </div>
 
-              <div className="p-3 rounded-2xl bg-amber-50/90 border border-amber-300 space-y-1">
-                <div className="font-black text-amber-950 flex items-center justify-between">
-                  <span>+12 HOURS</span>
-                  <span className="text-[10px] font-bold text-amber-800 bg-amber-200 px-1.5 py-0.2 rounded">Glut Slump</span>
+              <div className="p-3.5 rounded-xl bg-amber-50/80 border border-amber-200 flex items-start gap-2.5">
+                <Thermometer className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-amber-950 block font-bold">Ambient Field Decay</strong>
+                  <p className="text-[11px] text-amber-900 mt-0.5">Field temperature 31°C. Shelf-life window reduces past 24 hours.</p>
                 </div>
-                <p className="text-[11px] text-slate-600">APMC wholesale arrivals flood market; auction bids slump 22%.</p>
-                <div className="text-[10px] text-amber-800 font-bold">~85% Value Retained</div>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-rose-50 border border-rose-300 space-y-1 ring-1 ring-rose-500/30">
-                <div className="font-black text-rose-950 flex items-center justify-between">
-                  <span>+24 HOURS</span>
-                  <span className="text-[10px] font-bold text-rose-800 bg-rose-200 px-1.5 py-0.2 rounded">DEADLINE</span>
-                </div>
-                <p className="text-[11px] text-rose-900">Soft rot incubation begins; factory puree intake rejected.</p>
-                <div className="text-[10px] text-rose-800 font-bold">Window Closes</div>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-100/80 border border-slate-200 space-y-1 opacity-70">
-                <div className="font-black text-slate-900 flex items-center justify-between">
-                  <span>+36 HOURS</span>
-                  <span className="text-[10px] font-bold text-slate-700 bg-slate-200 px-1.5 py-0.2 rounded">Severe Loss</span>
-                </div>
-                <p className="text-[11px] text-slate-600">Total distress liquidation required; up to 60% loss exposure.</p>
-                <div className="text-[10px] text-rose-700 font-bold">Distress Dumping</div>
               </div>
             </div>
           </div>
@@ -798,279 +628,148 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
           </div>
 
           {/* ──────────────────────────────────────────────────────────
-             7. FINANCIAL RECOVERY COMPARISON CHART & MATRIX
+             7. INTERACTIVE "WHAT-IF" SCENARIO SIMULATOR (COLLAPSIBLE)
              ────────────────────────────────────────────────────────── */}
-          <div className="card p-6 border-slate-200 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
-              <div>
-                <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2 font-display">
-                  <Scale className="w-4 h-4 text-emerald-600" />
-                  <span>Financial Recovery Comparison Matrix (Value Saved)</span>
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Net farmer payouts across alternative salvage channels vs distress mandi liquidation.
-                </p>
-              </div>
-              <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
-                +₹16,800 Maximum Loss Avoided
-              </span>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              {/* Option 1 Bar */}
-              <div className="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1.5">
-                <div className="flex items-center justify-between font-bold">
-                  <span className="text-emerald-950">Option 1: Emergency Food Processing (Sahyadri Hub)</span>
-                  <span className="font-mono text-emerald-800 font-black text-sm">₹64,800 Net (94.7% Recovered)</span>
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+            <button
+              onClick={() => setShowSimulator(!showSimulator)}
+              className="w-full p-4 sm:p-5 flex items-center justify-between text-left hover:bg-slate-50 transition cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                  <Sliders className="w-4 h-4 text-emerald-600" />
                 </div>
-                <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-600 rounded-full w-[94.7%]" />
-                </div>
-                <div className="flex justify-between text-[11px] text-emerald-800 font-semibold">
-                  <span>Zero weather risk exposure at factory intake</span>
-                  <span>+₹16,800 vs Mandi</span>
-                </div>
-              </div>
-
-              {/* Option 2 Bar */}
-              <div className="p-3 rounded-2xl bg-white border border-slate-200 space-y-1.5">
-                <div className="flex items-center justify-between font-bold">
-                  <span className="text-slate-800">Option 2: Alternative Corporate Offtake (Reliance Fresh)</span>
-                  <span className="font-mono text-slate-900 font-black text-sm">₹61,500 Net (89.8% Recovered)</span>
-                </div>
-                <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                  <div className="h-full bg-teal-600 rounded-full w-[89.8%]" />
-                </div>
-                <div className="flex justify-between text-[11px] text-slate-500">
-                  <span>Reefer van pickup directly from farmgate</span>
-                  <span className="text-emerald-700 font-bold">+₹13,500 vs Mandi</span>
-                </div>
-              </div>
-
-              {/* Option 3 Bar */}
-              <div className="p-3 rounded-2xl bg-white border border-slate-200 space-y-1.5">
-                <div className="flex items-center justify-between font-bold">
-                  <span className="text-slate-800">Option 3: Cold Storage Buffer (Niphad Pre-Cooling Hub)</span>
-                  <span className="font-mono text-slate-900 font-black text-sm">₹58,200 Net (85.0% Recovered)</span>
-                </div>
-                <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-600 rounded-full w-[85.0%]" />
-                </div>
-                <div className="flex justify-between text-[11px] text-slate-500">
-                  <span>14-day buffer allows market rate recovery post-monsoon</span>
-                  <span className="text-emerald-700 font-bold">+₹10,200 vs Mandi</span>
-                </div>
-              </div>
-
-              {/* Option 5 Bar: Mandi */}
-              <div className="p-3 rounded-2xl bg-rose-50/50 border border-rose-200 space-y-1.5">
-                <div className="flex items-center justify-between font-bold">
-                  <span className="text-rose-950">Option 5: Distressed APMC Wholesale Mandi Liquidation</span>
-                  <span className="font-mono text-rose-800 font-black text-sm">₹48,000 Net (70.1% Recovered)</span>
-                </div>
-                <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                  <div className="h-full bg-rose-500 rounded-full w-[70.1%]" />
-                </div>
-                <div className="flex justify-between text-[11px] text-rose-800 font-semibold">
-                  <span>Heavy losses from 22% auction price slump & moisture cut</span>
-                  <span>Baseline Distress</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ──────────────────────────────────────────────────────────
-             8. INTERACTIVE "WHAT-IF" SCENARIO SIMULATOR
-             ────────────────────────────────────────────────────────── */}
-          {scenarioCalculations && (
-            <div className="card p-6 border-slate-200 space-y-5 bg-gradient-to-br from-slate-900 to-emerald-950 text-white">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/10">
                 <div>
-                  <h3 className="font-black text-white text-base flex items-center gap-2 font-display">
-                    <Sliders className="w-4 h-4 text-emerald-400" />
-                    <span>Interactive "What-If" Salvage Scenario Simulator</span>
+                  <h3 className="font-bold text-slate-900 text-sm font-display">
+                    Interactive "What-If" Scenario Simulation (Optional)
                   </h3>
-                  <p className="text-xs text-slate-300">
-                    Test how market price slumps, rainfall intensity, and remaining shelf life impact your net recovery.
+                  <p className="text-xs text-slate-500">
+                    Test how market price slumps, rainfall intensity, and remaining shelf life impact net recovery.
                   </p>
                 </div>
-                <button
-                  onClick={() => {
-                    setScenarioPriceSlumpPct(22);
-                    setScenarioRainIntensity('MODERATE');
-                    setScenarioShelfLifeDays(3);
-                  }}
-                  className="px-3 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-emerald-200 border border-white/15 flex items-center gap-1.5 cursor-pointer w-fit"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  <span>Reset Simulator</span>
-                </button>
               </div>
-
-              {/* Sliders Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs">
-                {/* Control 1: APMC Price Slump */}
-                <div className="space-y-2">
-                  <div className="flex justify-between font-bold">
-                    <span className="text-slate-300">APMC Mandi Price Slump:</span>
-                    <span className="text-amber-400 font-mono font-black">-{scenarioPriceSlumpPct}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="35"
-                    step="5"
-                    value={scenarioPriceSlumpPct}
-                    onChange={(e) => setScenarioPriceSlumpPct(Number(e.target.value))}
-                    className="w-full accent-amber-500 cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] text-slate-400">
-                    <span>0% (Normal)</span>
-                    <span>20% (Glut)</span>
-                    <span>35% (Crash)</span>
-                  </div>
-                </div>
-
-                {/* Control 2: Rainfall Threat */}
-                <div className="space-y-2">
-                  <div className="flex justify-between font-bold">
-                    <span className="text-slate-300">Precipitation Threat:</span>
-                    <span className="text-blue-400 font-bold">{scenarioRainIntensity}</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-1 pt-1">
-                    {(['MILD', 'MODERATE', 'SEVERE'] as const).map(tier => (
-                      <button
-                        key={tier}
-                        onClick={() => setScenarioRainIntensity(tier)}
-                        className={`py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                          scenarioRainIntensity === tier
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white/10 text-slate-300 hover:bg-white/20'
-                        }`}
-                      >
-                        {tier}
-                      </button>
-                    ))}
-                  </div>
-                  <span className="text-[10px] text-slate-400 block">
-                    {scenarioRainIntensity === 'SEVERE' ? '45mm storm threat' : scenarioRainIntensity === 'MODERATE' ? '25mm showers' : '10mm drizzle'}
-                  </span>
-                </div>
-
-                {/* Control 3: Shelf-life */}
-                <div className="space-y-2">
-                  <div className="flex justify-between font-bold">
-                    <span className="text-slate-300">Remaining Ambient Days:</span>
-                    <span className="text-emerald-400 font-mono font-black">{scenarioShelfLifeDays} Days</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="6"
-                    step="1"
-                    value={scenarioShelfLifeDays}
-                    onChange={(e) => setScenarioShelfLifeDays(Number(e.target.value))}
-                    className="w-full accent-emerald-500 cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] text-slate-400">
-                    <span>1 Day (Rot)</span>
-                    <span>3 Days</span>
-                    <span>6 Days (Fresh)</span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-emerald-700 hidden sm:inline">
+                  {showSimulator ? 'Hide Controls' : 'Open Simulator'}
+                </span>
+                {showSimulator ? (
+                  <ChevronUp className="w-4 h-4 text-slate-500" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-slate-500" />
+                )}
               </div>
+            </button>
 
-              {/* Dynamic Simulator Output Box */}
-              <div className="p-4 rounded-2xl bg-white/10 border border-white/15 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                <div>
-                  <span className="text-slate-300 block text-[11px]">Projected Urgency Index:</span>
-                  <div className="text-2xl font-black font-mono text-rose-400 mt-0.5">
-                    {scenarioCalculations.simulatedUrgency} / 100
-                  </div>
-                  <span className="text-[10px] text-slate-400">
-                    {scenarioCalculations.simulatedUrgency > 80 ? 'CRITICAL DISPATCH' : 'MONITOR ACTIVE'}
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-slate-300 block text-[11px]">Mandi Realization Under Slump:</span>
-                  <div className="text-2xl font-black font-mono text-amber-300 mt-0.5">
-                    ₹{scenarioCalculations.mandiProjectedNet.toLocaleString()}
-                  </div>
-                  <span className="text-[10px] text-slate-400">
-                    Net @ ₹{scenarioCalculations.mandiProjectedRate}/kg
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-slate-300 block text-[11px]">Value Protected by Factory Route:</span>
-                  <div className="text-2xl font-black font-mono text-emerald-400 mt-0.5">
-                    +₹{scenarioCalculations.valueProtected.toLocaleString()}
-                  </div>
-                  <span className="text-[10px] text-emerald-300">
-                    100% Guaranteed Contract Price
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ──────────────────────────────────────────────────────────
-             9. REGIONAL EMERGENCY SALVAGE HUB NETWORK GRID
-             ────────────────────────────────────────────────────────── */}
-          <div className="card p-6 border-slate-200 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
-              <div>
-                <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2 font-display">
-                  <MapPin className="w-4 h-4 text-rose-600" />
-                  <span>Nearby Emergency Salvage Facilities (Nashik Cluster)</span>
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Verified agro-processing plants, cold storage pre-cooling rooms, and wholesale yards within transit radius.
-                </p>
-              </div>
-              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 w-fit">
-                ● 4 Ready Facilities
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            {showSimulator && scenarioCalculations && (
+              <div className="p-5 sm:p-6 bg-slate-900 text-white space-y-5 border-t border-slate-800">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-900">Sahyadri Food Park</span>
-                  <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">42 km</span>
+                  <span className="text-xs text-slate-400">Tweak parameters to recalculate projected recovery:</span>
+                  <button
+                    onClick={() => {
+                      setScenarioPriceSlumpPct(22);
+                      setScenarioRainIntensity('MODERATE');
+                      setScenarioShelfLifeDays(3);
+                    }}
+                    className="px-3 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-emerald-200 border border-white/15 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Reset</span>
+                  </button>
                 </div>
-                <p className="text-[11px] text-slate-500">Dindori Puree & Pulping Line. 28 MT available intake slot.</p>
-                <div className="text-[10px] text-emerald-700 font-bold">● Puree Processing Ready</div>
-              </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-900">Niphad Pre-Cooling Hub</span>
-                  <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">12 km</span>
-                </div>
-                <p className="text-[11px] text-slate-500">Controlled atmosphere shock chambers. 45 MT available.</p>
-                <div className="text-[10px] text-blue-700 font-bold">● Cold Chain Buffer Ready</div>
-              </div>
+                {/* Sliders Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs">
+                  {/* Control 1: APMC Price Slump */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between font-bold">
+                      <span className="text-slate-300">APMC Price Slump:</span>
+                      <span className="text-amber-400 font-mono font-black">-{scenarioPriceSlumpPct}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="35"
+                      step="5"
+                      value={scenarioPriceSlumpPct}
+                      onChange={(e) => setScenarioPriceSlumpPct(Number(e.target.value))}
+                      className="w-full accent-amber-500 cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-400">
+                      <span>0% (Normal)</span>
+                      <span>20% (Glut)</span>
+                      <span>35% (Crash)</span>
+                    </div>
+                  </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-900">Pimpalgaon Baswant APMC</span>
-                  <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">18 km</span>
-                </div>
-                <p className="text-[11px] text-slate-500">Wholesale auction yard. Open intake but price glut alert.</p>
-                <div className="text-[10px] text-amber-700 font-bold">● Mandi Auction Open</div>
-              </div>
+                  {/* Control 2: Rainfall Threat */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between font-bold">
+                      <span className="text-slate-300">Rain Threat:</span>
+                      <span className="text-blue-400 font-bold">{scenarioRainIntensity}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1 pt-1">
+                      {(['MILD', 'MODERATE', 'SEVERE'] as const).map(tier => (
+                        <button
+                          key={tier}
+                          onClick={() => setScenarioRainIntensity(tier)}
+                          className={`py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                            scenarioRainIntensity === tier
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-white/10 text-slate-300 hover:bg-white/20'
+                          }`}
+                        >
+                          {tier}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-900">Reliance DC Ghansoli</span>
-                  <span className="text-[10px] font-bold bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">195 km</span>
+                  {/* Control 3: Shelf-life */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between font-bold">
+                      <span className="text-slate-300">Remaining Ambient Days:</span>
+                      <span className="text-emerald-400 font-mono font-black">{scenarioShelfLifeDays} Days</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="6"
+                      step="1"
+                      value={scenarioShelfLifeDays}
+                      onChange={(e) => setScenarioShelfLifeDays(Number(e.target.value))}
+                      className="w-full accent-emerald-500 cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-400">
+                      <span>1 Day (Rot)</span>
+                      <span>3 Days</span>
+                      <span>6 Days (Fresh)</span>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-[11px] text-slate-500">Institutional retail sourcing yard with reefer fleet transit.</p>
-                <div className="text-[10px] text-purple-700 font-bold">● Corporate Offtake Ready</div>
+
+                {/* Output Metrics */}
+                <div className="p-4 rounded-xl bg-white/10 border border-white/15 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                  <div>
+                    <span className="text-slate-400 block text-[11px]">Simulated Urgency:</span>
+                    <div className="text-xl font-black font-mono text-rose-400 mt-0.5">
+                      {scenarioCalculations.simulatedUrgency} / 100
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[11px]">Mandi Net Under Slump:</span>
+                    <div className="text-xl font-black font-mono text-amber-300 mt-0.5">
+                      ₹{scenarioCalculations.mandiProjectedNet.toLocaleString()}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[11px]">Value Saved via Factory:</span>
+                    <div className="text-xl font-black font-mono text-emerald-400 mt-0.5">
+                      +₹{scenarioCalculations.valueProtected.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
         </div>

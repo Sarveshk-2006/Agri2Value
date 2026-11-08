@@ -477,72 +477,51 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
         </div>
       )}
 
-      {/* ─── 2. FINANCIAL OVERVIEW: 6 CRISP KPI CARDS ─── */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+      {/* ─── 2. FINANCIAL OVERVIEW: 4 CLEAN KPI CARDS ─── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {/* CARD 1 — ACTIVE DEALS */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-1.5 hover:border-emerald-400 hover:shadow-xs transition duration-200">
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-1.5 hover:border-emerald-400 hover:shadow-xs transition duration-200">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Active Deals</span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Active Contracts</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
               <FileCheck2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 font-mono">
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
             {metrics ? metrics.active_agreements_count : agreements.filter(a => ['ACCEPTED', 'IN_PROGRESS'].includes(a.status)).length}
           </div>
           <div className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
             <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-            <span>{agreements.length} Total recorded</span>
+            <span>{agreements.length} Total recorded deals</span>
           </div>
         </div>
 
-        {/* CARD 2 — DELIVERIES PENDING */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-1.5 hover:border-blue-400 hover:shadow-xs transition duration-200">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Deliveries Pending</span>
-            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Truck className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-slate-900 font-mono">
-            {metrics ? metrics.deliveries_awaiting_confirmation_count : deliveries.filter(d => d.status === 'PENDING').length}
-          </div>
-          <div className="text-[11px] text-blue-700 font-semibold flex items-center gap-1">
-            <Clock className="w-3 h-3 text-blue-600" />
-            <span>{deliveries.length} Shipments logged</span>
-          </div>
-        </div>
-
-        {/* CARD 3 — EXPECTED FARMER PAYOUT */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-1.5 hover:border-emerald-400 hover:shadow-xs transition duration-200">
+        {/* CARD 2 — EXPECTED FARMER PAYOUT */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-1.5 hover:border-emerald-400 hover:shadow-xs transition duration-200">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Expected Payout</span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
               <Wallet className="w-4 h-4" />
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black text-emerald-700 font-mono">
             ₹{expectedPayoutTotal.toLocaleString('en-IN')}
           </div>
-          <div className="text-[11px] text-slate-500 truncate" title="Agreed net farmer proceeds">
-            Agreed net proceeds
+          <div className="text-[11px] text-slate-500">
+            Agreed net farmer proceeds
           </div>
         </div>
 
-        {/* CARD 4 — PAYMENTS RECEIVED */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-1.5 hover:border-emerald-400 hover:shadow-xs transition duration-200">
+        {/* CARD 3 — PAYMENTS RECEIVED */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-1.5 hover:border-emerald-400 hover:shadow-xs transition duration-200">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Payments Received</span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Payments Settled</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div className="text-xl sm:text-2xl font-black text-emerald-800 font-mono">
             ₹{paymentsReceivedTotal.toLocaleString('en-IN')}
-          </div>
-          {/* Visual Mini Progress Bar */}
-          <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-            <div className="bg-emerald-600 h-1.5 rounded-full" style={{ width: `${paymentCompletionPct}%` }} />
           </div>
           <div className="text-[11px] text-emerald-700 font-semibold flex items-center justify-between">
             <span>{paymentCompletionPct}% realized</span>
@@ -550,11 +529,11 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
           </div>
         </div>
 
-        {/* CARD 5 — OUTSTANDING BALANCE */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-1.5 hover:border-amber-400 hover:shadow-xs transition duration-200">
+        {/* CARD 4 — OUTSTANDING BALANCE */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 space-y-1.5 hover:border-amber-400 hover:shadow-xs transition duration-200">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Outstanding</span>
-            <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Escrow Protected</span>
+            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
               <Clock className="w-4 h-4" />
             </div>
           </div>
@@ -562,25 +541,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
             ₹{outstandingBalanceTotal.toLocaleString('en-IN')}
           </div>
           <div className="text-[11px] text-amber-700 font-semibold">
-            Due within terms
-          </div>
-        </div>
-
-        {/* CARD 6 — DISPUTES & ALERTS */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-1.5 hover:border-rose-400 hover:shadow-xs transition duration-200">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Disputes / Alerts</span>
-            <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center">
-              <Scale className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-slate-900 font-mono flex items-center gap-1">
-            <span className="text-rose-600">{disputes.filter(d => d.status !== 'RESOLVED' && d.status !== 'CLOSED').length}</span>
-            <span className="text-slate-400 text-lg font-normal">/</span>
-            <span className="text-amber-600">{alerts.filter(a => !a.is_resolved).length}</span>
-          </div>
-          <div className="text-[11px] text-slate-600 font-medium">
-            Active review cases
+            Due within T+3 statutory terms
           </div>
         </div>
       </div>
@@ -627,171 +588,50 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
       {activeSubTab === 'overview' && (
         <div className="space-y-6">
 
-          {/* QUICK ACTION CENTER (Compact 4-Action Ribbon) */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <button
-              onClick={() => setIsDeliveryModalOpen(true)}
-              className="bg-white rounded-xl border border-slate-200 p-3.5 text-left transition group hover:border-emerald-500 hover:shadow-2xs cursor-pointer flex items-center gap-3"
-            >
-              <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                <Truck className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-slate-900 text-xs truncate">Log Delivery</h3>
-                <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-0.5">
-                  Record weighbridge <ChevronRight className="w-3 h-3 inline" />
+          {/* 1. TRUST & ESCROW PROTECTION COCKPIT */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
+                  Statutory Farmer Protection Active
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
+                  Score: {protectionScore}/100
                 </span>
               </div>
-            </button>
-
-            <button
-              onClick={() => setIsPaymentModalOpen(true)}
-              className="bg-white rounded-xl border border-slate-200 p-3.5 text-left transition group hover:border-blue-500 hover:shadow-2xs cursor-pointer flex items-center gap-3"
-            >
-              <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                <Wallet className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-slate-900 text-xs truncate">Record Payment</h3>
-                <span className="text-[10px] text-blue-700 font-semibold flex items-center gap-0.5">
-                  Simulate installment <ChevronRight className="w-3 h-3 inline" />
-                </span>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setIsDisputeModalOpen(true)}
-              className="bg-white rounded-xl border border-slate-200 p-3.5 text-left transition group hover:border-rose-500 hover:shadow-2xs cursor-pointer flex items-center gap-3"
-            >
-              <div className="w-9 h-9 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                <Scale className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-slate-900 text-xs truncate">Raise Dispute</h3>
-                <span className="text-[10px] text-rose-700 font-semibold flex items-center gap-0.5">
-                  Overdue or mismatch <ChevronRight className="w-3 h-3 inline" />
-                </span>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setActiveSubTab('alerts')}
-              className="bg-white rounded-xl border border-slate-200 p-3.5 text-left transition group hover:border-amber-500 hover:shadow-2xs cursor-pointer flex items-center gap-3"
-            >
-              <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                <AlertTriangle className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-slate-900 text-xs truncate">Financial Risks</h3>
-                <span className="text-[10px] text-amber-700 font-semibold flex items-center gap-0.5">
-                  Review alerts <ChevronRight className="w-3 h-3 inline" />
-                </span>
-              </div>
-            </button>
-          </div>
-
-          {/* FARMER FINANCIAL PROTECTION SCORE CARD (NEW FEATURE) */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-xs">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">Explainable Protection Engine</span>
-                </div>
-                <h2 className="text-xl font-extrabold text-slate-900 font-display">
-                  Farmer Financial Protection Score
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-500 max-w-2xl">
-                  Holistic index measuring agreement clarity, verified weighbridge weight, milestone payment regularity, and deduction transparency.
-                </p>
-              </div>
-
-              {/* Score Display Cockpit */}
-              <div className="flex items-center gap-4 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl px-5 py-3.5 self-start md:self-auto">
-                <div className="text-center">
-                  <div className="text-3xl sm:text-4xl font-black text-emerald-800 font-mono leading-none">
-                    {protectionScore}
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">out of 100</span>
-                </div>
-                <div className="border-l border-emerald-200 pl-4 space-y-0.5">
-                  <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-600 text-white">
-                    EXCELLENT TRANSPARENCY
-                  </span>
-                  <div className="text-xs font-medium text-slate-600">High Trust Verified</div>
-                </div>
-              </div>
+              <h2 className="text-xl font-extrabold text-slate-900 font-display">
+                Protected Settlement Ledger &amp; Escrow Guarantee
+              </h2>
+              <p className="text-xs text-slate-500 max-w-2xl">
+                Every transaction includes pre-authorized price locks, verified weighbridge certificates, itemized deduction limits, and T+3 statutory payout enforcement.
+              </p>
             </div>
 
-            {/* 5 Explainable Factor Pillars */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 pt-6">
-              <div className="space-y-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                  <span>Agreement Terms</span>
-                  <span className="text-emerald-700 font-mono">100%</span>
-                </div>
-                <div className="w-full bg-slate-200 rounded-full h-1.5">
-                  <div className="bg-emerald-600 h-1.5 rounded-full" style={{ width: '100%' }} />
-                </div>
-                <p className="text-[10px] text-slate-500">Mutual terms signed</p>
-              </div>
+            <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center">
+              <button
+                onClick={() => setIsDeliveryModalOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-2xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <Truck className="w-3.5 h-3.5" />
+                <span>Log Weighbridge</span>
+              </button>
 
-              <div className="space-y-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                  <span>Delivery Proof</span>
-                  <span className="text-emerald-700 font-mono">95%</span>
-                </div>
-                <div className="w-full bg-slate-200 rounded-full h-1.5">
-                  <div className="bg-emerald-600 h-1.5 rounded-full" style={{ width: '95%' }} />
-                </div>
-                <p className="text-[10px] text-slate-500">Weighbridge slip verified</p>
-              </div>
+              <button
+                onClick={() => setIsPaymentModalOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-2xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <Wallet className="w-3.5 h-3.5" />
+                <span>Record Payment</span>
+              </button>
 
-              <div className="space-y-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                  <span>Payment Escrow</span>
-                  <span className="text-emerald-700 font-mono">92%</span>
-                </div>
-                <div className="w-full bg-slate-200 rounded-full h-1.5">
-                  <div className="bg-emerald-600 h-1.5 rounded-full" style={{ width: '92%' }} />
-                </div>
-                <p className="text-[10px] text-slate-500">Tranche 1 on schedule</p>
-              </div>
-
-              <div className="space-y-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                  <span>Deductions Audit</span>
-                  <span className="text-emerald-700 font-mono">96%</span>
-                </div>
-                <div className="w-full bg-slate-200 rounded-full h-1.5">
-                  <div className="bg-emerald-600 h-1.5 rounded-full" style={{ width: '96%' }} />
-                </div>
-                <p className="text-[10px] text-slate-500">Itemized pre-authorized</p>
-              </div>
-
-              <div className="space-y-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100 col-span-2 sm:col-span-1">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                  <span>Dispute Health</span>
-                  <span className="text-amber-700 font-mono">88%</span>
-                </div>
-                <div className="w-full bg-slate-200 rounded-full h-1.5">
-                  <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: '88%' }} />
-                </div>
-                <p className="text-[10px] text-slate-500">1 review in progress</p>
-              </div>
-            </div>
-
-            {/* Practical Advice Banner */}
-            <div className="mt-4 p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-100 flex items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2 text-emerald-900">
-                <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>
-                  <strong>Farmer Recommendation:</strong> Complete final 1,500 kg delivery within 48h to trigger automatic release of remaining ₹23,400 escrow balance.
-                </span>
-              </div>
-              <span className="text-[11px] font-medium text-emerald-700 shrink-0 hidden sm:inline">
-                Verified by Protocol
-              </span>
+              <button
+                onClick={() => setIsDisputeModalOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-2xs flex items-center gap-1.5 cursor-pointer"
+              >
+                <Scale className="w-3.5 h-3.5" />
+                <span>Raise Dispute</span>
+              </button>
             </div>
           </div>
 
@@ -1070,8 +910,8 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
                         onClick={() => setSelectedAuditEvent(ev)}
                         className="text-emerald-700 hover:text-emerald-900 font-bold inline-flex items-center gap-1 cursor-pointer"
                       >
-                        <Hash className="w-3 h-3 text-emerald-600" />
-                        <span>Inspect SHA-256 Hash</span>
+                        <FileCheck2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>View Milestone Receipt</span>
                       </button>
                     </div>
                   </div>
