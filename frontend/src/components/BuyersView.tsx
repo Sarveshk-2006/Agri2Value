@@ -1,6 +1,7 @@
 // frontend/src/components/BuyersView.tsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ShoppingBag,
   Search,
@@ -44,6 +45,7 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
   cropLots = [],
   onNavigateToExecution,
 }) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   // Core Data
@@ -350,15 +352,15 @@ export const BuyersView: React.FC<BuyersViewProps> = ({
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-display text-white">
-              Commercial Buyer Network
+              {t('buyers.title')}
             </h1>
 
             <div className="text-emerald-300 font-bold text-sm sm:text-base flex items-center gap-2">
-              <span>Connect. Compare. Sell Better.</span>
+              <span>{t('buyers.verifiedProcurement')}</span>
             </div>
 
             <p className="text-xs sm:text-sm text-emerald-100/80 max-w-2xl leading-relaxed">
-              Connect directly with verified corporate buyers, retail supermarket chains, and wholesale aggregators across Maharashtra with transparent procurement rates and secure payment terms.
+              {t('buyers.subtitle')}
             </p>
           </div>
 

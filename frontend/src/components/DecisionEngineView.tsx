@@ -1,6 +1,7 @@
 // frontend/src/components/DecisionEngineView.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Cpu,
   Calculator,
@@ -61,6 +62,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
   onLotSelect,
   onNavigateToExecution,
 }) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const activeLotId = selectedLotId || (lots.length > 0 ? lots[0].id : '');
   const activeLot = lots.find((l) => l.id === activeLotId) || lots[0];
@@ -305,7 +307,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-display">
-                  Profit Decision Engine
+                  {t('profit.title')}
                 </h1>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -313,7 +315,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                Compare feasible selling pathways and discover the strongest estimated return for your harvest.
+                {t('profit.subtitle')}
               </p>
             </div>
           </div>
@@ -327,7 +329,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
             className="btn-primary text-xs py-2 px-3.5 flex items-center gap-2 shadow-xs cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>{loading ? 'Evaluating...' : 'Re-Evaluate'}</span>
+            <span>{loading ? t('profit.calculating') : t('profit.calculate')}</span>
           </button>
         </div>
       </div>
@@ -351,7 +353,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Step 1: Select Harvest Lot */}
           <div className="space-y-1.5">
-            <label className="label">1. Select Harvest Lot to Evaluate *</label>
+            <label className="label">{t('profit.step1')} *</label>
             <select
               value={activeLotId}
               onChange={(e) => onLotSelect && onLotSelect(e.target.value)}
@@ -367,7 +369,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
 
           {/* Step 2: Active Lot Context Overview */}
           <div className="space-y-1.5">
-            <label className="label">2. Selected Harvest Lot</label>
+            <label className="label">{t('profit.step2')}</label>
             <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs space-y-1">
               <div className="flex items-center justify-between font-bold text-slate-800">
                 <span className="flex items-center gap-1.5">
@@ -387,7 +389,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
 
           {/* Step 3: Simulation Preset Switcher */}
           <div className="space-y-1.5">
-            <label className="label">3. Evaluation Scenario Preset</label>
+            <label className="label">{t('profit.step3')}</label>
             <select
               value={selectedScenario}
               onChange={(e) => setSelectedScenario(e.target.value)}

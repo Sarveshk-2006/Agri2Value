@@ -1,5 +1,6 @@
 // frontend/src/components/HarvestLotsView.tsx
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Wheat,
   Plus,
@@ -47,6 +48,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
   onNavigateToDecision,
   onNavigateToRescue,
 }) => {
+  const { t, i18n } = useTranslation();
   // Search, filter, and sorting state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFarmFilter, setSelectedFarmFilter] = useState('ALL');
@@ -315,10 +317,10 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-display">
-                Harvest & Crop Lots
+                {t('harvest.title')}
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                Manage registered harvests, produce quantities, quality and readiness for market decisions.
+                {t('harvest.subtitle')}
               </p>
             </div>
           </div>
@@ -329,7 +331,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
           className="btn-primary self-start sm:self-auto flex items-center gap-2 shadow-sm cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Register New Harvest</span>
+          <span>{t('harvest.registerLot')}</span>
         </button>
       </div>
 
@@ -340,7 +342,7 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
         {/* Metric 1: Total Lots */}
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            Total Harvest Lots
+            {t('harvest.activeLots')}
           </span>
           <div className="mt-2 flex items-baseline gap-1.5">
             <span className="text-xl sm:text-2xl font-black text-slate-900 font-mono">
@@ -353,11 +355,11 @@ export const HarvestLotsView: React.FC<HarvestLotsViewProps> = ({
         {/* Metric 2: Total Registered Quantity */}
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            Total Produce Volume
+            {t('harvest.totalVolume')}
           </span>
           <div className="mt-2 flex items-baseline gap-1.5">
             <span className="text-xl sm:text-2xl font-black text-emerald-800 font-mono">
-              {overviewMetrics.totalKg.toLocaleString('en-IN')}
+              {overviewMetrics.totalKg.toLocaleString(i18n.language === 'en' ? 'en-IN' : `${i18n.language}-IN`)}
             </span>
             <span className="text-xs text-emerald-700 font-bold font-mono">
               kg ({overviewMetrics.totalTonnes} MT)

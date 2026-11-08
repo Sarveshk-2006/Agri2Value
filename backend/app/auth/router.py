@@ -15,7 +15,13 @@ from jose import JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.auth.schemas import DemoLoginRequest, RefreshRequest, TokenResponse, UserMeResponse
+from app.auth.schemas import (
+    DemoLoginRequest,
+    RefreshRequest,
+    TokenResponse,
+    UserMeResponse,
+    UpdateLanguageRequest,
+)
 from app.auth.dependencies import get_current_user
 from app.core.config import get_settings
 from app.core.security import create_access_token, create_refresh_token, decode_token
@@ -110,6 +116,30 @@ async def demo_login(
 async def get_me(
     current_user: User = Depends(get_current_user),
 ) -> UserMeResponse:
+    return UserMeResponse(
+        id=current_user.id,
+        full_name=current_user.full_name,
+        phone=current_user.phone,
+        role=current_user.role,
+        preferred_language=current_user.preferred_language,
+        is_active=current_user.is_active,
+        demo_mode=settings.DEMO_MODE,
+    )
+
+
+@router.patch(
+    "/me/language",
+    response_model=UserMeResponse,
+    summary="Update User Preferred Language",
+)
+async def update_language(
+    payload: UpdateLanguageRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> UserMeResponse:
+    current_user.preferred_language = payload.preferred_language.strip().lower()
+    await db.commit()
+    await db.refresh(current_user)
     return UserMeResponse(
         id=current_user.id,
         full_name=current_user.full_name,

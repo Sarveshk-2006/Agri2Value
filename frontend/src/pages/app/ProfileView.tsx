@@ -1,6 +1,7 @@
 // frontend/src/pages/app/ProfileView.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   User,
   ShieldCheck,
@@ -25,6 +26,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import type { User as UserType, Farm } from '../../types';
+import { LanguageSelector } from '../../components/LanguageSelector';
 
 interface ProfileViewProps {
   user: UserType | null;
@@ -39,6 +41,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onResetDemoData,
   onLogout,
 }) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   // State
@@ -78,18 +81,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 <User className="w-5 h-5 text-emerald-700" />
               </div>
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight font-display">
-                Farmer Profile & Land Portfolio
+                {t('profile.title')}
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-slate-500">
-              Manage your agricultural identity, registered land parcels, verified equipment, and secure system session.
+              {t('profile.subtitle')}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
             <span className="badge-green">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>ACTIVE SESSION</span>
+              <span>{t('profile.activeSession')}</span>
             </span>
             <span className="badge-slate font-medium text-[10px]">
               VERIFIED FARMER ACCOUNT
@@ -154,11 +157,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <div className="flex justify-between items-center py-2 border-b border-slate-100">
                 <span className="text-slate-500 flex items-center gap-1.5 font-medium">
                   <Globe className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Preferred Language</span>
+                  <span>{t('profile.preferredLanguage')}</span>
                 </span>
-                <span className="font-bold text-slate-900">
-                  {user?.preferred_language === 'mr' ? 'Marathi (मराठी)' : 'English / Marathi'}
-                </span>
+                <div>
+                  <LanguageSelector />
+                </div>
               </div>
 
               <div className="flex justify-between items-center py-2 border-b border-slate-100">

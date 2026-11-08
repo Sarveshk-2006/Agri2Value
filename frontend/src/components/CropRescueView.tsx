@@ -1,5 +1,6 @@
 // frontend/src/components/CropRescueView.tsx
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
   Flame,
@@ -56,6 +57,7 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
   onLotSelect,
   onNavigateToExecution,
 }) => {
+  const { t, i18n } = useTranslation();
   const [activeLotId, setActiveLotId] = useState<string>(
     selectedLotId || cropLots[0]?.id || ''
   );
@@ -257,14 +259,14 @@ export const CropRescueView: React.FC<CropRescueViewProps> = ({
                 <Flame className="w-6 h-6" />
               </div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-black font-display tracking-tight text-white">
-                Crop Rescue Intelligence
+                {t('cropRescue.title')}
               </h1>
             </div>
             <p className="text-sm sm:text-base md:text-lg font-semibold text-rose-300">
               Protect Your Harvest. Recover Your Value. (फसल बचाव मोड)
             </p>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
-              Detect emerging agricultural risks, evaluate emergency salvage opportunities, and take timely action to protect your harvest and minimize financial losses.
+              {t('cropRescue.subtitle')}
             </p>
           </div>
 

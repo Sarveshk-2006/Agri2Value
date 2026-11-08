@@ -2,6 +2,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sprout, LogOut, Bell, HelpCircle, Globe, Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from './LanguageSelector';
 import type { User } from '../types';
 
 interface HeaderProps {
@@ -23,6 +25,8 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMobileMenu,
   isMobileMenuOpen,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
@@ -58,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
               <p className="text-[11px] font-medium text-slate-500 hidden sm:block">
-                कृषि-मूल्य • Farm-to-Profit Decision & Execution Network
+                {t('common.appTagline')}
               </p>
             </div>
           </Link>
@@ -72,12 +76,15 @@ export const Header: React.FC<HeaderProps> = ({
               : 'bg-amber-50/80 border-amber-200/80 text-amber-800'
           }`}>
             <span className={`w-2 h-2 rounded-full ${backendOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-            <span>{backendOnline ? 'Live Network Connected' : 'Offline / Standalone Mode'}</span>
+            <span>{backendOnline ? t('common.networkLive') : t('common.offlineMode')}</span>
           </div>
         </div>
 
         {/* User Profile & Right Actions */}
         <div className="flex items-center gap-1.5 sm:gap-3">
+          {/* Language Selector Pill */}
+          <LanguageSelector variant="dark" />
+
           {/* Public Website Link */}
           <Link
             to="/"
@@ -85,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Return to Public Website"
           >
             <Globe className="w-3.5 h-3.5 text-slate-400" />
-            <span>Public Site</span>
+            <span>{t('common.publicSite')}</span>
           </Link>
 
           {/* Architecture / Specs Button */}
@@ -95,13 +102,13 @@ export const Header: React.FC<HeaderProps> = ({
             title="System Specifications & Architecture"
           >
             <HelpCircle className="w-4 h-4 text-slate-400 group-hover:text-emerald-600" />
-            <span className="hidden lg:inline">Architecture</span>
+            <span className="hidden lg:inline">{t('common.architecture')}</span>
           </button>
 
           {user ? (
             <div className="flex items-center gap-1.5 sm:gap-2.5 sm:pl-2 sm:border-l sm:border-slate-200">
               {/* Notification Pill */}
-              <div className="relative p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 text-slate-500 cursor-pointer transition-colors" title="Notifications">
+              <div className="relative p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 text-slate-500 cursor-pointer transition-colors" title={t('common.notifications')}>
                 <Bell className="w-4 h-4" />
                 <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white" />
               </div>
@@ -129,9 +136,9 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Logout Button */}
               <button
                 onClick={onLogout}
-                title="Sign Out to Home Page"
+                title={t('common.signOut')}
                 className="flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-all cursor-pointer"
-                aria-label="Sign out"
+                aria-label={t('common.signOut')}
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -141,7 +148,7 @@ export const Header: React.FC<HeaderProps> = ({
               to="/login"
               className="btn-primary text-xs py-1.5 px-3 sm:py-2 sm:px-4 shadow-sm"
             >
-              Sign In
+              {t('common.signIn')}
             </Link>
           )}
         </div>

@@ -21,6 +21,8 @@ import {
   Globe,
   ShieldCheck
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from './LanguageSelector';
 import type { TabKey } from '../types';
 
 interface SidebarProps {
@@ -53,6 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isMobileOpen = false,
   onCloseMobile,
 }) => {
+  const { t } = useTranslation();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Lock body scroll when mobile drawer is open
@@ -69,35 +72,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const navGroups: NavGroup[] = [
     {
-      sectionTitle: 'Overview',
+      sectionTitle: t('nav.overview'),
       items: [
         {
           key: 'dashboard',
-          label: 'Dashboard',
+          label: t('nav.dashboard'),
           icon: LayoutDashboard,
           badge: null,
         },
         {
           key: 'profile',
-          label: 'Farmer Profile',
+          label: t('nav.profile'),
           icon: UserCheck,
           badge: null,
         },
       ],
     },
     {
-      sectionTitle: 'Farm Management',
+      sectionTitle: t('nav.farmManagement'),
       items: [
         {
           key: 'farms',
-          label: 'Farms & Land',
+          label: t('nav.farms'),
           icon: Home,
           badge: farmCount > 0 ? farmCount : null,
           badgeColor: 'slate',
         },
         {
           key: 'lots',
-          label: 'Harvest Lots',
+          label: t('nav.lots'),
           icon: Wheat,
           badge: lotCount > 0 ? lotCount : null,
           badgeColor: 'emerald',
@@ -105,80 +108,80 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
     {
-      sectionTitle: 'Intelligence',
+      sectionTitle: t('nav.intelligence'),
       items: [
         {
           key: 'decision-preview',
-          label: 'Profit Engine',
+          label: t('nav.profit'),
           icon: Sparkles,
           badge: null,
         },
         {
           key: 'market-weather',
-          label: 'Market & Weather',
+          label: t('nav.marketWeather'),
           icon: CloudSun,
           badge: null,
         },
       ],
     },
     {
-      sectionTitle: 'Marketplace & Execution',
+      sectionTitle: t('nav.marketplaceExecution'),
       items: [
         {
           key: 'buyers',
-          label: 'Buyer Network',
+          label: t('nav.buyers'),
           icon: Users,
           badge: null,
         },
         {
           key: 'infrastructure',
-          label: 'Logistics & Storage',
+          label: t('nav.logistics'),
           icon: Truck,
           badge: null,
         },
         {
           key: 'execution',
-          label: 'Execution Tracker',
+          label: t('nav.tracker'),
           icon: FileText,
           badge: null,
         },
       ],
     },
     {
-      sectionTitle: 'Protection',
+      sectionTitle: t('nav.protectionSection'),
       items: [
         {
           key: 'rescue',
-          label: 'Crop Rescue Mode',
+          label: t('nav.cropRescue'),
           icon: Flame,
-          badge: urgentRescueCount > 0 ? 'ALERT' : null,
+          badge: urgentRescueCount > 0 ? t('nav.alert') : null,
           badgeColor: 'rose',
         },
         {
           key: 'protection',
-          label: 'Farmer Protection',
+          label: t('nav.farmerProtection'),
           icon: ShieldCheck,
           badge: null,
         },
       ],
     },
     {
-      sectionTitle: 'Smart Farming',
+      sectionTitle: t('nav.smartFarming'),
       items: [
         {
           key: 'iot-monitoring',
-          label: 'IoT Monitoring',
+          label: t('nav.iot'),
           icon: Activity,
           badge: null,
         },
       ],
     },
     {
-      sectionTitle: 'Technical',
+      sectionTitle: t('nav.technical'),
       items: [
         {
           key: 'specs',
-          label: 'Engine Specs',
+          label: t('nav.engineSpecs'),
           icon: FileCode2,
           badge: null,
         },
@@ -235,13 +238,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <span className="font-extrabold text-slate-900 font-display text-sm">All Platform Modules</span>
           </div>
-          <button
-            onClick={onCloseMobile}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 cursor-pointer"
-            aria-label="Close Navigation"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <LanguageSelector variant="dark" />
+            <button
+              onClick={onCloseMobile}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 cursor-pointer"
+              aria-label="Close Navigation"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto space-y-4 pr-1">

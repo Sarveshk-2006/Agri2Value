@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Activity,
   Droplet,
@@ -111,6 +112,7 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
   farms,
   onNavigateToRescue,
 }) => {
+  const { t, i18n } = useTranslation();
   const [selectedFarmId, setSelectedFarmId] = useState<string>(farms[0]?.id || '');
   const [devices, setDevices] = useState<IoTDevice[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
@@ -517,11 +519,11 @@ export const IoTMonitoringView: React.FC<IoTMonitoringViewProps> = ({
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-display">
-              IoT & Edge Microclimate Intelligence
+              {t('iot.title')}
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-500 max-w-3xl leading-relaxed">
-              Monitor farm environmental conditions, analyze edge sensor telemetry, simulate microclimate scenarios, and generate transparent agricultural advisories for precision horticultural management.
+              {t('iot.subtitle')}
             </p>
           </div>
 

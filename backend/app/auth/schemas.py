@@ -51,6 +51,14 @@ class RefreshRequest(BaseModel):
     refresh_token: str
 
 
+class UpdateLanguageRequest(BaseModel):
+    preferred_language: str = Field(
+        ...,
+        max_length=10,
+        examples=["en", "hi", "mr", "te", "ta", "kn", "gu", "pa", "bn", "ml"]
+    )
+
+
 class UserMeResponse(BaseModel):
     id: str
     full_name: str

@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Sprout, Menu, X, ArrowRight, UserCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from '../LanguageSelector';
 import type { User } from '../../types';
 
 interface PublicNavbarProps {
@@ -10,6 +12,7 @@ interface PublicNavbarProps {
 }
 
 export const PublicNavbar: React.FC<PublicNavbarProps> = ({ user, onLogout }) => {
+  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -28,7 +31,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ user, onLogout }) =>
   }, [location.pathname]);
 
   const navLinks = [
-    { label: 'Home', path: '/' },
+    { label: t('nav.home'), path: '/' },
     { label: 'About', path: '/about' },
     { label: 'How It Works', path: '/how-it-works' },
     { label: 'Features', path: '/features' },
@@ -94,6 +97,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ user, onLogout }) =>
 
           {/* Desktop Action Buttons */}
           <div className="hidden md:flex items-center gap-3">
+            <LanguageSelector variant="dark" />
             {user ? (
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-xs font-semibold">
@@ -104,7 +108,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ user, onLogout }) =>
                   to="/app/dashboard"
                   className="btn-primary text-xs py-2 px-3.5 shadow-sm shadow-emerald-600/20"
                 >
-                  <span>Farmer Console</span>
+                  <span>{t('common.farmerConsole')}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
                 {onLogout && (
@@ -112,7 +116,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ user, onLogout }) =>
                     onClick={onLogout}
                     className="text-xs font-semibold text-slate-500 hover:text-rose-600 transition-colors px-2 py-1"
                   >
-                    Logout
+                    {t('common.signOut')}
                   </button>
                 )}
               </div>
@@ -126,13 +130,13 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ user, onLogout }) =>
                       : 'border-white/30 text-white hover:bg-white/10'
                   }`}
                 >
-                  Sign In
+                  {t('common.signIn')}
                 </Link>
                 <Link
                   to="/app/dashboard"
                   className="btn-primary text-xs py-2 px-4 shadow-md shadow-emerald-600/25"
                 >
-                  <span>Explore App</span>
+                  <span>{t('common.farmerConsole')}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -141,6 +145,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({ user, onLogout }) =>
 
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-2 md:hidden">
+            <LanguageSelector variant="dark" />
             <Link
               to="/app/dashboard"
               className="btn-primary text-xs py-1.5 px-3"

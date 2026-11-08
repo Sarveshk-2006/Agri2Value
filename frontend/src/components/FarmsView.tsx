@@ -1,5 +1,6 @@
 // frontend/src/components/FarmsView.tsx
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Home,
   Plus,
@@ -55,6 +56,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
   onCloseCreateModal,
   onOpenCreateModal,
 }) => {
+  const { t, i18n } = useTranslation();
   // URL-driven query parameters
   const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const isSearchEmpty = urlParams?.get('view') === 'empty';
@@ -554,14 +556,14 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-display">
-                  Farms & Land Holdings
+                  {t('farms.title')}
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold tracking-wide">
                   3D Map Active
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                Manage land holdings, location-specific 3D geospatial visualization, and boundary mapping.
+                {t('farms.subtitle')}
               </p>
             </div>
           </div>
@@ -573,7 +575,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
             className="btn-primary flex items-center gap-2 shadow-xs cursor-pointer text-xs sm:text-sm py-2 sm:py-2.5 px-3.5 sm:px-4"
           >
             <Plus className="w-4 h-4" />
-            <span>Add New Farm</span>
+            <span>{t('farms.addNewFarm')}</span>
           </button>
         </div>
       </div>
@@ -925,7 +927,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
                       </div>
 
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold shrink-0">
-                        ACTIVE HOLDING
+                        {t('farms.activeHolding')}
                       </span>
                     </div>
 
@@ -933,7 +935,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
                     <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
                       <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-100">
                         <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                          Land Area
+                          {t('farms.landArea')}
                         </span>
                         <span className="font-extrabold text-slate-900 font-mono text-sm">
                           {farm.land_area} {farm.land_area_unit}
@@ -942,7 +944,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
 
                       <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-100">
                         <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                          GPS Coordinates
+                          {t('farms.gpsCoordinates')}
                         </span>
                         <div className="flex items-center justify-between gap-1 font-mono text-xs text-slate-800 font-bold mt-0.5">
                           <span className="truncate">
@@ -972,7 +974,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
                     <div>
                       <div className="flex items-center justify-between text-xs font-semibold text-slate-500 mb-1.5">
                         <span className="uppercase tracking-wider text-[10px] font-bold">
-                          Associated Farm Resources
+                          {t('farms.associatedResources')}
                         </span>
                         <span className="font-mono text-slate-400 text-[11px]">
                           {farm.resources?.length || 0} Registered
@@ -1044,7 +1046,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
                       }`}
                     >
                       <Eye className="w-3.5 h-3.5" />
-                      <span>Explore 3D Farm</span>
+                      <span>{t('farms.exploreDigitalTwin')}</span>
                     </button>
 
                     <button
@@ -1054,7 +1056,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
                       title="Edit Farm Details"
                     >
                       <Pencil className="w-3.5 h-3.5" />
-                      <span>Edit</span>
+                      <span>{t('common.edit')}</span>
                     </button>
                   </div>
                 </div>

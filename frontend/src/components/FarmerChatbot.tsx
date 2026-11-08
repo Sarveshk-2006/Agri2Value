@@ -11,6 +11,9 @@ import {
   User as UserIcon,
   ChevronRight
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { getAIContent } from '../services/aiAdvisorI18n';
+import { getIntlLocale } from '../i18n/formatters';
 
 interface ChatMessage {
   id: string;
@@ -23,22 +26,18 @@ interface ChatMessage {
   };
 }
 
-const SMART_SUGGESTIONS = [
-  'Tomato mandi price in Nashik today?',
-  'Which selling route gives the most profit?',
-  'Cold storage facilities in Niphad?',
-  'What are my rights if payment is delayed?',
-  'How does Crop Rescue salvage rain-damaged crops?'
-];
-
 export const FarmerChatbot: React.FC = () => {
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language || 'en';
+  const aiContent = getAIContent(currentLang);
+
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'welcome',
       sender: 'ai',
-      text: 'Namaste! I am your Agri2Value AI Post-Harvest Advisor 🌾. Ask me about mandi prices, profitable buyer routes, cold storage, or payment protection!',
+      text: aiContent.welcome,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -47,51 +46,87 @@ export const FarmerChatbot: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Update initial welcome message when language changes if no conversation has started
+  useEffect(() => {
+    setMessages(prev => {
+      if (prev.length === 1 && prev[0].id === 'welcome') {
+        return [{
+          id: 'welcome',
+          sender: 'ai',
+          text: aiContent.welcome,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }];
+      }
+      return prev;
+    });
+  }, [currentLang, aiContent.welcome]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
   const generateAnswer = (query: string): { text: string; action?: { label: string; route: string } } => {
     const q = query.toLowerCase();
+    const localizedAnswers = aiContent.answers;
 
-    if (q.includes('price') || q.includes('mandi') || q.includes('rate') || q.includes('tomato')) {
+    if (
+      q.includes('price') || q.includes('mandi') || q.includes('rate') || q.includes('tomato') ||
+      q.includes('भाव') || q.includes('দর') || q.includes('ధర') || q.includes('விலை') ||
+      q.includes('ದರ') || q.includes('ਕੀਮਤ') || q.includes('ചന്ത') || q.includes('റേറ്റ്')
+    ) {
       return {
-        text: 'Nashik APMC modal price for Tomato is ₹14.00/kg (Pimpalgaon APMC: ₹14.50/kg). However, our Profit Decision Engine shows institutional buyers (like Sahyadri Agro) are paying ₹16.50–₹23.80/kg net! We recommend checking direct buyer offers before selling at the mandi.',
-        action: { label: 'Compare Selling Routes', route: '/app/decision' }
+        text: localizedAnswers.price.text,
+        action: { label: localizedAnswers.price.actionLabel, route: '/app/decision' }
       };
     }
 
-    if (q.includes('profit') || q.includes('route') || q.includes('recommend') || q.includes('best')) {
+    if (
+      q.includes('profit') || q.includes('route') || q.includes('recommend') || q.includes('best') ||
+      q.includes('नफा') || q.includes('मुनाफा') || q.includes('लाभ') || q.includes('లాభం') ||
+      q.includes('லாபம்') || q.includes('ಆದಾಯ') || q.includes('ਲਾਭ') || q.includes('അറ്റാദായം')
+    ) {
       return {
-        text: 'For 4,000 kg Tomato, Direct Institutional Retail offers ₹62,500 net profit (+₹8,900 / +16.6% over the local mandi) with a 3-day payment guarantee. Standard cold storage is flagged as high-risk for tomatoes due to chilling injury without ethylene scrubbers.',
-        action: { label: 'View Ranked Pathways', route: '/app/decision' }
+        text: localizedAnswers.profit.text,
+        action: { label: localizedAnswers.profit.actionLabel, route: '/app/decision' }
       };
     }
 
-    if (q.includes('cold') || q.includes('storage') || q.includes('warehouse')) {
+    if (
+      q.includes('cold') || q.includes('storage') || q.includes('warehouse') ||
+      q.includes('शीतगृह') || q.includes('कोल्ड') || q.includes('হিমাগার') ||
+      q.includes('గోడౌన్') || q.includes('கிடங்கு') || q.includes('ಶೀತಲ') || q.includes('ശീതീകരണ')
+    ) {
       return {
-        text: 'Niphad Multi-Commodity Cold Chain Hub has 45,000 kg available capacity at ₹0.70/kg/month. It is ideal for Onions and Grapes (up to 90 days), providing price arbitrage during seasonal supply gluts.',
-        action: { label: 'Explore Infrastructure', route: '/app/infra' }
+        text: localizedAnswers.storage.text,
+        action: { label: localizedAnswers.storage.actionLabel, route: '/app/infra' }
       };
     }
 
-    if (q.includes('dispute') || q.includes('delay') || q.includes('payment') || q.includes('rights') || q.includes('contract')) {
+    if (
+      q.includes('dispute') || q.includes('delay') || q.includes('payment') || q.includes('rights') || q.includes('contract') ||
+      q.includes('तक्रार') || q.includes('पेमेंट') || q.includes('पैसे') || q.includes('शिकायत') || q.includes('చెల్లింపు') ||
+      q.includes('பணம்') || q.includes('ಪಾವತಿ') || q.includes('টাকা') || q.includes('പരാതി')
+    ) {
       return {
-        text: 'Under Agri2Value digital agreements, buyers are legally bound to statutory payment terms (typically 3 business days post-weighbridge confirmation). If a buyer delays, an automated PAYMENT_OVERDUE risk alert triggers and you can file a formal dispute in 1 click.',
-        action: { label: 'Farmer Protection Center', route: '/app/protection' }
+        text: localizedAnswers.dispute.text,
+        action: { label: localizedAnswers.dispute.actionLabel, route: '/app/protection' }
       };
     }
 
-    if (q.includes('rescue') || q.includes('rain') || q.includes('damage') || q.includes('rot') || q.includes('salvage')) {
+    if (
+      q.includes('rescue') || q.includes('rain') || q.includes('damage') || q.includes('rot') || q.includes('salvage') ||
+      q.includes('बचाव') || q.includes('पाऊस') || q.includes('पाऊस') || q.includes('बारिश') || q.includes('ವರ್ಷ') ||
+      q.includes('వర్షం') || q.includes('மழை') || q.includes('ਮੀਂਹ') || q.includes('বৃষ্টি') || q.includes('മഴ')
+    ) {
       return {
-        text: 'Our Crop Rescue engine models perishable salvage: rain-threatened tomatoes can be immediately diverted to Sahyadri Puree & Pulp Works (₹3.20/kg processing tariff) to recover 75% of commercial value instead of suffering 100% field spoilage.',
-        action: { label: 'Launch Crop Rescue', route: '/app/rescue' }
+        text: localizedAnswers.rescue.text,
+        action: { label: localizedAnswers.rescue.actionLabel, route: '/app/rescue' }
       };
     }
 
     return {
-      text: 'Agri2Value provides complete farm-to-profit protection: deterministic profit optimization, logistics coordination, digital deal records, and IoT smart monitoring. Would you like to evaluate your crop lot now?',
-      action: { label: 'Go to Dashboard', route: '/app/dashboard' }
+      text: localizedAnswers.fallback.text,
+      action: { label: localizedAnswers.fallback.actionLabel, route: '/app/dashboard' }
     };
   };
 
@@ -121,7 +156,7 @@ export const FarmerChatbot: React.FC = () => {
       };
       setMessages(prev => [...prev, aiMsg]);
       setIsTyping(false);
-    }, 700);
+    }, 600);
   };
 
   const toggleSpeech = () => {
@@ -140,7 +175,7 @@ export const FarmerChatbot: React.FC = () => {
 
     try {
       const recognition = new SpeechRecognition();
-      recognition.lang = 'en-IN';
+      recognition.lang = getIntlLocale(currentLang);
       recognition.interimResults = false;
 
       recognition.onstart = () => {
@@ -168,7 +203,7 @@ export const FarmerChatbot: React.FC = () => {
     }
   };
 
-  // Do not render the floating advisor on auth screens (/login, /register) to avoid obstructing form controls
+  // Do not render floating advisor on auth screens to avoid obstructing forms
   if (['/login', '/register'].includes(location.pathname)) {
     return null;
   }

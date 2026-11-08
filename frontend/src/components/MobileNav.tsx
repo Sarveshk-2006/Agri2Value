@@ -1,6 +1,7 @@
 // frontend/src/components/MobileNav.tsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   Sparkles,
@@ -23,6 +24,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   onSelectTab,
   urgentRescueCount = 0
 }) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const path = location.pathname;
 
@@ -30,43 +32,43 @@ export const MobileNav: React.FC<MobileNavProps> = ({
     {
       to: '/app/dashboard',
       key: 'dashboard' as TabKey,
-      label: 'Home',
+      label: t('nav.home'),
       icon: LayoutDashboard,
       isActive: activeTab === 'dashboard' || path === '/app/dashboard' || path === '/app'
     },
     {
       to: '/app/decision',
       key: 'decision-preview' as TabKey,
-      label: 'Profit',
+      label: t('nav.profit'),
       icon: Sparkles,
       isActive: activeTab === 'decision-preview' || path.includes('/app/decision'),
     },
     {
       to: '/app/protection',
       key: 'protection' as TabKey,
-      label: 'Protection',
+      label: t('nav.farmerProtection'),
       icon: ShieldCheck,
       isActive: activeTab === 'protection' || path.includes('/app/protection')
     },
     {
       to: '/app/execution',
       key: 'execution' as TabKey,
-      label: 'Tracker',
+      label: t('nav.tracker'),
       icon: Truck,
       isActive: activeTab === 'execution' || path.includes('/app/execution')
     },
     {
       to: '/app/iot',
       key: 'iot-monitoring' as TabKey,
-      label: 'Sensors',
+      label: t('nav.sensors'),
       icon: Radio,
       isActive: activeTab === 'iot-monitoring' || path.includes('/app/iot'),
-      badge: urgentRescueCount > 0 ? 'ALERT' : undefined
+      badge: urgentRescueCount > 0 ? t('nav.alert') : undefined
     },
     {
       to: '/app/profile',
       key: 'profile' as TabKey,
-      label: 'Profile',
+      label: t('nav.profile'),
       icon: User,
       isActive: activeTab === 'profile' || path.includes('/app/profile')
     }

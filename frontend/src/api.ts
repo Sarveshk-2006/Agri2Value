@@ -214,6 +214,10 @@ class ApiService {
     return this.token;
   }
 
+  hasToken(): boolean {
+    return !!this.token;
+  }
+
   private getHeaders(): HeadersInit {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -299,6 +303,25 @@ class ApiService {
       // Fallback
     }
     return DEFAULT_DEMO_USER;
+  }
+
+  async updatePreferredLanguage(language: string): Promise<User> {
+    try {
+      const res = await fetch(`${API_BASE}/auth/me/language`, {
+        method: 'PATCH',
+        headers: {
+          ...this.getHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ preferred_language: language }),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback
+    }
+    return { ...DEFAULT_DEMO_USER, preferred_language: language };
   }
 
   async getFarms(): Promise<Farm[]> {

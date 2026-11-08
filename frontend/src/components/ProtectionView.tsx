@@ -1,5 +1,6 @@
 // frontend/src/components/ProtectionView.tsx
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ShieldCheck,
   FileCheck2,
@@ -55,6 +56,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
   cropLots: _cropLots = [],
   onNavigateToExecution,
 }) => {
+  const { t, i18n } = useTranslation();
   const [activeSubTab, setActiveSubTab] = useState<SubTab>('overview');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -441,7 +443,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-display flex flex-wrap items-center gap-2">
-              <span>Farmer Protection & Deal Transparency</span>
+              <span>{t('protection.title')}</span>
               <span className="text-emerald-700 text-lg font-normal">कृषि-सुरक्षा व विश्वास</span>
             </h1>
 
@@ -450,7 +452,7 @@ export const ProtectionView: React.FC<ProtectionViewProps> = ({
             </p>
 
             <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">
-              Monitor commercial commitments, verify produce deliveries, track payment progress, identify unfair deductions, and protect your financial interests through transparent digital records.
+              {t('protection.subtitle')}
             </p>
           </div>
 

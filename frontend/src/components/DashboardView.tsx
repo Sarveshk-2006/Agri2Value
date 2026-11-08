@@ -1,6 +1,7 @@
 // frontend/src/components/DashboardView.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   Wheat, 
   MapPin, 
@@ -29,6 +30,7 @@ import { api } from '../api';
 import { WeatherSprayWidget } from './WeatherSprayWidget';
 import { SchemeDiscoveryModal } from './SchemeDiscoveryModal';
 import { CropDamageScannerModal } from './CropDamageScannerModal';
+import { formatNumber, formatCurrency, formatDate } from '../i18n/formatters';
 
 interface DashboardViewProps {
   user: User | null;
@@ -47,6 +49,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenCreateLot,
   onOpenCreateFarm,
 }) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   // State
@@ -127,15 +130,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span>Smart Execution Network Active</span>
+              <span>{t('dashboard.networkActive')}</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight font-display text-white">
-              Namaste, {user?.full_name?.split(' ')[0] || 'Ramesh'}! 🌾
+              {t('dashboard.welcome')}, {user?.full_name?.split(' ')[0] || 'Ramesh'}! 🌾
             </h1>
 
             <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed font-normal">
-              Your farm digital twin, APMC market rates, Open-Meteo microclimate, and verified direct dispatch pathways are synchronized. Maximize harvest realization through deterministic profit intelligence.
+              {t('dashboard.heroDesc')}
             </p>
           </div>
 
@@ -146,7 +149,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-98"
             >
               <Sparkles className="w-4 h-4 text-slate-950" />
-              <span>Run Profit Engine</span>
+              <span>{t('dashboard.runProfit')}</span>
               <ArrowRight className="w-4 h-4 text-slate-950" />
             </button>
 
@@ -155,7 +158,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/25 text-white border border-white/20 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 backdrop-blur-xs transition-all cursor-pointer active:scale-98"
             >
               <PlusCircle className="w-4 h-4 text-emerald-300" />
-              <span>Register Harvest Lot</span>
+              <span>{t('dashboard.registerHarvest')}</span>
             </button>
           </div>
         </div>
@@ -171,14 +174,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-extrabold text-slate-900 font-display">
-                  Crop Rescue Active: Perishable Tomato Protection
+                  {t('dashboard.rescueActive')}
                 </span>
                 <span className="px-2 py-0.5 rounded text-[10px] font-black bg-rose-600 text-white tracking-wider uppercase">
-                  High Urgency
+                  HIGH URGENCY
                 </span>
               </div>
               <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
-                Rapid salvage pathways monitored for Tomato lots facing shelf-life expiry or APMC Mandi price gluts. Cold storage buffering and direct food processing units stand ready.
+                {t('dashboard.rescueDesc')}
               </p>
             </div>
           </div>
@@ -187,7 +190,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             onClick={() => handleSelectTab('rescue')}
             className="px-4 py-2 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs rounded-xl shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer active:scale-98"
           >
-            <span>Launch Crop Rescue</span>
+            <span>{t('dashboard.launchRescue')}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </section>
@@ -207,7 +210,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* KPI 1: Registered Farms */}
         <div className="card p-5 sm:p-6 flex flex-col justify-between hover:border-slate-300 transition-all shadow-2xs">
           <div className="flex items-start justify-between">
-            <span className="label text-[11px] font-bold text-slate-500 mb-0">Registered Land Holding</span>
+            <span className="label text-[11px] font-bold text-slate-500 mb-0">{t('dashboard.landHolding')}</span>
             <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
               <Layers className="w-4 h-4" />
             </div>
@@ -215,7 +218,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="my-2">
             <div className="text-3xl font-black text-slate-900 font-display">{farms.length}</div>
             <div className="text-xs text-slate-500 mt-1 flex items-center gap-1 font-medium">
-              <span>{totalAcres.toFixed(1)} Total Acres</span>
+              <span>{totalAcres.toFixed(1)} {t('dashboard.totalAcres')}</span>
               {primaryFarm && <span>• {primaryFarm.district}</span>}
             </div>
           </div>
@@ -228,17 +231,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* KPI 2: Harvest Lots */}
         <div className="card p-5 sm:p-6 flex flex-col justify-between hover:border-slate-300 transition-all shadow-2xs">
           <div className="flex items-start justify-between">
-            <span className="label text-[11px] font-bold text-slate-500 mb-0">Active Harvest Volume</span>
+            <span className="label text-[11px] font-bold text-slate-500 mb-0">{t('dashboard.harvestVolume')}</span>
             <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-100">
               <Wheat className="w-4 h-4" />
             </div>
           </div>
           <div className="my-2">
             <div className="text-3xl font-black text-slate-900 font-mono">
-              {totalKg.toLocaleString()} <span className="text-sm font-normal text-slate-500">kg</span>
+              {formatNumber(totalKg, i18n.language)} <span className="text-sm font-normal text-slate-500">kg</span>
             </div>
             <div className="text-xs text-slate-500 mt-1 font-medium">
-              <span>{cropLots.length} Registered {cropLots.length === 1 ? 'Lot' : 'Lots'} ({activeLot?.crop_name || 'Produce'})</span>
+              <span>{cropLots.length} {t('dashboard.activeLots')} ({activeLot?.crop_name || 'Produce'})</span>
             </div>
           </div>
           <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
@@ -250,7 +253,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* KPI 3: APMC Benchmark */}
         <div className="card p-5 sm:p-6 flex flex-col justify-between hover:border-slate-300 transition-all shadow-2xs">
           <div className="flex items-start justify-between">
-            <span className="label text-[11px] font-bold text-slate-500 mb-0">APMC Mandi Price</span>
+            <span className="label text-[11px] font-bold text-slate-500 mb-0">{t('dashboard.apmcPrice')}</span>
             <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-100">
               <TrendingUp className="w-4 h-4" />
             </div>
@@ -275,14 +278,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* KPI 4: Execution Engine */}
         <div className="card p-5 sm:p-6 flex flex-col justify-between hover:border-slate-300 transition-all shadow-2xs">
           <div className="flex items-start justify-between">
-            <span className="label text-[11px] font-bold text-slate-500 mb-0">Dispatch Readiness</span>
+            <span className="label text-[11px] font-bold text-slate-500 mb-0">{t('dashboard.dispatchReadiness')}</span>
             <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center shrink-0 border border-purple-100">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
           <div className="my-2">
             <div className="text-3xl font-black text-slate-900 font-display flex items-center gap-2">
-              <span>4 Pathways</span>
+              <span>{t('dashboard.fourPathways')}</span>
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             </div>
             <div className="text-xs text-slate-500 mt-1 font-medium">
@@ -382,7 +385,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
             <div>
               <h3 className="text-base font-extrabold text-slate-900 font-display">
-                Government Schemes & Subsidy Explorer 🏛️
+                {t('dashboard.exploreSchemes')} 🏛️
               </h3>
               <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                 Explore Agriculture Infrastructure Fund (3% interest subvention), PMFBY crop loss safety, MIDH (up to 50% cold storage grants), and PoCRA climate incentives. Calculate eligible benefits instantly.
@@ -394,7 +397,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             onClick={() => setIsSchemeModalOpen(true)}
             className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
           >
-            <span>Explore Schemes & Calculate Subsidy</span>
+            <span>{t('dashboard.exploreSchemes')}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -412,7 +415,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
             <div>
               <h3 className="text-base font-extrabold text-slate-900 font-display">
-                AI Crop Damage & Quality Diagnostic 📷
+                {t('dashboard.cropDiagnostic')} 📷
               </h3>
               <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                 Scan produce photos to detect early fungal blight, transit bruising, or sunscald. Directly links damage severity to Crop Rescue salvage routes and insurance claim dossiers.
@@ -424,7 +427,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             onClick={() => setIsScannerModalOpen(true)}
             className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
           >
-            <span>Launch Vision Scanner & Diagnostic</span>
+            <span>{t('dashboard.cropDiagnostic')}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -443,7 +446,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="text-lg font-black text-slate-900 font-display">
-                    Active Harvest Workspace
+                    {t('dashboard.activeWorkspace')}
                   </h2>
                   <span className="badge-green text-[10px]">
                     OPERATIONAL DIGITAL TWIN
@@ -459,7 +462,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   onClick={() => handleSelectTab('lots')}
                   className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
                 >
-                  <span>Manage All Lots ({cropLots.length})</span>
+                  <span>{t('dashboard.manageLots')} ({cropLots.length})</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -603,7 +606,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 className="btn-primary text-xs py-2.5 px-5 shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Analyse Profit Recommendation</span>
+                <span>{t('dashboard.analyseProfit')}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -615,14 +618,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h2 className="text-lg font-black text-slate-900 font-display">Registered Farm</h2>
+                <h2 className="text-lg font-black text-slate-900 font-display">{t('dashboard.registeredFarm')}</h2>
                 <p className="text-xs text-slate-500 mt-0.5">Physical land parcel & equipment twin</p>
               </div>
               <button
                 onClick={() => handleSelectTab('farms')}
                 className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
               >
-                <span>Manage</span>
+                <span>{t('dashboard.manageFarms')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>

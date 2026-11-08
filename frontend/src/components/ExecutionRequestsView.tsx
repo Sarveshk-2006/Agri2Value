@@ -1,5 +1,6 @@
 // frontend/src/components/ExecutionRequestsView.tsx
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   FileText,
   Clock,
@@ -63,6 +64,7 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
   onNavigateToInfra,
   onNavigateToProtection,
 }) => {
+  const { t, i18n } = useTranslation();
   const [requests, setRequests] = useState<ExecutionRequest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -307,14 +309,14 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
                 <FileText className="w-6 h-6" />
               </div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-black font-display tracking-tight text-white">
-                Smart Execution Tracker
+                {t('execution.title')}
               </h1>
             </div>
             <p className="text-sm sm:text-base md:text-lg font-semibold text-emerald-300">
               From Decision to Realized Profit.
             </p>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
-              Monitor every stage of your agricultural transaction, from commercial confirmation and logistics execution to verified delivery and final financial settlement.
+              {t('execution.subtitle')}
             </p>
           </div>
 

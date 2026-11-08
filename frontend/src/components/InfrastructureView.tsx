@@ -1,5 +1,6 @@
 // frontend/src/components/InfrastructureView.tsx
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Truck,
   Warehouse,
@@ -50,6 +51,7 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
   cropLots,
   onNavigateToExecution,
 }) => {
+  const { t, i18n } = useTranslation();
   // Category state
   const [activeCategory, setActiveCategory] = useState<InfraCategory>('transport');
 
@@ -439,14 +441,14 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
                 <Truck className="w-6 h-6" />
               </div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-black font-display tracking-tight text-white">
-                Logistics, Cold Chain & Processing Units
+                {t('logistics.title')}
               </h1>
             </div>
             <p className="text-sm sm:text-base md:text-lg font-semibold text-emerald-300">
               Move Smarter. Store Better. Deliver Fresher.
             </p>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
-              Discover reliable agricultural transport fleets, temperature-controlled cold storage facilities, and verified agro-processing units with transparent service tariffs and dependable capacity.
+              {t('logistics.subtitle')}
             </p>
           </div>
 
