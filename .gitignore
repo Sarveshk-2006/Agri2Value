@@ -68,6 +68,7 @@ frontend/.vite/
 *.db
 *.sqlite3
 postgres_data/
+backend/backups/
 
 # ---- ML Models -----------------------------------------------
 ml/models/*.pt

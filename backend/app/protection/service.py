@@ -315,6 +315,10 @@ class ProtectionService:
                 partner_contact = p.contact_phone
                 payment_terms_days = 7
 
+        unit_price = req.indicative_unit_price
+        if not unit_price or unit_price <= Decimal("0.00"):
+            unit_price = (lot.target_price_per_kg if lot and lot.target_price_per_kg and lot.target_price_per_kg > 0 else Decimal("18.00"))
+
         payload = AgreementCreate(
             crop_lot_id=req.crop_lot_id,
             execution_request_id=req.id,
@@ -327,7 +331,7 @@ class ProtectionService:
             quality_grade=lot.quality_grade if lot else "Grade A",
             agreed_quantity_kg=req.requested_quantity_kg,
             quantity_unit="kg",
-            agreed_unit_price=req.indicative_unit_price,
+            agreed_unit_price=unit_price,
             pricing_unit="INR/kg",
             logistics_deduction=req.indicative_logistics_cost,
             processing_deduction=req.indicative_processing_cost,

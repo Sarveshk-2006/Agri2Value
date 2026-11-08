@@ -125,11 +125,12 @@ async def demo_login(
     payload: DemoLoginRequest,
     db: AsyncSession = Depends(get_db),
 ) -> TokenResponse:
-    # Guard: ensure this endpoint is unavailable in production
-    if settings.APP_ENV == "production" and not settings.DEMO_MODE:
+    # Guard: strictly disable demo login in production environments
+    if settings.APP_ENV == "production":
+        logger.warning("Attempted demo login in production environment - access denied", phone_suffix=payload.phone[-4:] if payload.phone else "")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Demo login is not available in production. Use the real OTP authentication endpoint.",
+            detail="Demo login is strictly disabled in production. Use the mobile OTP verification endpoint.",
         )
 
     # Validate demo OTP code — intentionally simple for demonstration

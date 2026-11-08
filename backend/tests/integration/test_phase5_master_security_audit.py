@@ -197,3 +197,4 @@ async def test_sql_injection_resilience(client: AsyncClient):
             headers=headers,
         )
         assert resp.status_code in (200, 422), f"Query failed abnormally on input '{sqli}': {resp.status_code}"
+
