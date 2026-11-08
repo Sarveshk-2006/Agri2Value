@@ -129,6 +129,7 @@ export const ExecutionRequestsView: React.FC<ExecutionRequestsViewProps> = ({
       totalVolumeKg,
       totalRealizedPayout: Math.round(totalRealizedPayout),
       inFlightEstimatedPayout: Math.round(inFlightEstimatedPayout),
+      totalEstimatedPayout: Math.round(totalRealizedPayout + inFlightEstimatedPayout)
     };
   }, [requests]);
 

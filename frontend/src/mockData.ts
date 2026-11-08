@@ -1136,11 +1136,11 @@ export const MOCK_CROP_RESCUE: CropRescueAssessment = {
     'Pre-cooling transfer affords up to 30 days safe buffer storage if wholesale market rates are expected to rebound post-monsoon.',
   ],
   assumptions_disclosed: [
-    { name: 'Ambient Safe Shelf-Life', value: 4, unit: 'Days', source_description: 'Biological perishability limit at 28-34°C field ambient temperature' },
-    { name: 'Precipitation Risk Trigger', value: 25, unit: 'mm / 48h', source_description: 'Open-Meteo forecast exceeding threshold causes field rot' },
-    { name: 'APMC Gluts Discount', value: 22, unit: '% drop', source_description: 'Historical APMC price decline during pre-monsoon distress rush' },
-    { name: 'Puree Extraction Recovery', value: 92.5, unit: '% yield', source_description: 'Sahyadri factory calibrated recovery for Grade A Abhinav tomato' },
-    { name: 'Cold Chamber Daily Rate', value: 0.028, unit: '₹/kg/day', source_description: 'Niphad Pre-cooling hub verified commercial tariff' },
+    { name: 'Ambient Safe Shelf-Life', value: 4, unit: 'Days', provenance: 'VERIFIED', is_configurable: false, source_description: 'Biological perishability limit at 28-34°C field ambient temperature' },
+    { name: 'Precipitation Risk Trigger', value: 25, unit: 'mm / 48h', provenance: 'VERIFIED', is_configurable: false, source_description: 'Open-Meteo forecast exceeding threshold causes field rot' },
+    { name: 'APMC Gluts Discount', value: 22, unit: '% drop', provenance: 'ILLUSTRATIVE_BENCHMARK', is_configurable: false, source_description: 'Historical APMC price decline during pre-monsoon distress rush' },
+    { name: 'Puree Extraction Recovery', value: 92.5, unit: '% yield', provenance: 'VERIFIED', is_configurable: false, source_description: 'Sahyadri factory calibrated recovery for Grade A Abhinav tomato' },
+    { name: 'Cold Chamber Daily Rate', value: 0.028, unit: '₹/kg/day', provenance: 'VERIFIED', is_configurable: false, source_description: 'Niphad Pre-cooling hub verified commercial tariff' },
   ],
 };
 

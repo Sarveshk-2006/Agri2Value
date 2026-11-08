@@ -179,6 +179,8 @@ export const InfrastructureView: React.FC<InfrastructureViewProps> = ({
       procDailyTons: Math.round(totalProcessingIntakeTons),
       procAvailableTons: Math.round(availableProcessingIntakeTons),
       aggregateReadyCapacityTons: Math.round(availableColdStorageTons + availableProcessingIntakeTons),
+      activeBookingsCount: 3,
+      completedBookingsCount: 12,
     };
   }, [logistics, coldStorage, processing]);
 

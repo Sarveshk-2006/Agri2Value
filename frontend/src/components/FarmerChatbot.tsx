@@ -322,7 +322,7 @@ export const FarmerChatbot: React.FC = () => {
 
           {/* Prompt Suggestions */}
           <div className="p-2.5 bg-white border-t border-slate-100 overflow-x-auto no-scrollbar flex items-center gap-1.5">
-            {SMART_SUGGESTIONS.map((s, idx) => (
+            {aiContent.suggestions.map((s, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(s)}

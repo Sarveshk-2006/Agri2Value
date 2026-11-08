@@ -99,7 +99,6 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [districtFilter, setDistrictFilter] = useState('ALL');
   const [sortBy, setSortBy] = useState<'recent' | 'area_desc' | 'area_asc' | 'name'>('recent');
-  const [viewLayout, setViewLayout] = useState<'split' | 'cards'>('split');
 
   // Districts list for filter dropdown
   const districtOptions = useMemo(() => {
@@ -446,6 +445,7 @@ export const FarmsView: React.FC<FarmsViewProps> = ({
           latitude: !isNaN(lat) ? lat : undefined,
           longitude: !isNaN(lon) ? lon : undefined,
           resources: editResources.map((r) => ({
+            id: r.id || 'res-' + Math.random().toString(36).substring(2, 9),
             resource_type: r.resource_type,
             name: r.name,
             quantity: r.quantity,

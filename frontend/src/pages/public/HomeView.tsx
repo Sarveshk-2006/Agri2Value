@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   Sparkles,
+  Sprout,
   ArrowRight,
   Layers,
   ShieldCheck,
