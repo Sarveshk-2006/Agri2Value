@@ -64,3 +64,4 @@ All data and interactions remain strictly grounded in the real backend architect
 - **Tablet (768 × 1024):** `docs/screenshots/iot_baseline_tablet.png` (157,958 bytes)
 - **Mobile (375 × 812):** `docs/screenshots/iot_baseline_mobile.png` (53,355 bytes)
 - Artifact directory mirrors preserved at `C:\Users\Sarvesh Kulkarni\.gemini\antigravity\brain\3cb2df03-6d76-4390-8e30-9f5e5e0a8314\`.
+

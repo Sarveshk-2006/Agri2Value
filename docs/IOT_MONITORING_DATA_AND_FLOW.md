@@ -79,3 +79,4 @@
    - Auto-resolves previous alerts if readings return to safe bounds (e.g. soil moisture ≥35%).
    - Updates `device.last_seen_at` and `device.last_reading_summary`.
 5. **Real-Time Client Refresh:** Frontend updates gauges, adds readings to the telemetry ledger, and triggers alert notification banners.
+

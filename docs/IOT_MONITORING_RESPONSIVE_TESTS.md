@@ -36,3 +36,4 @@
    - Table wrapped in `overflow-x-auto` to prevent root window expansion.
    - Action buttons and filter bars flex-wrap cleanly without text overlap.
    - All slider labels and numeric values wrap gracefully with zero horizontal scrollbar on `document.body`.
+
